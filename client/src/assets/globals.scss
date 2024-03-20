@@ -1,0 +1,251 @@
+@import "constants";
+
+@font-face {
+  font-family: Montserrat;
+  src: url("./fonts/Montserrat/Montserrat-Regular.ttf") format("truetype");
+}
+
+// для элемента формы
+@mixin form-elem {
+  border: var(--border-block);
+  border-radius: var(--border-radius);
+  padding: var(--padding-form);
+  background-color: #fff;
+  font-family: var(--font-family-primary);
+
+  &:focus {
+    box-shadow: var(--hover-elem);
+    outline: 0;
+  }
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: 14px;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 400;
+}
+
+.border-block {
+  border: var(--border-block);
+  border-radius: var(--border-radius);
+}
+
+// Обёртка на формы
+.wrapper-content {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border: var(--border-block);
+}
+
+.link {
+  text-decoration: none;
+  color: black;
+}
+
+label {
+  font-size: 15px;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+button {
+  padding: 0.5rem 2rem;
+  border: 0;
+  border-radius: 10px;
+  background-color: var(--main-color);
+  color: #fff;
+  font-family: var(--font-family-title);
+  font-weight: 400;
+
+  &:hover {
+    opacity: 0.8;
+    transition: 0.3s;
+  }
+
+}
+
+input {
+  @include form-elem;
+
+  transition: 0.3s;
+}
+
+textarea {
+  @include form-elem;
+}
+
+.form-control {
+  &:focus {
+    box-shadow: 0 0 0.1rem 0.15rem var(--second-color);
+    outline: 0;
+  }
+}
+
+// кнопки ------------------------------------------------------------------------------------------
+// вторичная кнопка
+.btn-custom-secondary {
+  background: gray;
+}
+
+// кнопка принять
+.btn-custom-accept {
+  background: var(--second-accept);
+}
+
+// главная кнопка - побуждает к действию (выделяется)
+.btn-custom-primary {
+  background: var(--main-color);
+}
+
+// hover without styles
+.btn-custom-neutral {
+  border-radius: var(--border-radius);
+  background: transparent;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  color: black;
+  transition:0.3s;
+  width: fit-content;
+
+  &:hover {
+    background: lightgray;
+  }
+}
+
+// вторичная кнопка иконка с закруглением
+.btn-icon-rounded {
+  background: white;
+  border-radius: 50px;
+  color: black;
+  padding: 0.6rem 0.7rem;
+  transition:0.3s;
+  border: var(--border-block);
+
+  &:hover {
+    color: var(--main-color);
+  }
+}
+
+// кнопка иконка
+.btn-icon {
+  background: white;
+  border-radius: var(--border-radius-small);
+  color: black;
+  transition: 0.3s;
+
+  &:hover {
+    color: var(--main-color) !important;
+  }
+}
+
+// кнопки ------------------------------------------------------------------------------------------
+
+a {
+  font-size: 14px;
+  text-decoration: none;
+  color: black;
+
+  &:hover {
+    color: var(--main-color);
+    border-bottom-color: var(--main-color);
+  }
+
+  &:active {
+    transition: all 0.4s;
+    color: var(--main-color-hover);
+    border-bottom-color: var(--main-color-hover);
+  }
+}
+
+// выпадающий список с поиском
+.v-select {
+  min-width: 200px;
+
+  .vs__dropdown-toggle {
+    @include form-elem;
+
+    transition: 0.3s;
+  }
+
+  .vs__search {
+    font-size: 14px;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0.1rem 0.15rem var(--second-color);
+    outline: 0;
+    border: 0;
+  }
+}
+
+.form-check {
+  .form-check-input:checked {
+    background-color: var(--second-color);
+    border-color: var(--second-color);
+  }
+}
+
+//   individual dtyle for VDATEPICKER
+
+.vc-pane-container,
+.vc-popover-content-wrapper {
+  button {
+    background: none;
+    padding: 0;
+    color: black;
+  }
+}
+
+// form-select, accordion
+
+.form-select,
+.accordion-header {
+  // @include form-elem();
+  transition: 0.3s;
+}
+
+.accordion-header {
+  padding: 0;
+}
+
+.form-select {
+  padding-right: 2rem;
+  border-radius: var(--border-radius);
+
+  &:focus {
+    box-shadow: none;
+    border: var(--border-block);
+  }
+}
+
+.accordion-item {
+  .accordion-header {
+    .accordion-button {
+      &:focus,
+      &:hover {
+        color: black;
+        background: white;
+        box-shadow: var(--box-shadow);
+        outline: 0;
+        border: 0;
+      }
+    }
+  }
+}
+
+// media
+@media (width >= 768px) {
+  .nav-collapse {
+    display: block !important;
+  }
+}
