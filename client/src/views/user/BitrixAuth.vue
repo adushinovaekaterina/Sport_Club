@@ -63,7 +63,8 @@ const redirectTimer = _.debounce((login: boolean) => {
 }, redirectTime);
 
 function redirectPage(login: boolean) {
-  let namePage = login ? "Login" : "News";
+  let namePage = login ? "Login" : "Teams";
+  // let namePage = login ? "Login" : "News";
   router.push({ name: namePage });
 }
 

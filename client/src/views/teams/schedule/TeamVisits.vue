@@ -1,35 +1,35 @@
 <template>
   <div class="row">
-    <div class="col-12 overflow-scroll">
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Понедельник</th>
-            <th>Вторник</th>
-            <th>Среда</th>
-            <th>Четверг</th>
-            <th>Пятница</th>
-            <th>Суббота</th>
-            <th>Воскресенье</th>
-          </tr>
-          <tr>
-            <th>Участники</th>
-            <th v-for="(day, index) in weekDays" :key="index">
-              {{ formatDate(day) }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="participant in participants" :key="participant.name">
-            <td>{{ participant.name }}</td>
-            <td v-for="(day, index) in weekDays" :key="index">
-              <input type="checkbox" v-model="participant[formatDate(day)]" />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<!--    <div class="col-12 overflow-scroll">-->
+<!--      <table class="table">-->
+<!--        <thead>-->
+<!--          <tr>-->
+<!--            <th></th>-->
+<!--            <th>Понедельник</th>-->
+<!--            <th>Вторник</th>-->
+<!--            <th>Среда</th>-->
+<!--            <th>Четверг</th>-->
+<!--            <th>Пятница</th>-->
+<!--            <th>Суббота</th>-->
+<!--            <th>Воскресенье</th>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <th>Участники</th>-->
+<!--            <th v-for="(day, index) in weekDays" :key="index">-->
+<!--              {{ formatDate(day) }}-->
+<!--            </th>-->
+<!--          </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--          <tr v-for="participant in participants" :key="participant.name">-->
+<!--            <td>{{ participant.name }}</td>-->
+<!--            <td v-for="(day, index) in weekDays" :key="index">-->
+<!--              <input type="checkbox" v-model="participant[formatDate(day)]" />-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--    </div>-->
   </div>
 </template>
 

@@ -12,7 +12,7 @@ export enum TimeRange {
 
 export enum TypeGraphic {
   EVENTS_STATISTIC = "Статистика проведения мероприятий",
-  TEAMS_EVENTS = "Статистика коллективов с количество мероприятий",
+  TEAMS_EVENTS = "Статистика команд с количество мероприятий",
   DEFAULT_PARAMETERS = "Общие показатели",
 }
 

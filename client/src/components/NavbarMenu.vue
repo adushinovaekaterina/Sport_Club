@@ -3,18 +3,19 @@
     <div class="container-fluid mx-lg-6 mx-md-5">
       <!-- Иконка политеха -->
       <div class="navbar__item-logo">
-        <RouterLink to="/news">
-          <img src="@/assets/icon/logo.svg" alt="logo" class="logo" />
+        <RouterLink to="/teams">
+<!--        <RouterLink to="/news">-->
+          <img src="@/assets/icon/logo.svg" alt="logo" class="logo"/>
         </RouterLink>
       </div>
       <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarTogglerDemo02"
-        aria-controls="navbarTogglerDemo02"
-        aria-expanded="false"
-        aria-label="Переключатель навигации"
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarTogglerDemo02"
+          aria-controls="navbarTogglerDemo02"
+          aria-expanded="false"
+          aria-label="Переключатель навигации"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -22,36 +23,46 @@
         <!-- Здесь перебираем элементы из массива менюшек -->
         <div class="navbar__item-link row w-100 justify-content-center">
           <div
-            v-for="item in itemLink"
-            class="link-item col-auto"
-            v-bind:key="item.name"
+              v-for="item in itemLink"
+              class="link-item col-auto"
+              v-bind:key="item.name"
           >
             <RouterLink class="link" active-class="active" :to="item.path">
               <p class="align-items-center d-flex">{{ item.name }}</p>
             </RouterLink>
           </div>
 
-          <div v-if="can('can view directions')" class="link-item col-auto">
-            <RouterLink class="link" active-class="active" :to="'/statistic'">
-              <p class="align-items-center d-flex">Статистика</p>
+          <!--          <div v-if="can('can view directions')" class="link-item col-auto">-->
+          <!--            <RouterLink class="link" active-class="active" :to="'/statistic'">-->
+          <!--              <p class="align-items-center d-flex">Статистика</p>-->
+          <!--            </RouterLink>-->
+          <!--          </div>-->
+
+          <!--          <div v-if="can('can view directions')" class="link-item col-auto">-->
+          <!--            <RouterLink class="link" active-class="active" :to="'/directions'">-->
+          <!--              <p class="align-items-center d-flex">Направления</p>-->
+          <!--            </RouterLink>-->
+          <!--          </div>-->
+
+
+          <div v-if="can('can all')" class="link-item col-auto">
+            <RouterLink class="link" active-class="active" :to="'/admin-panel'">
+              <p class="align-items-center admin-btn d-flex"><span>Админ панель</span>
+                <font-awesome-icon :icon="['fas', 'gear']" class="fa-xl mx-2"/>
+              </p>
             </RouterLink>
           </div>
-
-          <div v-if="can('can view directions')" class="link-item col-auto">
-            <RouterLink class="link" active-class="active" :to="'/directions'">
-              <p class="align-items-center d-flex">Направления</p>
+          <div v-else-if="can('can create teams')" class="link-item col-auto">
+            <RouterLink class="link" active-class="active" :to="'/edit-teams'">
+              <p class="align-items-center admin-btn d-flex"><span>Настройки команд</span>
+                <font-awesome-icon :icon="['fas', 'gear']" class="fa-xl mx-2"/>
+              </p>
             </RouterLink>
           </div>
-
-            <div v-if="can('can all')" class="link-item col-auto">
-                <RouterLink class="link" active-class="active" :to="'/admin-panel'">
-                    <p class="align-items-center admin-btn d-flex"> <span>Админ панель </span> <font-awesome-icon :icon="['fas', 'gear']" class="fa-xl mx-2" /></p>
-                </RouterLink>
-            </div>
         </div>
         <!-- Кнопка вход + Личный кабинет-->
         <div class="navbar__item-login justify-content-center d-flex">
-          <User_Profile v-if="permissions_store.isLogged" />
+          <User_Profile v-if="permissions_store.isLogged"/>
           <RouterLink v-if="!permissions_store.isLogged" to="/login">
             <button class="login-button">Войти</button>
           </RouterLink>
@@ -62,10 +73,10 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { ref } from "vue";
+import {RouterLink} from "vue-router";
+import {ref} from "vue";
 import User_Profile from "@/components/UserProfile.vue";
-import { usePermissionsStore } from "@/store/permissions_store";
+import {usePermissionsStore} from "@/store/permissions_store";
 
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
@@ -73,8 +84,8 @@ ref(permissions_store.isLogged);
 
 const itemLink = [
   // { name: "Анкета(Создание)", path: "/questionnaire" },
-  { name: "Мероприятия", path: "/news" },
-  { name: "Коллективы", path: "/teams" },
+  {name: "Сборные команды", path: "/teams"},
+  {name: "Команды по физкультуре", path: "/pe_teams"},
   // { name: "Статистика", path: "/statistic" },
 ];
 </script>
@@ -112,12 +123,12 @@ const itemLink = [
     .link-item {
       padding: 1rem;
 
-      .admin-btn{
+      .admin-btn {
         padding: 0 10px;
         border-radius: 50px;
         border: 2px solid var(--main-navigation-color);
 
-        &:hover{
+        &:hover {
           border: 2px solid var(--main-color);
         }
       }

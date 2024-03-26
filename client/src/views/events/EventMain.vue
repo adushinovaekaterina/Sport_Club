@@ -2,7 +2,11 @@
   <div class="wrapper-team">
     <!-- Обертка карточек коллективов -->
     <div class="full-width">
-      <div class="wrapper-team__top-panel">
+      <div class="image-container">
+<!--      <div class="wrapper-team__top-panel">-->
+        <div v-for="(item, index) in team?.image" :key="index">
+          <img :src="item" v-if="currentPage === index" alt=""/>
+        </div>
         <div class="text-area">
           <div class="container">
             <p>{{ data.title }}</p>
@@ -97,6 +101,7 @@ import { onBeforeMount, ref } from "vue";
 import { useRoute } from "vue-router";
 import moment from "moment";
 import Tag from "@/components/TagElem.vue";
+import type {ITeam} from "@/store/models/teams/team.model";
 
 const route = useRoute();
 const data = ref();
@@ -104,6 +109,10 @@ const dateStart = ref();
 const dateEnd = ref();
 const dateStartRegistration = ref();
 const dateEndRegistration = ref();
+
+const team = ref<ITeam>({}); // команда
+
+const currentPage = ref(0);
 
 onBeforeMount(async () => {
   await fetchCurrentEvent();
@@ -152,45 +161,62 @@ async function fetchCurrentEvent() {
   margin-left: -50vw;
   margin-right: -50vw;
 
-  .wrapper-team__top-panel {
-    background-image: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.6) 10%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0) 100%
-      ),
-      url("https://kartinkin.net/uploads/posts/2022-03/1646938402_7-kartinkin-net-p-armrestling-kartinki-7.jpg");
-    background-size: 100% auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    background-position: center;
-    height: 350px;
-    width: 100%;
-    overflow: hidden;
-
+  .image-container {
     display: flex;
-    justify-content: start;
-    align-items: center;
-    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    width: 300px;
+    height: 200px;
+    background-size: cover;
+    overflow: hidden;
+    border-radius: 25px;
 
-    .text-area {
-      display: flex;
-      align-items: center;
-      background-size: 100% auto;
-      height: 350px;
-      width: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      opacity: 1;
-
-      p {
-        font-size: 36px;
-        font-weight: 600;
-        font-family: var(--font-family-title);
-        margin-bottom: 2rem;
-      }
+    img {
+      max-width: 100%;
+      height: auto;
     }
   }
+
+  //.wrapper-team__top-panel {
+  //  background-image: linear-gradient(
+  //      to right,
+  //      rgba(255, 255, 255, 1) 0%,
+  //      rgba(255, 255, 255, 0.6) 10%,
+  //      rgba(255, 255, 255, 0.5) 50%,
+  //      rgba(255, 255, 255, 0) 100%
+  //    ),
+  //     url("${team.image[currentPage]});
+  //    //url("https://kartinkin.net/uploads/posts/2022-03/1646938402_7-kartinkin-net-p-armrestling-kartinki-7.jpg");
+  //  background-size: 100% auto;
+  //  background-color: rgba(0, 0, 0, 0.5);
+  //  background-position: center;
+  //  height: 350px;
+  //  width: 100%;
+  //  overflow: hidden;
+  //
+  //  display: flex;
+  //  justify-content: start;
+  //  align-items: center;
+  //  position: relative;
+  //
+  //  .text-area {
+  //    display: flex;
+  //    align-items: center;
+  //    background-size: 100% auto;
+  //    height: 350px;
+  //    width: 100%;
+  //    background-color: rgba(0, 0, 0, 0.5);
+  //    color: white;
+  //    opacity: 1;
+  //
+  //    p {
+  //      font-size: 36px;
+  //      font-weight: 600;
+  //      font-family: var(--font-family-title);
+  //      margin-bottom: 2rem;
+  //    }
+  //  }
+  //}
 }
 
 .email {

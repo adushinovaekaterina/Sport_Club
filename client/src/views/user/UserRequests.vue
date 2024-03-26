@@ -28,7 +28,7 @@ import WIP from "@/components/WIP.vue";
 import UserTeamRequests from "@/views/user/UserTeamRequests.vue";
 
 const itemList = [
-  { name: "Коллективы (заявки)" },
+  { name: "Команды (заявки)" },
   { name: "Мероприятия (заявки)" },
 ];
 

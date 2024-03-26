@@ -8,7 +8,7 @@
       </div>
       <div class="col justify-content-end d-flex">
         <div>
-          <label class="form-label">Типы коллективов</label>
+          <label class="form-label">Типы команд</label>
           <select
             class="form-select"
             aria-label="Default select example"
@@ -31,8 +31,8 @@
         <thead>
           <tr>
             <th scope="col">№</th>
-            <th scope="col">ФИО руководителя</th>
-            <th scope="col">Назавание</th>
+            <th scope="col">ФИО тренера</th>
+            <th scope="col">Название</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -117,8 +117,8 @@ const visiblePages = 5;
 const teamId = ref(-1);
 
 const typeTeams = [
-  { id: 0, name: "Коллективы", type: "teams" },
-  { id: 1, name: "Направления", type: "direction" },
+  { id: 0, name: "Сборные команды", type: "teams" },
+  { id: 1, name: "Команды по физкультуре", type: "direction" },
 ];
 
 const selectedTypeTeam = ref(typeTeams[0]); //тип коллективв

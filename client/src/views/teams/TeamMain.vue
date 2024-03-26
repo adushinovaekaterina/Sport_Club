@@ -11,19 +11,19 @@
             </div>
         </div>
 
-        <div v-if="can('can edit own teams')" class="col-auto justify-content-end">
-            <button
-                    type="button"
-                    class="btn-custom-neutral"
-                    data-bs-toggle="modal"
-                    data-bs-target="#editTeamModal"
-            >
-                <FontAwesomeIcon icon="pencil" size="2x"/>
-            </button>
-        </div>
+<!--        <div v-if="can('can edit own teams')" class="col-auto justify-content-end">-->
+<!--            <button-->
+<!--                    type="button"-->
+<!--                    class="btn-custom-neutral"-->
+<!--                    data-bs-toggle="modal"-->
+<!--                    data-bs-target="#editTeamModal"-->
+<!--            >-->
+<!--                <FontAwesomeIcon icon="pencil" size="2x"/>-->
+<!--            </button>-->
+<!--        </div>-->
     </div>
     <hr/>
-    <div class="block-title">О коллективе</div>
+    <div class="block-title">О команде</div>
     <div class="middle-panel row g-3">
         <div class="column-left col-md-7 col-sm-12">
             <div class="description">
@@ -46,17 +46,33 @@
             </div>
         </div>
     </div>
-    <div class="block-title">Галерея</div>
-    <div class="middle-panel">
-        <div class="gallery">
-            <img
-                    v-for="(el, index) in team?.team_photos"
-                    v-bind:key="index"
-                    :src="el.image"
-                    alt=""
-            />
-        </div>
+
+  <div class="block-title">Галерея</div>
+  <div class="middle-panel">
+    <div class="gallery">
+      <div v-for="(item, index) in team?.image" :key="index">
+        <img :src="item" v-if="currentPage === index" />
+        <img :src="item" v-if="currentPage === index" />
+        <img :src="item" v-if="currentPage === index" />
+        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
+        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
+        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
+        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
+      </div>
     </div>
+  </div>
+
+<!--    <div class="block-title">Галерея</div>-->
+<!--    <div class="middle-panel">-->
+<!--        <div class="gallery">-->
+<!--            <img-->
+<!--                    v-for="(el, index) in team?.team_photos"-->
+<!--                    v-bind:key="index"-->
+<!--                    :src="el.image"-->
+<!--                    alt=""-->
+<!--            />-->
+<!--        </div>-->
+<!--    </div>-->
     <div class="map">
         <div class="info">
             <div class="title">Наши контакты</div>

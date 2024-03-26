@@ -1,59 +1,80 @@
 <template>
-  <!-- Это вся обертка -->
-  <div class="wrapper-team">
-    <!-- Обертка карточек коллективов -->
-    <div class="full-width">
-      <div class="wrapper-team__top-panel">
-        <div class="text-area">
-          <div class="container" v-if="team && team.title">
-            <p>{{ team.title }}</p>
-            <ModalQuestionnaire v-model="team.title" />
+<!--   Это вся обертка-->
+    <div class="wrapper-team">
+      <!-- Обертка карточек коллективов -->
+      <div class="full-width">
+        <div class="wrapper-team__top-panel">
+          <div class="text-area">
+            <div class="container" v-if="team && team.title">
+              <p>{{ team.title }}</p>
+              <ModalQuestionnaire v-model="team.title" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+
+<!--  <div>-->
+<!--    <div class="image-container" :style="getImageStyle()">-->
+<!--      <div v-for="(item, index) in team?.image" :key="index">-->
+<!--        <img :src="item" v-if="currentPage === index" alt=""/>-->
+<!--      </div>-->
+<!--      &lt;!&ndash; Ваш контент здесь &ndash;&gt;-->
+<!--      <div class="text-area">-->
+<!--        <div class="container" v-if="team && team.title">-->
+<!--          <p>{{ team.title }}</p>-->
+<!--          <ModalQuestionnaire v-model="team.title"/>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
     <div v-if="show" class="wrapper-team__content wrapper-content border-block">
       <!-- Навигация -->
       <div class="wrapper-second__navigation">
         <template v-for="(item, index) in itemList" :key="index">
           <a
-            v-if="item.permission"
-            @click="
+              v-if="item.permission"
+              @click="
               selectItem(index);
               showCreate = false;
             "
-            :class="{ active: index == selectedItem }"
-            >{{ item.name }}</a
+              :class="{ active: index == selectedItem }"
+          >{{ item.name }}</a
           >
         </template>
       </div>
 
+      <!--Главная страница команды-->
       <div v-if="selectedItem === 0">
-        <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId" />
+        <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId"/>
       </div>
 
+      <!--Блок с расписанием-->
       <div v-if="selectedItem === 1">
-        <!-- Блок с НОВОСТЯМИ -->
-        <TeamNews :idTeam="teamId" />
-      </div>
-<!--расписание-->
-      <div v-if="selectedItem === 2">
-        <TeamSchedule :team-id="teamId"/>
-      </div>
-      <!-- участники -->
-      <div v-if="selectedItem === 3">
-        <ParticipationsPage :idTeam="teamId" />
+        <TeamSchedule/>
+        <!--<TeamNews :idTeam="idTeam" />-->
       </div>
 
-      <div v-if="selectedItem === 4">
-        <Ankets />
+      <!--участники-->
+      <div v-if="selectedItem === 2">
+        <ParticipationsPage :idTeam="teamId"/>
+        <!--<TeamSchedule :team-id="teamId"/>-->
       </div>
 
       <!-- заявки -->
-      <div v-if="selectedItem == 5">
-        <TeamRequests :idTeam="teamId" />
+      <div v-if="selectedItem === 3">
+        <TeamRequests :idTeam="teamId"/>
+        <!--        <ParticipationsPage :idTeam="teamId" />-->
       </div>
+
+      <!--      <div v-if="selectedItem === 4">-->
+      <!--        <Ankets />-->
+      <!--      </div>-->
+
+      <!--      &lt;!&ndash; заявки &ndash;&gt;-->
+      <!--      <div v-if="selectedItem == 5">-->
+      <!--        <TeamRequests :idTeam="teamId" />-->
+      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -62,18 +83,18 @@
 import "@/assets/nav-second.scss";
 import TeamSchedule from "@/views/teams/schedule/TeamPage.vue";
 
-import { onBeforeMount, ref } from "vue";
+import {onBeforeMount, ref} from "vue";
 import Ankets from "@/views/teams/QuestionnairePage.vue";
 
 import axios from "axios";
-import { useRoute } from "vue-router";
+import {useRoute} from "vue-router";
 import ModalQuestionnaire from "@/components/modals/ModalQuestionnaire.vue";
 import TeamNews from "./TeamNews.vue";
 import TeamRequests from "./TeamRequests.vue";
-import { usePermissionsStore } from "@/store/permissions_store";
+import {usePermissionsStore} from "@/store/permissions_store";
 import TeamMain from "./TeamMain.vue";
-import type { ITeam } from "@/store/models/teams/team.model";
-import type { Ref } from "vue";
+import type {ITeam} from "@/store/models/teams/team.model";
+import type {Ref} from "vue";
 import ParticipationsPage from "@/views/teams/ParticipationsPage.vue";
 
 const route = useRoute();
@@ -85,6 +106,8 @@ const show = ref(true);
 
 
 const team: Ref<ITeam> = ref({});
+
+const currentPage = ref(0);
 
 onBeforeMount(async () => {
   await fetchCurrentTeam();
@@ -100,12 +123,12 @@ const selectedItem = ref(0);
 const showCreate = ref(false);
 
 const itemList = [
-  { name: "Главная", permission: true },
-  { name: "Новости", permission: true },
-  { name: "Расписание занятий", permission: true },
-  { name: "Участники", permission: true },
-  { name: "Редактор анкеты", permission: can("can create questionnaires") },
-  { name: "Заявки", permission: can("can create questionnaires") },
+  {name: "Главная", permission: true},
+  // { name: "Новости", permission: true },
+  {name: "Расписание занятий", permission: true},
+  {name: "Участники", permission: true},
+  // { name: "Редактор анкеты", permission: can("can create questionnaires") },
+  {name: "Заявки", permission: can("can edit status requisitions")},
 ];
 
 const selectItem = (i: number) => {
@@ -119,6 +142,16 @@ itemList.forEach((item, index) => {
 async function handleUpdateTeam() {
   await fetchCurrentTeam();
 }
+
+// function getImageStyle() {
+//   return {
+//     'background-image': `url("${team.value.image[currentPage]}")`,
+//     'background-size': 'cover',
+//     overflow: 'hidden',
+//     'border-radius': '25px',
+//   };
+// }
+
 </script>
 
 <style lang="scss" scoped>
@@ -145,19 +178,49 @@ async function handleUpdateTeam() {
     margin-right: -50vw;
   }
 
+  //.image-container {
+  //  display: flex;
+  //  flex-direction: column;
+  //  justify-content: start;
+  //  width: 300px;
+  //  height: 200px;
+  //
+  //
+  //  align-items: center;
+  //  position: relative;
+  //
+  //  .text-area {
+  //    display: flex;
+  //    align-items: center;
+  //    background-size: 100% auto;
+  //    height: 350px;
+  //    width: 100%;
+  //    background-color: rgba(0, 0, 0, 0.5);
+  //    color: white;
+  //    opacity: 1;
+  //
+  //    p {
+  //      font-size: 18px;
+  //      font-weight: 600;
+  //    }
+  //  }
+  //}
+
   .wrapper-team__top-panel {
     background-image: linear-gradient(
-        to right,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 0.6) 10%,
-        rgba(255, 255, 255, 0.5) 50%,
-        rgba(255, 255, 255, 0) 100%
-      ),
-      url("https://sun9-70.userapi.com/impg/hoGoGUgoywvDUTx8l17HB-5Rnpn3xKM7M1IP0Q/aRoqzu5at1s.jpg?size=2560x1707&quality=95&sign=f10e37ffd001af7dbd3cd5ab53041dee&type=album");
+            to right,
+            rgba(255, 255, 255, 1) 0%,
+            rgba(255, 255, 255, 0.6) 10%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0) 100%
+    ),
+    url("");
+    //url("https://sun9-70.userapi.com/impg/hoGoGUgoywvDUTx8l17HB-5Rnpn3xKM7M1IP0Q/aRoqzu5at1s.jpg?size=2560x1707&quality=95&sign=f10e37ffd001af7dbd3cd5ab53041dee&type=album");
     background-size: 100% auto;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
     background-position: center;
-    height: 350px;
+    height: 250px;
     width: 100%;
     overflow: hidden;
 

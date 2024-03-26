@@ -7,6 +7,7 @@ export class ApiRequest {
   message = ref("");
 
   async handleApiRequest(apiCall: () => Promise<AxiosResponse>) {
+
     this.loading.value = true;
     this.error.value = "";
 

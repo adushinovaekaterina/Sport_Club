@@ -10,8 +10,12 @@ import type { ICreateRequisition } from "@/store/models/forms/requisition-fields
 
 export const useTeamStore = defineStore("teams", () => {
   const layout = ref(true);
-  const apiRequest = new ApiRequest();
+  let apiRequest = new ApiRequest();
   const visits = ref([]);
+
+  function refresh() {
+    apiRequest = new ApiRequest()
+  }
 
   async function getUserRequisitions(id: number) {
     return (await axios.get("/api/teams/requisitions/user/" + id)).data;
@@ -179,7 +183,7 @@ export const useTeamStore = defineStore("teams", () => {
     });
   }
 
-  //архивировать или нет колелктив
+  // архивировать или нет команду
   async function archiveTeam(id: number, isArchive: boolean) {
     return apiRequest.handleApiRequest(async () => {
       return await axios.put(`/api/teams/${id}/archive`, {
@@ -311,20 +315,23 @@ export const useTeamStore = defineStore("teams", () => {
       title: "Вид деятельности",
       hidden: true,
       menu_types: [
-        { id: 1, title: "Научная деятельность", checked: true },
-        { id: 2, title: "Учебная деятельность", checked: true },
-        { id: 3, title: "Общественная деятельность", checked: true },
-        { id: 4, title: "Спортивная деятельность", checked: true },
-        { id: 5, title: "Культурно-творческая деятельность", checked: true },
+        { id: 1, title: "Командный", checked: true },
+        { id: 2, title: "Индивидуальный", checked: true },
+
+        // { id: 1, title: "Научная деятельность", checked: true },
+        // { id: 2, title: "Учебная деятельность", checked: true },
+        // { id: 3, title: "Общественная деятельность", checked: true },
+        // { id: 4, title: "Спортивная деятельность", checked: true },
+        // { id: 5, title: "Культурно-творческая деятельность", checked: true },
       ],
     },
     {
       id: 3,
-      title: "Тип коллектива",
+      title: "Тип команды",
       hidden: true,
       menu_types: [
-        { id: 1, title: "Архивный", checked: false },
-        { id: 2, title: "Действующий", checked: true },
+        { id: 1, title: "Архивная", checked: false },
+        { id: 2, title: "Действующая", checked: true },
       ],
     },
   ];
@@ -355,6 +362,8 @@ export const useTeamStore = defineStore("teams", () => {
     deleteAvs,
     deletePhotos,
     addPhoto,
+
+    refresh,
 
     layout,
     menu_items,

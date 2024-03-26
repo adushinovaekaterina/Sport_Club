@@ -23,35 +23,36 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-title" id="exampleModalLabel">Заполните анкету</div>
-        <div class="modal-subtitle" :value="modelValue">{{ modelValue }}</div>
+        <div class="modal-title" id="exampleModalLabel">Подтверждение отправки заявки</div>
+        <div class="modal-subtitle" :value="modelValue">Вы собираетесь отправить заявку в сборную команду "{{ modelValue }}"</div>
 
         <div class="alert alert-warning" v-if="msg">
           {{ msg }}
+<!--          Вы не авторизованы-->
         </div>
         <LoadingElem v-if="teamStore.apiRequest.loading" size-fa-icon="" />
 
-        <div
-          v-for="(form, i) in data"
-          class="wrapper-questions"
-          v-bind:key="form.id"
-        >
-          <div class="wrapper-one-question">
-            <div class="question-label">
-              {{ form.title }}{{ form.required ? "*" : "" }}
-            </div>
-            <textarea
-              class="input-answer"
-              v-model="createRequisitionData.fields[i]"
-            />
-          </div>
-        </div>
+<!--        <div-->
+<!--          v-for="(form, i) in data"-->
+<!--          class="wrapper-questions"-->
+<!--          v-bind:key="form.id"-->
+<!--        >-->
+<!--          <div class="wrapper-one-question">-->
+<!--            <div class="question-label">-->
+<!--              {{ form.title }}{{ form.required ? "*" : "" }}-->
+<!--            </div>-->
+<!--            <textarea-->
+<!--              class="input-answer"-->
+<!--              v-model="createRequisitionData.fields[i]"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </div>-->
         <div class="wrap-button">
           <button type="button" class="close-btn" data-bs-dismiss="modal">
-            Закрыть
+            Отмена
           </button>
           <button class="send-btn" @click="createRequisition()">
-            Отправить ответы
+            Отправить заявку
           </button>
         </div>
       </div>
@@ -129,6 +130,9 @@ async function fetchRequisition() {
   .modal-dialog {
     width: 100%;
     max-width: 900px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     .modal-content {
       background-color: #fff;
@@ -192,7 +196,7 @@ async function fetchRequisition() {
         }
 
         .send-btn {
-          font-weight: 400;
+          //font-weight: 400;
           font-size: 20px;
           width: 290px;
           height: 80px;
