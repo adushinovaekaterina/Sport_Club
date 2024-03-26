@@ -14,7 +14,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td>{{ participant.user.fullname}} ({{participant.counter}} / {{maxVisits}})</td>
+                    <td>{{ participant.user.fullname }} ({{ participant.counter }} / {{ maxVisits }})</td>
                     <td v-for="(date, index) in dates.dateRange" :key="index">
                         <input type="checkbox" :checked="participant.days[formatDate(date)]"
                                @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
@@ -40,14 +40,14 @@ import {TeamRoles} from "@/store/enums/team_roles";
 import type {ITeam} from "@/store/models/teams/team.model";
 
 interface Participant {
-    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean }, counter:number }
+    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean }, counter: number }
 }
 
 const teamStore = useTeamStore();
 
 const props = defineProps<{
     teamId: number,
-    maxVisits:number,
+    maxVisits: number,
     dates: {
         dateStart: Date;
         dateEnd: Date;
@@ -67,22 +67,22 @@ onBeforeMount(async () => {
     await fetchVisits()
 });
 
-watch(() =>props.dates.dateRange, async ()=>{
-   await fetchVisits()
+watch(() => props.dates.dateRange, async () => {
+    await fetchVisits()
 })
 
-async function onChangeVisit(userId:number, visited:boolean | undefined, dateVisit:Date) {
+async function onChangeVisit(userId: number, visited: boolean | undefined, dateVisit: Date) {
 
-    let v  = visited ?? false
+    let v = visited ?? false
 
     dateVisit.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to zero
 
-    const uV:IUpdateVisit = {}
+    const uV: IUpdateVisit = {}
     uV.date_visit = dateVisit
     uV.status_visit = !v
     uV.team_id = props.teamId
     uV.user_id = userId
-    await teamStore.setVisit(uV).then(async ()=>{
+    await teamStore.setVisit(uV).then(async () => {
         await fetchVisits()
     })
 
@@ -94,7 +94,7 @@ async function fetchUsers() {
 }
 
 async function fetchVisits() {
-   const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear()
     const startOfYear = new Date(currentYear, 0, 1)
     const endOfYear = new Date(currentYear, 11, 31)
 
@@ -104,6 +104,7 @@ async function fetchVisits() {
 }
 
 async function userVisitsFormat(usersVisits: IVisit[]) {
+    userVisits.value = {}
     usersVisits.forEach((visit) => {
         const usrVisit = visit.user
         teamUsersFunctions.value.forEach((userFunction) => {
@@ -112,12 +113,13 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
             if (tUser?.id && userFunction.function?.title != TeamRoles.Leader) {
                 // insert new user in list
                 if (!userVisits.value[tUser.id]) {
-                    userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter:0}
-                } else if(usrVisit.id == tUser?.id){
+                    userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter: 0}
+                } else if (usrVisit.id == tUser?.id) {
                     // insert dates in user
                     const d = formatDate(new Date(visit.date_visit))
                     userVisits.value[tUser.id].days[d] = visit.status_visit
-                    userVisits.value[tUser.id].counter += 1
+
+                    if (visit.status_visit) userVisits.value[tUser.id].counter += 1
                 }
 
             }

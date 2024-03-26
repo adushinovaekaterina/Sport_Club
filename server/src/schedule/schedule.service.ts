@@ -60,8 +60,8 @@ export class ScheduleService {
       .andWhere(
         'team_visits.date_visit >= :date_start and team_visits.date_visit <= :date_end',
         {
-          date_start: searchVisitsDto.date_visit_start,
-          date_end: searchVisitsDto.date_visit_end,
+          date_start: new Date(searchVisitsDto.date_visit_start),
+          date_end: new Date(searchVisitsDto.date_visit_end),
         },
       );
 
@@ -83,6 +83,7 @@ export class ScheduleService {
         user_id: updateVisitsDto.user_id,
       })
       .getOne();
+    console.log(existingVisit)
     // existing Visit
     if (existingVisit) {
       res = this.teamVisitsRepository.update(existingVisit.id, {
