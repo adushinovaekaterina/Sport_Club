@@ -85,7 +85,6 @@ import { onBeforeMount, ref } from "vue";
 import type { ISchedule } from "@/store/models/schedule/schedule.model";
 import type { ICabinet } from "@/store/models/schedule/cabinet.model";
 import type { IUser } from "@/store/models/user/user.model";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { usePermissionsStore } from "@/store/permissions_store";
 
 const permissions_store = usePermissionsStore();

@@ -51,7 +51,7 @@
 
       <!--Блок с расписанием-->
       <div v-if="selectedItem === 1">
-        <TeamSchedule/>
+        <TeamSchedule :team-id="teamId"/>
         <!--<TeamNews :idTeam="idTeam" />-->
       </div>
 
@@ -84,12 +84,10 @@ import "@/assets/nav-second.scss";
 import TeamSchedule from "@/views/teams/schedule/TeamPage.vue";
 
 import {onBeforeMount, ref} from "vue";
-import Ankets from "@/views/teams/QuestionnairePage.vue";
 
 import axios from "axios";
 import {useRoute} from "vue-router";
 import ModalQuestionnaire from "@/components/modals/ModalQuestionnaire.vue";
-import TeamNews from "./TeamNews.vue";
 import TeamRequests from "./TeamRequests.vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import TeamMain from "./TeamMain.vue";
@@ -107,7 +105,7 @@ const show = ref(true);
 
 const team: Ref<ITeam> = ref({});
 
-const currentPage = ref(0);
+// const currentPage = ref(0);
 
 onBeforeMount(async () => {
   await fetchCurrentTeam();

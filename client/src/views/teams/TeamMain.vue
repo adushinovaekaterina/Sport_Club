@@ -112,7 +112,7 @@ const teamStore = useTeamStore();
 const team = ref<ITeam>({}); //коллектив
 
 const permissions_store = usePermissionsStore();
-const can = permissions_store.can;
+// const can = permissions_store.can;
 
 const currentPage = ref(0);
 

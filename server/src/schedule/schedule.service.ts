@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { SearchVisitsDto } from './dto/search-visits.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {InjectEntityManager, InjectRepository} from '@nestjs/typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import { TeamSchedule } from './entities/schedule.entity';
 import { UpdateVisitsDto } from './dto/update-visits.dto';
 import { UsersService } from '../users/users.service';
@@ -21,6 +21,7 @@ import { CreateCabinetTimeDto } from './dto/create-cabinet-time.dto';
 import { CabinetsTime } from './entities/cabinets-time.entity';
 import { Dictionary } from '../general/entities/dictionary.entity';
 import { UpdateCabinetTimeDto } from './dto/update-cabinet-time.dto';
+import {Team} from "../teams/entities/team.entity";
 
 @Injectable()
 export class ScheduleService {
@@ -36,13 +37,15 @@ export class ScheduleService {
     @InjectRepository(Dictionary)
     private readonly dictionaryRepository: Repository<Dictionary>,
     private readonly usersService: UsersService,
+
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
   ) {}
 
   async findVisits(searchVisitsDto: SearchVisitsDto) {
-    const res = this.teamSchedRepository
-      .createQueryBuilder('team_schedule')
+    const res = this.teamVisitsRepository
+      .createQueryBuilder('team_visits')
       .select([
-        'team_schedule.id',
         'user.id',
         'user.fullname',
         'user.education_group',
@@ -50,8 +53,8 @@ export class ScheduleService {
         'team_visits.status_visit',
         'team_visits.date_visit',
       ])
-      .leftJoin('team_schedule.team', 'team')
-      .leftJoin('team_schedule.team_visits', 'team_visits')
+      .leftJoin('team_visits.team', 'team')
+      // .leftJoin('team_schedule.team_visits', 'team_visits')
       .leftJoin('team_visits.user', 'user')
       .where('team.id = :team_id', { team_id: searchVisitsDto.team_id })
       .andWhere(
@@ -62,7 +65,7 @@ export class ScheduleService {
         },
       );
 
-    return await res.getOne();
+    return await res.getManyAndCount();
   }
 
   async updateVisit(updateVisitsDto: UpdateVisitsDto) {
@@ -70,18 +73,16 @@ export class ScheduleService {
 
     const existingVisit = await this.teamVisitsRepository
       .createQueryBuilder('team_visits')
-      .leftJoin('team_visits.team_schedule', 'team_schedule')
-      .leftJoin('team_schedule.team', 'team')
+      .leftJoin('team_visits.team', 'team')
       .leftJoin('team_visits.user', 'user')
       .where('team.id = :team_id', { team_id: updateVisitsDto.team_id })
       .andWhere('team_visits.date_visit = :date_visit', {
-        date_visit: updateVisitsDto.date_visit,
+        date_visit: new Date(updateVisitsDto.date_visit),
       })
       .andWhere('user.id = :user_id', {
         user_id: updateVisitsDto.user_id,
       })
       .getOne();
-    // console.log(updateVisitsDto, existingVisit)
     // existing Visit
     if (existingVisit) {
       res = this.teamVisitsRepository.update(existingVisit.id, {
@@ -90,17 +91,13 @@ export class ScheduleService {
       });
     } else {
       const user = await this.usersService.findOne(updateVisitsDto.user_id);
-      const team_schedule = await this.teamSchedRepository
-        .createQueryBuilder('team_schedule')
-        .leftJoin('team_schedule.team', 'team')
-        .where('team.id = :team_id', { team_id: updateVisitsDto.team_id })
-        .getOne();
+      const team = await this.entityManager.findOneBy(Team, { id: updateVisitsDto.team_id});
 
       res = this.teamVisitsRepository.insert({
         user: user,
         status_visit: updateVisitsDto.status_visit,
         date_visit: updateVisitsDto.date_visit,
-        team_schedule: team_schedule,
+        team: team,
         comment: updateVisitsDto.comment,
       });
     }

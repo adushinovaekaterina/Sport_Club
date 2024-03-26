@@ -34,7 +34,7 @@
   </div>
   <!--    visits-->
   <div class="row">
-    <TeamVisits />
+    <TeamVisits :dates="dates" :team-id="teamId" />
   </div>
 </template>
 

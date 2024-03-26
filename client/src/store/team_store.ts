@@ -7,11 +7,11 @@ import axios from "axios";
 import { ApiRequest } from "@/store/handleApiRequest";
 import type { IRUFunction } from "./models/user/search-user-functions.model";
 import type { ICreateRequisition } from "@/store/models/forms/requisition-fields.model";
+import type {IUpdateVisit} from "@/store/models/schedule/visits.model";
 
 export const useTeamStore = defineStore("teams", () => {
   const layout = ref(true);
   let apiRequest = new ApiRequest();
-  const visits = ref([]);
 
   function refresh() {
     apiRequest = new ApiRequest()
@@ -37,6 +37,14 @@ export const useTeamStore = defineStore("teams", () => {
     });
     return res.data;
   }
+
+  async function setVisit(iUpdateVisit:IUpdateVisit) {
+    const res = await axios.post("/api/schedule/visits", {
+       ...iUpdateVisit
+    });
+    return res.data;
+  }
+
 
   // data will be returned as index 0 - is data, index 1 is count
   async function fetchTeamsOfDirection(direction: number = -1) {
@@ -364,6 +372,7 @@ export const useTeamStore = defineStore("teams", () => {
     addPhoto,
 
     refresh,
+    setVisit,
 
     layout,
     menu_items,

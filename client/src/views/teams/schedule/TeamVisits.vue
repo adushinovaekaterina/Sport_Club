@@ -1,95 +1,125 @@
 <template>
-  <div class="row">
-<!--    <div class="col-12 overflow-scroll">-->
-<!--      <table class="table">-->
-<!--        <thead>-->
-<!--          <tr>-->
-<!--            <th></th>-->
-<!--            <th>Понедельник</th>-->
-<!--            <th>Вторник</th>-->
-<!--            <th>Среда</th>-->
-<!--            <th>Четверг</th>-->
-<!--            <th>Пятница</th>-->
-<!--            <th>Суббота</th>-->
-<!--            <th>Воскресенье</th>-->
-<!--          </tr>-->
-<!--          <tr>-->
-<!--            <th>Участники</th>-->
-<!--            <th v-for="(day, index) in weekDays" :key="index">-->
-<!--              {{ formatDate(day) }}-->
-<!--            </th>-->
-<!--          </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--          <tr v-for="participant in participants" :key="participant.name">-->
-<!--            <td>{{ participant.name }}</td>-->
-<!--            <td v-for="(day, index) in weekDays" :key="index">-->
-<!--              <input type="checkbox" v-model="participant[formatDate(day)]" />-->
-<!--            </td>-->
-<!--          </tr>-->
-<!--        </tbody>-->
-<!--      </table>-->
-<!--    </div>-->
-  </div>
+    <div class="row">
+        <div class="col-12 overflow-scroll">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th v-for="(date, index2) in dates.dateRange" v-bind:key="index2">
+                        <div class="text-center"> {{ formatDayOfWeek(date) }}</div>
+                        <div class="text-center"> {{ date.toLocaleDateString() }}</div>
+                    </th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr v-for="participant in userVisits" :key="participant.name">
+                    <td>{{ participant.user.fullname}}</td>
+                    <td v-for="(date, index) in dates.dateRange" :key="index">
+                        <input type="checkbox" :checked="participant.days[formatDate(date)]"
+                               @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
 
-import {computed, ref} from "vue";
-import {formatDate, getMonday} from "@/views/teams/schedule/format-date";
+import type {Ref} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
+import {formatDate, formatDayOfWeek} from "@/views/teams/schedule/format-date";
+import type {IUserFunction} from "@/store/models/user/user-functions.model";
+import {useTeamStore} from "@/store/team_store";
+import type {IRUFunction} from "@/store/models/user/search-user-functions.model";
+import type {IVisit} from "@/store/models/schedule/visits.model";
+import {IUpdateVisit} from "@/store/models/schedule/visits.model";
+import {TeamRoles} from "@/store/enums/team_roles";
 
 interface Participant {
-  name: string;
-
-  [key: string]: string | boolean;
+    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean } }
 }
 
-const weekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника
+const teamStore = useTeamStore();
 
-const weekDays = computed(() => {
-    const days: Date[] = [];
-    const startDate = new Date(weekStart.value);
-    for (let i = 0; i < 7; i++) {
-        const day = new Date(startDate);
-        day.setDate(startDate.getDate() + i);
-        days.push(day);
-    }
-    return days;
+const props = defineProps<{
+    teamId: number;
+    dates: {
+        dateStart: Date;
+        dateEnd: Date;
+        dateRange: Date[];
+        weeks: string[];
+        formattedDate: string;
+    };
+}>();
+
+const filter: Ref<IRUFunction> = ref({});
+const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
+const userVisits: Ref = ref<Participant>({});
+
+onBeforeMount(async () => {
+    await fetchUsers();
+    await fetchVisits()
 });
 
+watch(() =>props.dates.dateRange, async ()=>{
+   await fetchVisits()
+})
 
-const participants: Participant[] = [
-  {
-    name: "Иванов",
-    Monday: false,
-    Tuesday: false,
-    Wednesday: false,
-    Thursday: false,
-    Friday: false,
-    Saturday: false,
-    Sunday: false,
-  },
-  {
-    name: "Конышев",
-    Monday: false,
-    Tuesday: false,
-    Wednesday: false,
-    Thursday: false,
-    Friday: false,
-    Saturday: false,
-    Sunday: false,
-  },
-  {
-    name: "Соболевский",
-    Monday: false,
-    Tuesday: false,
-    Wednesday: false,
-    Thursday: false,
-    Friday: false,
-    Saturday: false,
-    Sunday: false,
-  },
-];
+async function onChangeVisit(userId:number, visited:boolean | undefined, dateVisit:Date) {
+
+    let v  = visited ?? false
+
+    dateVisit.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to zero
+
+    const uV:IUpdateVisit = {}
+    uV.date_visit = dateVisit
+    uV.status_visit = !v
+    uV.team_id = props.teamId
+    uV.user_id = userId
+    await teamStore.setVisit(uV).then(async ()=>{
+        await fetchVisits()
+    })
+
+}
+
+async function fetchUsers() {
+    const data = await teamStore.fetchUsersOfTeam(props.teamId, filter.value);
+    teamUsersFunctions.value = data[0]
+}
+
+async function fetchVisits() {
+    const data = await teamStore.fetchVisits(props.dates.dateStart.toISOString(), props.dates.dateEnd.toISOString(), props.teamId);
+
+    await userVisitsFormat(data[0])
+}
+
+async function userVisitsFormat(usersVisits: IVisit[]) {
+    usersVisits.forEach((visit) => {
+        const usrVisit = visit.user
+        teamUsersFunctions.value.forEach((userFunction) => {
+            const tUser = userFunction.user
+            // console.log("userVisissts",usrVisit.id == tUser?.id , usrVisit.id, tUser?.id, userFunction)
+            if (tUser?.id && userFunction.function?.title != TeamRoles.Leader) {
+                // insert new user in list
+                if (!userVisits.value[tUser.id]) {
+                    userVisits.value[tUser.id] = {user: userFunction.user, days: {}}
+                } else if(usrVisit.id == tUser?.id){
+                    // insert dates in user
+                    const d = formatDate(new Date(visit.date_visit))
+                    userVisits.value[tUser.id].days[d] = visit.status_visit
+                }
+
+            }
+        })
+    })
+
+    console.log(userVisits.value)
+
+}
+
 </script>
 
 <style lang="scss" scoped>

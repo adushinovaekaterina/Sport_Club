@@ -194,7 +194,6 @@ import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
 import {FilterTeam} from "@/store/models/teams/filter-teams.model";
 import ModalFull from "@/components/modals/ModalFull.vue";
 import Search from "@/components/SearchField.vue";
-import Tag from "@/components/TagElem.vue";
 import type {ITeam} from "@/store/models/teams/team.model";
 import type {Ref} from "vue";
 import LoadingElem from "@/components/LoadingElem.vue";

@@ -18,6 +18,6 @@ export class UpdateVisitsDto {
   comment: string;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Type(() => Boolean)
   status_visit: boolean;
 }
