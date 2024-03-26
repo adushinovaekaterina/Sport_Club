@@ -16,8 +16,12 @@
                 <tr v-for="participant in userVisits" :key="participant.name">
                     <td>{{ participant.user.fullname }} ({{ participant.counter }} / {{ maxVisits }})</td>
                     <td v-for="(date, index) in dates.dateRange" :key="index">
-                        <input type="checkbox" :checked="participant.days[formatDate(date)]"
-                               @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
+                        <label class="checkbox-label col-auto">
+                            <input type="checkbox" :checked="participant.days[formatDate(date)]"
+                                   @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
+                            <div class="checkbox-custom"></div>
+                        </label>
+
                     </td>
                 </tr>
                 </tbody>
@@ -133,5 +137,47 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
 <style lang="scss" scoped>
 h3 {
   color: #959595;
+}
+
+.checkbox-custom {
+  display: inline-block;
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.3rem;
+  background-color: var(--second-color-50);
+
+  &:hover {
+    cursor: pointer;
+    background-color: #b9e6e9;
+  }
+
+  &::before {
+    content: "";
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--second-color);
+    background-image: url(@/assets/icon/checked.svg);
+    background-position: center;
+    border-radius: 0.3rem;
+    position: absolute;
+    opacity: 0;
+    transition: 0.2s;
+  }
+}
+
+input[type="checkbox"] {
+  display: none;
+
+  &:checked ~ .checkbox-custom::before {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &:checked ~ .checkbox-text {
+    color: #373737;
+    text-decoration-line: none;
+  }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
 
     <!--    calendar-->
-    <div class="my-3" style="width: max-content">
+    <div class="my-4" >
 
         <div class="row">
             <div class="col-auto">
@@ -15,17 +15,17 @@
                     </template>
                 </DropdownBtn>
             </div>
-            <div class="col">
-                <b>Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
+            <div class="col justify-content-end align-items-center d-flex">
+                <b class="mx-3">Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-primary" @click="setMaxVisits()">Сохранить</button>
+                <button type="button" class=" btn-custom-accept" @click="setMaxVisits()">Сохранить</button>
             </div>
         </div>
 
     </div>
     <!--    buttons-->
-    <div class="row  mt-4">
+    <div class="row  mt-5">
         <div class="col-12">
             <div class="d-flex justify-content-between mb-3">
                 <button @click="prevWeek" class="btn-custom-neutral">
