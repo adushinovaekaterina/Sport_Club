@@ -17,6 +17,7 @@ export interface ITeam {
   document?: string;
   short_description?: string;
   set_open?: boolean;
+  max_visits?: number;
 
   team_photos?: ITeamPhotos[];
   functions?: IFunction[];

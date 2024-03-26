@@ -14,7 +14,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td>{{ participant.user.fullname}}</td>
+                    <td>{{ participant.user.fullname}} ({{participant.counter}} / {{maxVisits}})</td>
                     <td v-for="(date, index) in dates.dateRange" :key="index">
                         <input type="checkbox" :checked="participant.days[formatDate(date)]"
                                @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
@@ -37,15 +37,17 @@ import type {IRUFunction} from "@/store/models/user/search-user-functions.model"
 import type {IVisit} from "@/store/models/schedule/visits.model";
 import {IUpdateVisit} from "@/store/models/schedule/visits.model";
 import {TeamRoles} from "@/store/enums/team_roles";
+import type {ITeam} from "@/store/models/teams/team.model";
 
 interface Participant {
-    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean } }
+    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean }, counter:number }
 }
 
 const teamStore = useTeamStore();
 
 const props = defineProps<{
-    teamId: number;
+    teamId: number,
+    maxVisits:number,
     dates: {
         dateStart: Date;
         dateEnd: Date;
@@ -55,6 +57,7 @@ const props = defineProps<{
     };
 }>();
 
+const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
 const userVisits: Ref = ref<Participant>({});
@@ -91,7 +94,11 @@ async function fetchUsers() {
 }
 
 async function fetchVisits() {
-    const data = await teamStore.fetchVisits(props.dates.dateStart.toISOString(), props.dates.dateEnd.toISOString(), props.teamId);
+   const currentYear = new Date().getFullYear()
+    const startOfYear = new Date(currentYear, 0, 1)
+    const endOfYear = new Date(currentYear, 11, 31)
+
+    const data = await teamStore.fetchVisits(startOfYear.toISOString(), endOfYear.toISOString(), props.teamId);
 
     await userVisitsFormat(data[0])
 }
@@ -105,18 +112,17 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
             if (tUser?.id && userFunction.function?.title != TeamRoles.Leader) {
                 // insert new user in list
                 if (!userVisits.value[tUser.id]) {
-                    userVisits.value[tUser.id] = {user: userFunction.user, days: {}}
+                    userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter:0}
                 } else if(usrVisit.id == tUser?.id){
                     // insert dates in user
                     const d = formatDate(new Date(visit.date_visit))
                     userVisits.value[tUser.id].days[d] = visit.status_visit
+                    userVisits.value[tUser.id].counter += 1
                 }
 
             }
         })
     })
-
-    console.log(userVisits.value)
 
 }
 

@@ -17,6 +17,10 @@ export const useTeamStore = defineStore("teams", () => {
     apiRequest = new ApiRequest()
   }
 
+  async function setMaxVisits(teamId:number, maxVisits: number) {
+    return (await axios.post(`/api/teams/${teamId}/max-visits/`, {max_visits:maxVisits})).data;
+  }
+
   async function getUserRequisitions(id: number) {
     return (await axios.get("/api/teams/requisitions/user/" + id)).data;
   }
@@ -41,7 +45,7 @@ export const useTeamStore = defineStore("teams", () => {
   async function setVisit(iUpdateVisit:IUpdateVisit) {
     const res = await axios.post("/api/schedule/visits", {
        ...iUpdateVisit
-    });
+    })
     return res.data;
   }
 
@@ -373,6 +377,7 @@ export const useTeamStore = defineStore("teams", () => {
 
     refresh,
     setVisit,
+    setMaxVisits,
 
     layout,
     menu_items,

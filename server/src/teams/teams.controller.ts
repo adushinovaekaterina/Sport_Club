@@ -59,6 +59,16 @@ export class TeamsController {
     private readonly uploadsService: UploadsService,
   ) {}
 
+  @Post(':id/max-visits')
+  // определяет авторизован ли пользователь и какие у него разрешения
+  async setMaxVisits(
+      @UserDecorator() user: User,
+      @Param('id') id:number,
+      @Body() params: {max_visits:number},
+  ) {
+    return this.teamsService.setMaxVisits(id, params.max_visits);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Получение списка коллективов с их руководителями' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Успешно', type: [Team] })
