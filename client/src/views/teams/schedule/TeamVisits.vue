@@ -132,7 +132,7 @@ async function setDataPie() {
     let freeVisits = 0
     let half = maxPoints.value / 2
     // Посещения
-    dataPie.value.push({value: usrV.counter, name: 'Посещения'})
+    dataPie.value.push({value: ( usrV.counter < half ? usrV.counter : half), name: 'Посещения'})
     if (usrV.counter < half) {
         freeVisits = half - usrV.counter
     }
