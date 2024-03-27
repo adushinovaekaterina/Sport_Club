@@ -28,12 +28,6 @@ export class UpdateTeamDto {
   description: string;
 
   @IsOptional()
-  @Length(1, 50, {
-    message: 'Краткое название, максимальная длина текста 1-50',
-  })
-  shortname: string;
-
-  @IsOptional()
   @IsArray()
   leaders: number[];
 

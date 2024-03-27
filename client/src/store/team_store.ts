@@ -79,20 +79,16 @@ export const useTeamStore = defineStore("teams", () => {
     });
   }
 
+  //create team
   async function createTeam(
-    direction: number,
     title: string,
     description: string,
     shortname: string,
     leaders: number[],
     cabinets: number[],
-    fileUstav: File,
-    fileDocument: File,
   ) {
     const formData = new FormData();
-    if (direction > 0) {
-      formData.append("id_parent", direction.toString());
-    }
+
     formData.append("title", title);
     formData.append("description", description);
     formData.append("shortname", shortname);
@@ -105,19 +101,6 @@ export const useTeamStore = defineStore("teams", () => {
       formData.append("cabinets[]", cabinets[i].toString());
     }
 
-    if (fileUstav && fileDocument) {
-      formData.append(
-        "files",
-        fileUstav,
-        `ustav.${fileUstav.name.split(".").pop()}`,
-      );
-      formData.append(
-        "files",
-        fileDocument,
-        `document.${fileDocument.name.split(".").pop()}`,
-      );
-    }
-
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -127,7 +110,6 @@ export const useTeamStore = defineStore("teams", () => {
     return apiRequest.handleApiRequest(async () => {
       return await axios.post("api/teams", formData, config);
     });
-    //create team
   }
 
   async function createRequisition(createRequisition: ICreateRequisition) {
@@ -160,29 +142,10 @@ export const useTeamStore = defineStore("teams", () => {
     for (let i = 0; i < uT.cabinets.length; i++) {
       formData.append("cabinets[]", uT.cabinets[i].toString());
     }
-    // paths to files
-    if (uT.charterPath != null && uT.charterPath.length > 0)
-      formData.append("charterTeam", uT.charterPath);
-    if (uT.documentPath != null && uT.documentPath.length > 0)
-      formData.append("document", uT.documentPath);
     // leaders
     uT.leaders.forEach((el) => {
       formData.append("leaders[]", el.toString());
     });
-
-    if (uT.fileUstav != null)
-      formData.append(
-        "files",
-        uT.fileUstav,
-        `ustav.${uT.fileUstav.name.split(".").pop()}`,
-      );
-
-    if (uT.fileDocument != null)
-      formData.append(
-        "files",
-        uT.fileDocument,
-        `document.${uT.fileDocument.name.split(".").pop()}`,
-      );
 
     const config = {
       headers: {

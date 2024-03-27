@@ -144,9 +144,7 @@ export class TeamsController {
   @UseInterceptors(FilesInterceptor('files'))
   async update(
     @UserDecorator() user: User,
-    @Req() request: Request,
     @Param('id') id: number,
-    @UploadedFiles(new FileSizeValidationPipe()) files: Express.Multer.File[],
     @Body() updateTeamDto: UpdateTeamDto,
   ) {
     await this.usersService.hasPermissionsSystemOrTeam(
@@ -155,39 +153,6 @@ export class TeamsController {
       [TeamPermissions.SPECIAL],
       [Permissions.CAN_CREATE_TEAMS],
     );
-
-    const startPathUrl = `${request.protocol}://${request.get('host')}`;
-
-    // устав коллектива
-    let ustavPath = updateTeamDto.charterTeam;
-    //документ
-    let docPath = updateTeamDto.document;
-
-    // console.log("ustav1 " + ustavPath)
-    // console.log("doc1 " + docPath)
-
-    if (files && files.length < 3) {
-      for (const f in files) {
-        //оставить только начало файла без расширения
-        if (files[f].originalname.split('.').shift() == 'ustav') {
-          ustavPath = await this.uploadsService.uploadFile(
-            startPathUrl,
-            files[f].buffer,
-            extname(files[f].originalname),
-          );
-        } else if (files[f].originalname.split('.').shift() == 'document') {
-          docPath = await this.uploadsService.uploadFile(
-            startPathUrl,
-            files[f].buffer,
-            extname(files[f].originalname),
-          );
-        }
-      }
-    }
-
-    updateTeamDto.charterTeam = ustavPath;
-
-    updateTeamDto.document = docPath;
 
     return await this.teamsService.update(user, id, updateTeamDto);
   }
@@ -259,44 +224,9 @@ export class TeamsController {
   @UseInterceptors(FilesInterceptor('files'))
   async createTeam(
     @UserDecorator() user: User,
-    @Req() request: Request,
-    @UploadedFiles(new FileSizeValidationPipe()) files: Express.Multer.File[],
     @Body() createTeamDto: CreateTeamDto,
   ) {
-    //, @Body() createTeamDto: CreateTeamDto
-
-    const startPathUrl = `${request.protocol}://${request.get('host')}`;
-
-    let ustav = null;
-    let doc = null;
-
-    for (const f in files) {
-      //оставить только начало файла без расширения
-      if (
-        files[f].originalname.split('.').shift() == 'ustav' &&
-        ustav == null
-      ) {
-        ustav = await this.uploadsService.uploadFile(
-          startPathUrl,
-          files[f].buffer,
-          extname(files[f].originalname),
-        );
-      } else if (
-        files[f].originalname.split('.').shift() == 'document' &&
-        doc == null
-      ) {
-        doc = await this.uploadsService.uploadFile(
-          startPathUrl,
-          files[f].buffer,
-          extname(files[f].originalname),
-        );
-      }
-    }
-
-    createTeamDto.charterTeam = ustav;
-    createTeamDto.document = doc;
-
-    return await this.teamsService.create(user, createTeamDto);
+    return await this.teamsService.createTeam(user, createTeamDto);
   }
 
   // ------------------------------------------------------------------------------------------------------

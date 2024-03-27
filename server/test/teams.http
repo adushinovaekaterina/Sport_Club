@@ -37,6 +37,16 @@ content-type: application/json
 
 }
 
+### create team
+POST http://localhost:3000/api/teams HTTP/1.1
+content-type: application/json
+
+{
+  "description": "no",
+  "title": "test",
+  "leaders": [4,5]
+}
+
 ### update team
 PUT http://localhost:3000/api/teams/60 HTTP/1.1
 content-type: application/json

@@ -147,13 +147,13 @@ export class TeamsService {
     }
 
     //создать коллектив, с учетом, что есь минимум 1 лидер
-    async create(user: User, createTeamDto: CreateTeamDto): Promise<Team> {
+    async createTeam(user: User, createTeamDto: CreateTeamDto) {
         const team = await this.teamsRepository.save({
             ...createTeamDto,
             cabinets: createTeamDto.cabinetsAsNumbers,
-            charter_team: createTeamDto.charterTeam,
             image: [],
             tags: [],
+            shortname:'',
             type_team: 'teams',
             creation_date: new Date(),
         });
@@ -172,8 +172,8 @@ export class TeamsService {
         await this.formService.createForm(fDto);
 
         // create schedule for team
-        const u = await this.usersService.findById(user.userId);
-        await this.entityManager.save(TeamSchedule, {team: team, user: u});
+        // const u = await this.usersService.findById(user.userId);
+        // await this.entityManager.save(TeamSchedule, {team: team, user: u});
 
         return team;
     }

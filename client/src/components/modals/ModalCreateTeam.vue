@@ -42,10 +42,6 @@
           <!-- Это вся обертка -->
 
           <div class="wrapper-team__create">
-<!--            <div v-if="!isEditTeam" class="alert alert-primary" role="alert">-->
-<!--              Прежде чем создать в системе новый коллектив, нужно утвердить его-->
-<!--              приказом!-->
-<!--            </div>-->
             <div
                 v-if="teamStore.apiRequest.message || teamStore.apiRequest.error"
                 class="alert alert-warning"
@@ -592,23 +588,20 @@ async function createTeam() {
   //create team
   await teamStore
       .createTeam(
-          selectedDirection.value,
           title.value,
           description.value,
           shortname.value,
           leaders.value.map((el) => el.id),
           auditories.value.map((item) => item.id),
-          charterTeamFile.value,
-          documentFile.value,
       )
       .then(() => {
         props.onSaveChanges();
       });
 }
 
-// обночить коллектив
+// update коллектив
 async function updateTeam() {
-  //create team
+  //update team
   const uT = new UpdateTeamModel();
   uT.id_parent = selectedDirection.value;
   uT.cabinets = auditories.value.map((el) => el.id);
@@ -617,29 +610,11 @@ async function updateTeam() {
   uT.leaders = leaders.value.map((el) => el.id);
   uT.shortname = shortname.value;
   uT.title = title.value;
-  uT.documentPath = teamObj.value.document ?? "";
-  uT.charterPath = teamObj.value.charter_team ?? "";
   uT.tags = tags.value;
   uT.links = links.value;
 
-  // files
-  uT.fileUstav = charterTeamFile.value;
-  uT.fileDocument = documentFile.value;
-
   await teamStore.updateTeam(uT);
   await fetchTeam(props.teamId);
-}
-
-async function handleFileUpload(
-    event: { target: { files: File[] } },
-    document: boolean,
-) {
-  const file = event.target.files[0];
-
-  if (!document) charterTeamFile.value = file;
-  else {
-    documentFile.value = file;
-  }
 }
 
 async function handleAvatarUpload(event: { target: { files: File[] } }) {

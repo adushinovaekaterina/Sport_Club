@@ -5,12 +5,7 @@ export default class UpdateTeamModel {
   description = "";
   shortname = "";
   cabinets: number[] = [];
-  documentPath = "";
-  charterPath = "";
   id_parent = 0;
   tags:string[] = [];
   links:string[] = [];
-
-  fileUstav: File | undefined;
-  fileDocument: File | undefined;
 }
