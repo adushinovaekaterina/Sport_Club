@@ -123,7 +123,7 @@ const showCreate = ref(false);
 const itemList = [
   {name: "Главная", permission: true},
   // { name: "Новости", permission: true },
-  {name: "Расписание занятий", permission: true},
+  {name: "Занятия", permission: true},
   {name: "Участники", permission: true},
   // { name: "Редактор анкеты", permission: can("can create questionnaires") },
   {name: "Заявки", permission: can("can edit status requisitions")},

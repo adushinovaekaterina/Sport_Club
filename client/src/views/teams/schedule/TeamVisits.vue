@@ -4,7 +4,7 @@
             <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         </div>
     </div>
-    <div class="row">
+    <div class="row" v-if="currUserF.function ?.title == TeamRoles.Leader || can('can all')">
         <div class="col-12 overflow-scroll">
             <table class="table">
                 <thead>
@@ -58,6 +58,8 @@ interface Participant {
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
 
+const can = permissions_store.can;
+
 const props = defineProps<{
     teamId: number,
     maxVisits: number,
@@ -74,6 +76,8 @@ const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
 const userVisits: Ref = ref<Participant>({});
+
+const currUserF = ref<IUserFunction>({})
 
 const maxPoints = ref(100)
 
@@ -132,7 +136,7 @@ async function setDataPie() {
     let freeVisits = 0
     let half = maxPoints.value / 2
     // Посещения
-    dataPie.value.push({value: ( usrV.counter < half ? usrV.counter : half), name: 'Посещения'})
+    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Посещения'})
     if (usrV.counter < half) {
         freeVisits = half - usrV.counter
     }
@@ -149,6 +153,12 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
 
     teamUsersFunctions.value.forEach((userFunction) => {
         const tUser = userFunction.user
+
+        // get curr user
+        if (permissions_store.user_id == tUser?.id) {
+            currUserF.value = userFunction
+        }
+
         if (tUser?.id && userFunction.function?.title != TeamRoles.Leader)
             userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter: 0}
 

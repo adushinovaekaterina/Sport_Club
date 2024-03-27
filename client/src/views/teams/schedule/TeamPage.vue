@@ -14,12 +14,14 @@
                     </template>
                 </DropdownBtn>
             </div>
-            <div class="col justify-content-end align-items-center d-flex">
-                <b class="mx-3">Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
-            </div>
-            <div class="col-auto">
-                <button type="button" class=" btn-custom-accept" @click="setMaxVisits()">Сохранить</button>
-            </div>
+            <template v-if="can('can edit own teams')">
+                <div class="col justify-content-end align-items-center d-flex">
+                    <b class="mx-3">Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class=" btn-custom-accept" @click="setMaxVisits()">Сохранить</button>
+                </div>
+            </template>
         </div>
 
     </div>
@@ -59,12 +61,16 @@ import {DatePicker} from "v-calendar";
 import DropdownBtn from "@/components/Buttons/DropdownBtn.vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
+import {usePermissionsStore} from "@/store/permissions_store";
 
 const props = defineProps<{
     teamId: number;
 }>();
 
+const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
+
+const can = permissions_store.can;
 
 const selectedWeekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника
 const maxVisits = ref(0); // Используем функцию для получения понедельника
