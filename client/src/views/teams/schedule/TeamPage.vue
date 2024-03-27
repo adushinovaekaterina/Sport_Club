@@ -1,7 +1,6 @@
 <template>
-
     <!--    calendar-->
-    <div class="my-4" >
+    <div class="my-4">
 
         <div class="row">
             <div class="col-auto">
@@ -53,10 +52,7 @@
 
 <script lang="ts" setup>
 import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
-import {
-    getFormattedWeek,
-    getMonday,
-} from "@/views/teams/schedule/format-date";
+import {getFormattedWeek, getMonday,} from "@/views/teams/schedule/format-date";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {computed, onBeforeMount, ref} from "vue";
 import {DatePicker} from "v-calendar";
@@ -103,10 +99,10 @@ async function setMaxVisits() {
 }
 
 async function getTeam() {
-    const data = await teamStore.fetchTeam(props.teamId);
-    team.value = data
+    team.value = await teamStore.fetchTeam(props.teamId)
     maxVisits.value = team.value.max_visits ?? 0
 }
+
 
 function prevWeek() {
     selectedWeekStart.value = new Date(
@@ -122,6 +118,7 @@ function nextWeek() {
 </script>
 
 <style lang="scss" scoped>
+
 h3 {
   color: #959595;
 }

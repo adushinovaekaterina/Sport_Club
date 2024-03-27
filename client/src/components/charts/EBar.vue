@@ -72,9 +72,9 @@ const options = computed(() => {
 }
 
 .chart {
-  height: 100%;
-  width: 100%;
-  display: flex;
+  height: 100px;
+  width: 100px;
+
   justify-content: center;
   align-items: center;
 }
