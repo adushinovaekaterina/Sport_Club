@@ -39,12 +39,16 @@ const colors = ['#4797ff', '#afafaf', '#ffa57f', '#afafaf']; // Red for berry, G
 // computed
 const options = computed(() => {
     return {
+        title: {
+            text: props.name, // Title text
+            left: 'center', // Title position
+        },
         tooltip: {
             trigger: 'item'
         },
         legend: {
             top: '5%',
-            left: 'center'
+            left: 'right'
         },
         series: [
             {
@@ -56,7 +60,7 @@ const options = computed(() => {
                 endAngle: 360,
                 data: props.data,
                 itemStyle: {
-                    color: function(params) {
+                    color: function (params) {
                         return colors[params.dataIndex];
                     }
                 },

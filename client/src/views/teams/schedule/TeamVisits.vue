@@ -149,7 +149,7 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
 
     teamUsersFunctions.value.forEach((userFunction) => {
         const tUser = userFunction.user
-        if (tUser?.id)
+        if (tUser?.id && userFunction.function?.title != TeamRoles.Leader)
             userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter: 0}
 
         usersVisits.forEach((visit) => {
