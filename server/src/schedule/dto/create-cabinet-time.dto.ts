@@ -4,9 +4,11 @@ export class CreateCabinetTimeDto {
   @IsNumber()
   id_team_schedule: number;
 
+  @IsOptional()
   @IsNumber()
   id_cabinet: number;
 
+  @IsOptional()
   @IsNumber()
   user_id: number;
 

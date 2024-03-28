@@ -6,6 +6,7 @@ export interface IScheduleSearch {
 }
 
 export interface ISchedule {
+  id?:number;
   cabinets_time?: ICabinetsTime[];
 }
 

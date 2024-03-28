@@ -81,7 +81,7 @@
 
 <script setup lang="ts">
 import "@/assets/nav-second.scss";
-import TeamSchedule from "@/views/teams/schedule/TeamPage.vue";
+import TeamSchedule from "@/views/teams/schedule/MainPage.vue";
 
 import {onBeforeMount, ref} from "vue";
 

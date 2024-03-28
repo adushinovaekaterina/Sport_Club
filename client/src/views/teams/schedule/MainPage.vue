@@ -42,14 +42,15 @@
         </div>
     </div>
 
-    <!--      schedule-->
-    <!--  <div class="row my-3">-->
-    <!--    <TeamSchedule :dates="dates" :team-id="teamId" />-->
-    <!--  </div>-->
+    <!-- schedule-->
+    <div class="row my-3">
+        <TeamSchedule :dates="dates" :team-id="teamId"/>
+    </div>
     <!--    visits-->
     <div class="row">
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"/>
     </div>
+
 </template>
 
 <script lang="ts" setup>
@@ -62,6 +63,8 @@ import DropdownBtn from "@/components/Buttons/DropdownBtn.vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
+import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
+import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
 
 const props = defineProps<{
     teamId: number;
