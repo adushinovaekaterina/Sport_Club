@@ -6,16 +6,16 @@
       </div>
       <div class="col-md-auto col-sm-12">
         <select
-          class="form-select"
-          aria-label="Select by dates accept users"
-          v-model="selectedParams.userDateInclude"
-          @change="fetchUsers()"
+            class="form-select"
+            aria-label="Select by dates accept users"
+            v-model="selectedParams.userDateInclude"
+            @change="fetchUsers()"
         >
           <optgroup label="Дата вступления">
             <option
-              v-for="date in selectParams.userDateInclude"
-              :value="date"
-              v-bind:key="date.id"
+                v-for="date in selectParams.userDateInclude"
+                :value="date"
+                v-bind:key="date.id"
             >
               {{ date.name }}
             </option>
@@ -43,16 +43,16 @@
 
     <div v-if="!isTable" class="members-list row g-2">
       <div
-        v-for="item in teamUsers"
-        class="col-md-12 col-lg-6"
-        v-bind:key="item.id"
+          v-for="item in teamUsers"
+          class="col-md-12 col-lg-6"
+          v-bind:key="item.id"
       >
         <div class="member-card border-block">
           <div class="row g-2">
             <div class="col-lg-auto col-md-auto col-sm-auto">
               <div class="image-container">
-                  <img v-if="item.user?.image" class="rounded-4" :src="item.user?.image" alt="" />
-                  <img v-else class="rounded-4" src="@/assets/icon/avatar.png" alt="" />
+                <img v-if="item.user?.image" class="rounded-4" :src="item.user?.image" alt="" />
+                <img v-else class="rounded-4" src="@/assets/icon/avatar.png" alt="" />
               </div>
             </div>
 
@@ -61,30 +61,30 @@
               <div class="row g-2 justify-content-end">
                 <div class="col-auto">
                   <div
-                    class="dropdown"
-                    v-if="item.function?.title != TeamRoles.Leader"
+                      class="dropdown"
+                      v-if="item.function?.title != TeamRoles.Leader"
                   >
                     <button
-                      class="btn-icon"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
+                        class="btn-icon"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
                     >
                       <font-awesome-icon :icon="['fas', 'ellipsis']" />
                     </button>
                     <ul class="dropdown-menu">
                       <a
-                        class="dropdown-item"
-                        @click="isEditMode = !isEditMode"
-                        href="javascript:"
+                          class="dropdown-item"
+                          @click="isEditMode = !isEditMode"
+                          href="javascript:"
                       >
                         <font-awesome-icon :icon="['fas', 'pencil']" />
                         Редактировать роль</a
                       >
                       <a
-                        class="dropdown-item"
-                        href="javascript:"
-                        @click="
+                          class="dropdown-item"
+                          href="javascript:"
+                          @click="
                           deleteUserFromTeam(
                             item.user?.id ?? -1,
                             Status.CANCELLED,
@@ -123,8 +123,8 @@
               <div class="row g-2 d-flex justify-content-end mt-3">
                 <div class="col-auto">
                   <button
-                    class="btn-custom-accept"
-                    @click="
+                      class="btn-custom-accept"
+                      @click="
                       saveChanges(
                         item.user?.education_group ?? '',
                         item.function?.title ?? '',
@@ -148,67 +148,67 @@
     <div v-if="isTable" class="overflow-scroll">
       <table class="table table-hover">
         <thead>
-          <tr>
-            <th scope="col">№</th>
-            <th scope="col">ФИО</th>
-            <th scope="col">Роль</th>
-            <th scope="col">Группа</th>
-            <th scope="col">Дата вступления</th>
-            <th scope="col"></th>
-          </tr>
+        <tr>
+          <th scope="col">№</th>
+          <th scope="col">ФИО</th>
+          <th scope="col">Роль</th>
+          <th scope="col">Группа</th>
+          <th scope="col">Дата вступления</th>
+          <th scope="col"></th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="(it, index) in teamUsers" v-bind:key="index">
-            <th scope="row">{{ index + 1 + offset }}</th>
-            <td>{{ it.user.fullname }}</td>
-            <td>{{ it.function?.title }}</td>
-            <td>{{ it.user.education_group }}</td>
-            <td>{{ new Date(it.dateCreate).toLocaleDateString() }}</td>
-            <!--            edit info-->
-            <td>
-              <div
+        <tr v-for="(it, index) in teamUsers" v-bind:key="index">
+          <th scope="row">{{ index + 1 + offset }}</th>
+          <td>{{ it.user.fullname }}</td>
+          <td>{{ it.function?.title }}</td>
+          <td>{{ it.user.education_group }}</td>
+          <td>{{ new Date(it.dateCreate).toLocaleDateString() }}</td>
+          <!--            edit info-->
+          <td>
+            <div
                 class="dropdown"
                 v-if="it.function?.title != TeamRoles.Leader"
-              >
-                <button
+            >
+              <button
                   class="btn-icon"
                   type="button"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
-                >
-                  <font-awesome-icon :icon="['fas', 'ellipsis']" />
-                </button>
-                <ul class="dropdown-menu">
-                  <a
+              >
+                <font-awesome-icon :icon="['fas', 'ellipsis']" />
+              </button>
+              <ul class="dropdown-menu">
+                <a
                     class="dropdown-item"
                     @click="isEditMode = !isEditMode"
                     href="javascript:"
-                  >
-                    <font-awesome-icon :icon="['fas', 'pencil']" />
-                    Редактировать роль</a
-                  >
-                  <a
+                >
+                  <font-awesome-icon :icon="['fas', 'pencil']" />
+                  Редактировать роль</a
+                >
+                <a
                     class="dropdown-item"
                     href="javascript:"
                     @click="
                       deleteUserFromTeam(it.user?.id ?? -1, Status.CANCELLED)
                     "
-                  >
-                    <font-awesome-icon :icon="['fas', 'trash']" />
-                    Удалить участника</a
-                  >
-                </ul>
-              </div>
-            </td>
-          </tr>
+                >
+                  <font-awesome-icon :icon="['fas', 'trash']" />
+                  Удалить участника</a
+                >
+              </ul>
+            </div>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
 
     <PaginationElem
-      :max-page="maxPages"
-      :visible-pages="visiblePages"
-      :handleEventChangePage="handleEventChangePage"
+        :max-page="maxPages"
+        :visible-pages="visiblePages"
+        :handleEventChangePage="handleEventChangePage"
     />
   </div>
 </template>
@@ -278,9 +278,9 @@ function handleEventChangeStateLayout(stateL: boolean) {
 }
 
 async function saveChanges(
-  education_group: string,
-  title_role: string,
-  id: number,
+    education_group: string,
+    title_role: string,
+    id: number,
 ) {
   await userStore.update(education_group, title_role, id);
   isEditMode.value = false;

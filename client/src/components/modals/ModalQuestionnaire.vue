@@ -72,6 +72,8 @@ import type { Ref } from "vue";
 import type { RURequisition } from "@/store/models/teams/update-requisition.model";
 import type { ICreateRequisition } from "@/store/models/forms/requisition-fields.model";
 import LoadingElem from "@/components/LoadingElem.vue";
+import type {IUserFunction} from "@/store/models/user/user-functions.model";
+import {TeamRoles} from "@/store/enums/team_roles";
 
 const permissions_store = usePermissionsStore();
 const exampleModal = ref(null);
@@ -90,6 +92,8 @@ const createRequisitionData: Ref<ICreateRequisition> = ref({
   team_id: idTeam,
   fields: [],
 });
+
+const currUserF = ref<IUserFunction>({})
 
 defineProps({
   modelValue: {

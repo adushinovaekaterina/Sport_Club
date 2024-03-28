@@ -43,9 +43,10 @@
     </div>
 
     <!--      schedule-->
-    <!--  <div class="row my-3">-->
-    <!--    <TeamSchedule :dates="dates" :team-id="teamId" />-->
-    <!--  </div>-->
+      <div class="row my-3">
+        <TeamSchedule :dates="dates" :team-id="teamId" />
+      </div>
+
     <!--    visits-->
     <div class="row">
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"/>
@@ -62,6 +63,7 @@ import DropdownBtn from "@/components/Buttons/DropdownBtn.vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
+import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
 
 const props = defineProps<{
     teamId: number;

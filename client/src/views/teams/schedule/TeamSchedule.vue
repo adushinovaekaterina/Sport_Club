@@ -141,6 +141,7 @@ async function setTime() {
   cT?.forEach((el) => {
     const dayWeek = el.day_week.name;
     const tStart = el.time_start;
+    const tEnd = el.time_end;
     // week date
     if (!timeDayWeek.value[dayWeek]) {
       timeDayWeek.value[dayWeek] = {};
@@ -151,7 +152,8 @@ async function setTime() {
       timeDayWeek.value[dayWeek][tStart] = [];
     }
 
-    if (!time.value.includes(tStart)) time.value.push(tStart);
+    if (!time.value.includes(tStart))
+      time.value.push(tStart);
 
     timeDayWeek.value[dayWeek][tStart].push({
       cabinet: el.cabinet,

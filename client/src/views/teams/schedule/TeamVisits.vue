@@ -79,7 +79,7 @@ const userVisits: Ref = ref<Participant>({});
 
 const currUserF = ref<IUserFunction>({})
 
-const maxPoints = ref(100)
+const maxPoints = ref(20)
 
 const dataPie = ref<{
     value: number,
@@ -134,17 +134,16 @@ async function setDataPie() {
     dataPie.value = []
     let usrV = userVisits.value[permissions_store.user_id]
     let freeVisits = 0
-    let half = maxPoints.value / 2
+    let half = maxPoints.value
     // Посещения
-    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Посещения'})
+    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Посещеннные занятия'})
     if (usrV.counter < half) {
         freeVisits = half - usrV.counter
     }
-    dataPie.value.push({value: freeVisits, name: ''})
+    dataPie.value.push({value: freeVisits, name: 'Занятий осталось посетить'})
 
-    dataPie.value.push({value: 0, name: 'Мероприятия'})
-    dataPie.value.push({value: half, name: ''})
-
+    //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
+    //dataPie.value.push({value: half, name: ''})
 }
 
 
