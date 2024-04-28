@@ -3,9 +3,8 @@
     <!--  time {{ time }} -->
     <!--  timeDayWeek {{ timeDayWeek }}-->
     <div class="row">
-        <div class="col-12 justify-content-end d-flex my-3">
-            <!--        v-if="can('can edit own teams')" -->
-            <button class="btn-custom-primary" type="button"
+        <div class="col-12 justify-content-end d-flex my-3" v-if="can('can create teams')">
+            <button class="btn-custom-primary"  type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#editScheduleModal">Добавить занятие
                 <FontAwesomeIcon icon="arrow-right"
@@ -68,7 +67,7 @@
                                         class="selected-day p-1 position-relative"
                                 >
                                     <!-- remove button-->
-                                    <div class="position-absolute top-0 end-0 p-2">
+                                    <div class="position-absolute top-0 end-0 p-2" v-if="can('can create teams')">
                                         <div class="btn-remove mb-3" @click="deleteTime(lesson?.id)">
                                             <FontAwesomeIcon icon="xmark"/>
                                         </div>

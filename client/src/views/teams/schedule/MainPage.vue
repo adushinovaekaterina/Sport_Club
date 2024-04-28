@@ -14,7 +14,7 @@
                     </template>
                 </DropdownBtn>
             </div>
-            <template v-if="can('can edit own teams')">
+            <template v-if="can('can create teams')">
                 <div class="col justify-content-end align-items-center d-flex">
                     <b class="mx-3">Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
                 </div>
@@ -64,7 +64,7 @@ import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
-import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
+// import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
 
 const props = defineProps<{
     teamId: number;

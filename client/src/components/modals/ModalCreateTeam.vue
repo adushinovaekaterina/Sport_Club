@@ -60,7 +60,7 @@
                                     <div class="fw-bold">Название:</div>
                                     <input
                                             type="text"
-                                            placeholder="Название коллектива"
+                                            placeholder="Название команды"
                                             v-model="title"
                                             required
                                     />

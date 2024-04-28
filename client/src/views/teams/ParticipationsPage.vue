@@ -165,7 +165,7 @@
             <td>{{ it.user.education_group }}</td>
             <td>{{ new Date(it.dateCreate).toLocaleDateString() }}</td>
             <!--            edit info-->
-            <td>
+            <td v-if = "can('can edit own teams')">
               <div
                 class="dropdown"
                 v-if="it.function?.title != TeamRoles.Leader"
@@ -205,11 +205,11 @@
       </table>
     </div>
 
-    <PaginationElem
-      :max-page="maxPages"
-      :visible-pages="visiblePages"
-      :handleEventChangePage="handleEventChangePage"
-    />
+<!--    <PaginationElem-->
+<!--      :max-page="maxPages"-->
+<!--      :visible-pages="visiblePages"-->
+<!--      :handleEventChangePage="handleEventChangePage"-->
+<!--    />-->
   </div>
 </template>
 
@@ -228,6 +228,7 @@ import PaginationElem from "@/components/PaginationElem.vue";
 import type { RURequisition } from "@/store/models/teams/update-requisition.model";
 import { useUserFunctionsStore } from "@/store/user_functions.store";
 import { Status } from "@/store/enums/enum_event";
+import {usePermissionsStore} from "@/store/permissions_store";
 
 const teamStore = useTeamStore();
 const uFStore = useUserFunctionsStore();
@@ -266,6 +267,10 @@ const selectParams = ref({
 const selectedParams = ref({
   userDateInclude: selectParams.value.userDateInclude[0],
 });
+
+const permissions_store = usePermissionsStore();
+
+const can = permissions_store.can;
 
 onBeforeMount(async () => {
   filter.value.offset = offset.value;

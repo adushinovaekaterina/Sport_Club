@@ -1,17 +1,17 @@
 <template>
     <div class="row">
         <div class="chart-container">
-            <EHalfPie :data="dataPie" :name="'Прогресс'"/>
+            <EHalfPie :data="dataPie" :name="'Progress'"/>
         </div>
     </div>
-    <div class="row" v-if="currUserF.function ?.title == TeamRoles.Leader || can('can all')">
+    <div class="row" v-if="currUserF.function ?.title == TeamRoles.Leader || can('can create teams')">
         <div class="col-12 overflow-scroll">
             <table class="table">
                 <thead>
                 <tr>
                     <th></th>
                     <th v-for="(date, index2) in dates.dateRange" v-bind:key="index2">
-                        <div class="text-center"> {{ formatDayOfWeek(date) }}</div>
+                        <div class="text-center" > {{ formatDayOfWeek(date) }}</div>
                         <div class="text-center"> {{ date.toLocaleDateString() }}</div>
                     </th>
                 </tr>
@@ -19,16 +19,18 @@
                 </thead>
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td>{{ participant.user.fullname }} <span class="text-danger">({{
-                            participant.counter
-                        }} / {{ maxVisits }})</span></td>
+                    <td>{{ participant.user.fullname }} <span class="text-danger">({{participant.counter}} / {{ maxVisits }})</span></td>
+
                     <td v-for="(date, index) in dates.dateRange" :key="index">
                         <label class="checkbox-label col-auto">
                             <input type="checkbox" :checked="participant.days[formatDate(date)]"
                                    @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
-                            <div class="checkbox-custom"></div>
+
+                          <div class ="checkbox-custom">
+                          </div>
                         </label>
                     </td>
+
                 </tr>
                 </tbody>
             </table>
@@ -79,7 +81,7 @@ const userVisits: Ref = ref<Participant>({});
 
 const currUserF = ref<IUserFunction>({})
 
-const maxPoints = ref(100)
+const maxPoints = ref(20)
 
 const dataPie = ref<{
     value: number,
@@ -131,20 +133,19 @@ async function fetchVisits() {
 }
 
 async function setDataPie() {
-    dataPie.value = []
-    let usrV = userVisits.value[permissions_store.user_id]
-    let freeVisits = 0
-    let half = maxPoints.value / 2
-    // Посещения
-    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Посещения'})
-    if (usrV.counter < half) {
-        freeVisits = half - usrV.counter
-    }
-    dataPie.value.push({value: freeVisits, name: ''})
+  dataPie.value = []
+  let usrV = userVisits.value[permissions_store.user_id]
+  let freeVisits = 0
+  let half = maxPoints.value
+  // Посещения
+  dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Classes attended'})
+  if (usrV.counter < half) {
+    freeVisits = half - usrV.counter
+  }
+  dataPie.value.push({value: freeVisits, name: 'Classes left to attend'})
 
-    dataPie.value.push({value: 0, name: 'Мероприятия'})
-    dataPie.value.push({value: half, name: ''})
-
+  //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
+  //dataPie.value.push({value: half, name: ''})
 }
 
 
@@ -229,3 +230,5 @@ input[type="checkbox"] {
   }
 }
 </style>
+<script setup lang="ts">
+</script>

@@ -126,16 +126,16 @@
               <div class="member-status col">
                 Статус: {{ item.status?.name }}
               </div>
-              <div class="col-auto">
-                <button
-                  class="button-outline px-4 button-text-dark"
-                  data-bs-toggle="modal"
-                  data-bs-target="#viewReqFormModal"
-                  @click="setCurrentRequisition(item)"
-                >
-                  Анкета
-                </button>
-              </div>
+<!--              <div class="col-auto">-->
+<!--                <button-->
+<!--                  class="button-outline px-4 button-text-dark"-->
+<!--                  data-bs-toggle="modal"-->
+<!--                  data-bs-target="#viewReqFormModal"-->
+<!--                  @click="setCurrentRequisition(item)"-->
+<!--                >-->
+<!--                  Анкета-->
+<!--                </button>-->
+<!--              </div>-->
               <div class="col-auto">
                 <button
                   class="px-4"

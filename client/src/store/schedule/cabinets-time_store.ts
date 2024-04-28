@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import axios from "axios";
 import {ApiRequest} from "@/store/handleApiRequest";
-import type {ICabinetsTime, ICabinetsTimeEdit, ICabinetsTimeSearch} from "@/store/models/schedule/cabinets-time.model";
+import type {ICabinetsTimeEdit, ICabinetsTimeSearch} from "@/store/models/schedule/cabinets-time.model";
 import type {ISchedule} from "@/store/models/schedule/schedule.model";
 
 export const useCabinetsTimeStore = defineStore("cabinets-time", () => {
