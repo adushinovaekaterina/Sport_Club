@@ -74,8 +74,8 @@ function OnRegistrationSubmit() {
 }
 
 function OnLoginCampusSubmit() {
-  window.location.href =
-    `${String(process.env.CAMPUS_LOGIN)}/?client_id=${String(process.env.BITRIX_CLIENT_ID)}`;
+  window.location.href = "https://int.istu.edu/oauth/authorize/?client_id=local.662b5b601b2e89.57721340"
+    // `${String(process.env.CAMPUS_LOGIN)}/?client_id=${String(process.env.BITRIX_CLIENT_ID)}`;
 }
 
 async function OnLoginSubmit() {

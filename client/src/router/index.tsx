@@ -7,6 +7,19 @@ const router = createRouter({
 
     routes: [
         {
+            // различные заяки, которые формировал юзер
+            //path: "*",
+            //path: "api/accounts/bitrix-auth",
+            path: "/bitrix-auth",
+            name: "BitrixAuth",
+            props: (route) => ({code: route.query.code}),
+
+            component: () => import("@/views/user/BitrixAuth.vue"),
+            meta: {
+
+            },
+        },
+        {
             // Авторизация
             path: "/",
             component: () => import("@/views/teams/TeamsPage.vue"),
@@ -94,17 +107,7 @@ const router = createRouter({
                 requiresAuth: true,
             },
         },
-        {
-            //различные заяки, которые формировал юзер
-            path: "/bitrix-auth",
-            name: "BitrixAuth",
-            props: (route) => ({code: route.query.code}),
 
-            component: () => import("@/views/user/BitrixAuth.vue"),
-            meta: {
-                requiresAuth: true
-            },
-        },
         {
             //различные заяки, которые формировал юзер
             path: "/edit-teams",
