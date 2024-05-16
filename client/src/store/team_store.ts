@@ -287,7 +287,7 @@ export const useTeamStore = defineStore("teams", () => {
     },
     {
       id: 2,
-      title: "Вид деятельности",
+      title: "Вид спорта",
       hidden: true,
       menu_types: [
         { id: 1, title: "Командный", checked: true },

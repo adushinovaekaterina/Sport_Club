@@ -1,14 +1,14 @@
 <template>
   <!-- Навигация -->
-  <div class="navigation wrapper-second__navigation border-block">
-    <template v-for="(item, index) in itemList" :key="index">
-      <a
-        @click="setSelectItem(index)"
-        :class="{ active: index == selectedItem }"
-        >{{ item.name }}</a
-      >
-    </template>
-  </div>
+<!--  <div class="navigation wrapper-second__navigation border-block">-->
+<!--    <template v-for="(item, index) in itemList" :key="index">-->
+<!--      <a-->
+<!--        @click="setSelectItem(index)"-->
+<!--        :class="{ active: index == selectedItem }"-->
+<!--        >{{ item.name }}</a-->
+<!--      >-->
+<!--    </template>-->
+<!--  </div>-->
 
   <!-- see request for team -->
   <div v-if="selectedItem === 0">
@@ -28,8 +28,8 @@ import WIP from "@/components/WIP.vue";
 import UserTeamRequests from "@/views/user/UserTeamRequests.vue";
 
 const itemList = [
-  { name: "Команды (заявки)" },
-  { name: "Мероприятия (заявки)" },
+  // { name: "Команды (заявки)" },
+  // { name: "Мероприятия (заявки)" },
 ];
 
 const selectedItem = ref(0);

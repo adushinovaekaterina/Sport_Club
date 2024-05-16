@@ -258,8 +258,8 @@ const filter: Ref<IRUFunction> = ref({});
 // выбранные параметры
 const selectParams = ref({
   userDateInclude: [
-    { id: 0, name: "Сначала недавно вступившие", order: "ASC" },
-    { id: 1, name: "Сначала давно вступившие", order: "DESC" },
+    { id: 0, name: "Сначала недавно вступившие", order: "DESC" },
+    { id: 1, name: "Сначала давно вступившие", order: "ASC" },
   ],
 });
 

@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <div class="chart-container">
-            <EHalfPie :data="dataPie" :name="'Progress'"/>
+            <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         </div>
     </div>
     <div class="row" v-if="currUserF.function ?.title == TeamRoles.Leader || can('can create teams')">
@@ -81,7 +81,7 @@ const userVisits: Ref = ref<Participant>({});
 
 const currUserF = ref<IUserFunction>({})
 
-const maxPoints = ref(20)
+const maxPoints = ref(30)
 
 const dataPie = ref<{
     value: number,
@@ -132,17 +132,28 @@ async function fetchVisits() {
     await setDataPie()
 }
 
-async function setDataPie() {
+async function setDataPie()
+{
   dataPie.value = []
   let usrV = userVisits.value[permissions_store.user_id]
   let freeVisits = 0
   let half = maxPoints.value
+
+  //let minimumVisits = Math.round((half*94)/100) // минимум занятий, которое надо посетить для получения 3 баллов
+  let minimumVisits = 0
   // Посещения
-  dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Classes attended'})
+  dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Занятий посещено'})
+
   if (usrV.counter < half) {
-    freeVisits = half - usrV.counter
+    minimumVisits = Math.round((half*94)/100) - usrV.counter
   }
-  dataPie.value.push({value: freeVisits, name: 'Classes left to attend'})
+
+  dataPie.value.push({value: minimumVisits, name: 'Занятий осталось посетить для получения зачета'})
+
+  if (minimumVisits < half) {
+    freeVisits = half - (minimumVisits + usrV.counter)
+  }
+  dataPie.value.push({value: freeVisits, name: 'Всего занятий, помимо посещенных и тех, которые надо посетить'})
 
   //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
   //dataPie.value.push({value: half, name: ''})
