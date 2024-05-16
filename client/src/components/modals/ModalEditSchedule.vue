@@ -8,15 +8,16 @@
                  role="alert">
                 {{ cabinetsStore.apiRequest.message }} {{ cabinetsStore.apiRequest.error }}
             </div>
-            <div class="fw-bold">Аудитория:</div>
-            <v-select
-                    placeholder="Аудитория"
-                    class="v-select"
-                    label="name"
-                    :options="foundAuditories"
-                    v-model="selectedCabinet"
-            ></v-select>
-
+            <div>
+                <div class="fw-bold">Аудитория:</div>
+                <v-select
+                        placeholder="Аудитория"
+                        class="v-select"
+                        label="name"
+                        :options="foundAuditories"
+                        v-model="selectedCabinet"
+                ></v-select>
+            </div>
             <!--     time   -->
             <div class="row g-2 my-2 d-flex justify-content-center text-center">
                 <div class="col-12">

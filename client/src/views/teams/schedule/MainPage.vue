@@ -46,6 +46,10 @@
     <div class="row my-3">
         <TeamSchedule :dates="dates" :team-id="teamId"/>
     </div>
+    <!--  user  competitions-->
+    <div class="row">
+        <UserCompetitions :team-id="teamId"/>
+    </div>
     <!--    visits-->
     <div class="row">
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"/>
@@ -64,6 +68,7 @@ import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
+import UserCompetitions from "@/views/teams/schedule/UserCompetitions.vue";
 // import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
 
 const props = defineProps<{

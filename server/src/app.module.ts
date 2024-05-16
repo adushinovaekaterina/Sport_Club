@@ -13,6 +13,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ScheduleModule } from './schedule/schedule.module';
 import { AccountsModule } from './accounts/accounts.module';
+import { CompetitionModule } from './competition/competition.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AccountsModule } from './accounts/accounts.module';
     UploadsModule,
     ScheduleModule,
     AccountsModule,
+    CompetitionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
