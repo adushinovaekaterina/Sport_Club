@@ -102,7 +102,6 @@ const can = permissions_store.can;
 const teamId = Number(route.params.id);
 const show = ref(true);
 
-
 const team: Ref<ITeam> = ref({});
 
 // const currentPage = ref(0);

@@ -14,16 +14,26 @@ import {FormField} from "../forms/entities/form_field.entity";
 import {TeamPhoto} from "../teams/entities/team-photo.entity";
 import {Competition} from "./entities/competition.entity";
 import {UserCompetition} from "./entities/user-competition.entity";
+import {StandardUserEntity} from "./entities/standard-user.entity";
+import {UsersService} from "../users/users.service";
+import {UploadsService} from "../uploads/uploads.service";
+import {GeneralService} from "../general/general.service";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             Competition,
-            UserCompetition
+            UserCompetition,
+            StandardUserEntity,
+            User,
+            Dictionary,
+            UserFunction,
+            TeamFunction,
+            Team
         ]),
     ],
     controllers: [CompetitionController],
-    providers: [CompetitionService]
+    providers: [CompetitionService, UsersService, GeneralService,]
 })
 export class CompetitionModule {
 }

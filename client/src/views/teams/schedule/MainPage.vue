@@ -50,15 +50,18 @@
     <div class="row">
         <UserCompetitions :team-id="teamId"/>
     </div>
-    <!--    visits-->
+    <!--  visits-->
     <div class="row">
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"/>
+    </div>
+    <!-- standard user -->
+    <div class="row" v-if="!can('can edit own teams')">
+        <StandardUser :team-id="teamId"/>
     </div>
 
 </template>
 
 <script lang="ts" setup>
-import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import {getFormattedWeek, getMonday,} from "@/views/teams/schedule/format-date";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {computed, onBeforeMount, ref} from "vue";
@@ -69,7 +72,8 @@ import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
 import UserCompetitions from "@/views/teams/schedule/UserCompetitions.vue";
-// import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
+import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
+import StandardUser from "@/views/teams/schedule/StandardUser.vue";
 
 const props = defineProps<{
     teamId: number;
