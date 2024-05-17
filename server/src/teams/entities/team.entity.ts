@@ -73,11 +73,6 @@ export class Team {
   @Column({ default: false })
   is_national: boolean;
 
-  //набор открыт
-  @ApiProperty()
-  @Column({ default: false })
-  is_set_open: boolean;
-
   @ApiProperty()
   @Column('simple-array', { nullable: true })
   cabinets: number[];

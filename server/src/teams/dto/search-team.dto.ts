@@ -38,6 +38,11 @@ export class SearchTeamDto {
   @Transform(({ value }) => value === 'true')
   set_open: boolean;
 
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  is_national: boolean;
+
   //id parent
   @IsOptional()
   @IsArray()

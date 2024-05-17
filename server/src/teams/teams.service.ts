@@ -97,6 +97,7 @@ export class TeamsService {
                 'teams.shortname',
                 'teams.charter_team',
                 'teams.id_parent',
+                'teams.is_national',
                 //     team photos
                 'team_photos.image',
                 'team_photos.id',
@@ -198,6 +199,7 @@ export class TeamsService {
                 'teams.charter_team',
                 'teams.id_parent',
                 'teams.set_open',
+                'teams.is_national',
             ])
             .where('teams.type_team = :type', {type: params.type})
             // select direction
@@ -281,6 +283,7 @@ export class TeamsService {
             })
             : query;
 
+        // is_archive
         if (params.is_archive != null) {
             //отфильтровать по типу коллектива
             query.andWhere('teams.is_archive = :is_archive', {
@@ -292,6 +295,13 @@ export class TeamsService {
         if (params.set_open != null) {
             query.andWhere('teams.set_open = :set_open', {
                 set_open: params.set_open,
+            });
+        }
+
+        // is_national
+        if (params.is_national != null) {
+            query.andWhere('teams.is_national = :is_national', {
+                is_national: params.is_national,
             });
         }
 

@@ -128,7 +128,6 @@ export class TeamsController {
 
   @Put(':id')
   @UseGuards(LocalAuthGuard)
-  // @SetMetadata('permissions', [Permissions.CAN_CREATE_TEAMS])
   @ApiOperation({
     summary: 'Обновить коллектив (ответственный по направлению) и руководитель',
   })

@@ -1,6 +1,6 @@
-import { Type } from 'class-transformer';
+import {Transform, Type} from 'class-transformer';
 import {
-  IsArray,
+  IsArray, IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -35,6 +35,11 @@ export class UpdateTeamDto {
   @IsArray()
   @IsString({ each: true })
   cabinets: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  is_national: boolean;
 
   @IsOptional()
   @IsArray()

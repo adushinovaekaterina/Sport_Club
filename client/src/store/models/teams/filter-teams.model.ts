@@ -3,6 +3,7 @@ export class FilterTeam {
   is_archive?: boolean;
   is_active?: boolean;
   set_open?: boolean;
+  is_national?:boolean;
 
   title?: string;
   description?: string;

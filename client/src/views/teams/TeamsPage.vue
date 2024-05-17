@@ -256,6 +256,7 @@ async function fetchTeams() {
     loading.value = true;
 
     filterTeam.value.searchTxt = findTeamTxt.value;
+    filterTeam.value.is_national = true
 
     let d = await teamStore.fetchTeamsSearch(filterTeam.value);
 
@@ -270,7 +271,6 @@ async function fetchTeams() {
 async function handleEventSetFilters() {
     menu_items.value.forEach((el) => {
         let open = undefined;
-        let directions: number[] = [];
 
         switch (el.id) {
             // is open
@@ -287,53 +287,7 @@ async function handleEventSetFilters() {
                 break;
             // directions
             case 2:
-                // пройтись по элементам меню
-                el.menu_types.forEach((elType) => {
-                    // пройтись по направлениям
-                    foundDirections.value.forEach((direction) => {
-                        let dir = -1;
 
-                        if (elType.checked) {
-                            switch (elType.id) {
-                                case 1:
-                                    dir =
-                                        direction.shortname == DirectionName.NID
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 2:
-                                    dir =
-                                        direction.shortname == DirectionName.UD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 3:
-                                    dir =
-                                        direction.shortname == DirectionName.OD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 4:
-                                    dir =
-                                        direction.shortname == DirectionName.SD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 5:
-                                    dir =
-                                        direction.shortname == DirectionName.KTD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                            }
-                        }
-
-                        if (dir > 0) directions.push(dir);
-                    });
-                });
-
-                // задать выбранные направления
-                filterTeam.value.directions = directions;
                 break;
             // archive
             case 3:

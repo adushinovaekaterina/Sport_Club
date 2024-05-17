@@ -64,13 +64,6 @@
                                             v-model="title"
                                             required
                                     />
-                                    <!--                  <div class="fw-bold">Краткое название:</div>-->
-                                    <!--                  <input-->
-                                    <!--                      type="text"-->
-                                    <!--                      placeholder="Краткое название"-->
-                                    <!--                      v-model="shortname"-->
-                                    <!--                      required-->
-                                    <!--                  />-->
 
                                     <div
                                             v-if="can('can edit own teams') && isEditTeam"
@@ -105,20 +98,6 @@
                                             </div>
                                         </div>
 
-                                        <!-- links-->
-                                        <!--                    <div class="fw-bold">Ссылки:</div>-->
-                                        <!--                    <div class="col-auto create-field">-->
-                                        <!--                      <input-->
-                                        <!--                          type="text"-->
-                                        <!--                          placeholder="Добавить"-->
-                                        <!--                          v-model="newLink"-->
-                                        <!--                      />-->
-                                        <!--                      <font-awesome-icon-->
-                                        <!--                          :icon="['fas', 'circle-plus']"-->
-                                        <!--                          class="btn-icon fa-lg"-->
-                                        <!--                          @click="addLink()"-->
-                                        <!--                      />-->
-                                        <!--                    </div>-->
                                         <div
                                                 class="col-auto position-relative align-items-center d-flex"
                                                 v-for="(link, index) in links"
@@ -221,6 +200,11 @@
                                     ></textarea>
                                 </div>
 
+                                <!--  Сборная  -->
+                                <CheckboxBtn title="Сборная" :on-change="(checked)=>is_national = checked"
+                                             :is-checked="is_national"/>
+
+
                                 <!-- main photos -->
                                 <div
                                         class="row g-2 mb-4"
@@ -239,6 +223,7 @@
                                                 :src="img"
                                         />
                                     </div>
+
                                     <!--  upload images-->
                                     <div class="col-12 d-flex align-items-center">
                                         <div>
@@ -291,7 +276,7 @@
                                                     type="button"
                                                     class="btn btn-secondary"
                                                     @click="
-                          archiveTeam(teamObj?.id ?? -1, !teamObj?.is_archive)
+                      archiveTeam(teamObj?.id ?? -1, !teamObj?.is_archive)
                         "
                                                     data-bs-toggle="tooltip"
                                                     data-bs-placement="top"
@@ -328,6 +313,7 @@ import {usePermissionsStore} from "@/store/permissions_store";
 import AddedImage from "@/components/AddImage.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {ApiRequest} from "@/store/handleApiRequest";
+import CheckboxBtn from "@/components/Buttons/CheckboxBtn.vue";
 
 const teamStore = useTeamStore();
 const auditoryStore = useAuditoriesStore();
@@ -347,6 +333,7 @@ const teamObj: Ref<ITeam> = ref({});
 // values from form
 const title = ref("");
 const shortname = ref("");
+const is_national = ref(false);
 
 const newLink = ref("");
 const newTag = ref("");
@@ -448,6 +435,7 @@ async function fetchTeam(id: number) {
     } else teamObj.value = {};
 
     tags.value = teamObj.value.tags ?? [];
+    is_national.value = teamObj.value.is_national ?? false
     links.value = teamObj.value.links ?? [];
 
     let ldrs = getLeaders(teamObj.value);
@@ -562,6 +550,7 @@ async function createTeam() {
             shortname.value,
             leaders.value.map((el) => el.id),
             auditories.value.map((item) => item.id),
+            is_national.value
         )
         .then(() => {
             props.onSaveChanges();
@@ -581,6 +570,7 @@ async function updateTeam() {
     uT.title = title.value;
     uT.tags = tags.value;
     uT.links = links.value;
+    uT.is_national = is_national.value
 
     await teamStore.updateTeam(uT);
     await fetchTeam(props.teamId);
@@ -603,7 +593,7 @@ async function handlePhotoUpload(event: { target: { files: File[] } }) {
 // архивировать команду
 async function archiveTeam(id: number, isArchive: boolean) {
     await teamStore.archiveTeam(id, isArchive).then(() => {
-        teamObj.value.is_archive = isArchive;
+        fetchTeam(props.teamId)
     });
 }
 

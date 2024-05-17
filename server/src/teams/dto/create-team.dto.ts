@@ -1,12 +1,12 @@
 import {
-  IsArray,
+  IsArray, IsBoolean,
   IsNumber,
   IsOptional,
   IsString,
   Length,
 } from 'class-validator';
 import { Team } from '../entities/team.entity';
-import { Type } from 'class-transformer';
+import {Transform, Type} from 'class-transformer';
 
 export class CreateTeamDto {
 
@@ -25,11 +25,10 @@ export class CreateTeamDto {
   })
   description: string;
 
-  // @IsNotEmpty({ message: 'Поле пустое' })
-  // @Length(1, 50, {
-  //   message: 'Краткое название, максимальная длина текста 1-50',
-  // })
-  // shortname: string;
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  is_national: boolean;
 
   @IsOptional()
   @IsArray()
@@ -39,10 +38,6 @@ export class CreateTeamDto {
   @IsArray()
   @IsString({ each: true })
   cabinets: string[];
-
-  // @IsNotEmpty({ message: 'Поле пустое' }) // Добавляем валидатор для userID
-  // @IsNumber()
-  // userID: number;
 
   get cabinetsAsNumbers(): number[] {
     return this.cabinets?.map((str) => parseInt(str));

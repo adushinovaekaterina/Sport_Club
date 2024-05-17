@@ -256,6 +256,7 @@ async function fetchTeams() {
     loading.value = true;
 
     filterTeam.value.searchTxt = findTeamTxt.value;
+    filterTeam.value.is_national = false
 
     let d = await teamStore.fetchTeamsSearch(filterTeam.value);
 
