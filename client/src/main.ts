@@ -11,6 +11,8 @@ import "./assets/style.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import FloatingVue, {Dropdown} from 'floating-vue'
+
 //компонент для выбора юзера из выпадающего списка
 import vSelect from "vue-select";
 import VCalendar from "v-calendar";
@@ -24,6 +26,10 @@ app.component("font-awesome-icon", FontAwesomeIcon);
 app.use(createPinia());
 app.use(router);
 app.use(VCalendar, {});
+app.use(FloatingVue)
+// popover
+app.component('VDropdown', Dropdown)
+
 // Кастомная директива на clickOutside
 app.directive("click-outside", {
   beforeMount(el, binding) {
