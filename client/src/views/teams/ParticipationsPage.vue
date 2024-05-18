@@ -236,6 +236,7 @@ const userStore = useFunctionsStore();
 
 const props = defineProps<{
   idTeam: number;
+  isNational:boolean
 }>();
 
 //pagination ---------------------------------------------------------------------

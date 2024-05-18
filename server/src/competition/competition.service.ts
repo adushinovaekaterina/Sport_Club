@@ -67,8 +67,9 @@ export class CompetitionService {
         } else {
             const user = await this.usersService.findById(dto.user_id)
             const standard = await this.dictionaryService.findOne(dto.standard_id)
-            this.standardUserRepository.create({user: user, standard: standard, value: dto.value})
-            res.message = "Сохранено"
+            await this.standardUserRepository.insert({user: user, standard: standard, value: dto.value}).then(()=>{
+                res.message = "Сохранено"
+            })
         }
 
         return res;

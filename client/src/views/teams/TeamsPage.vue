@@ -101,7 +101,8 @@
                             </div>
                         </div>
                         <div class="p-0 col-md-auto d-flex justify-content-center">
-                            <router-link :to="'/team/' + team.id">
+                            <router-link
+                                    :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
                                 <div class="card__banner">
                                     <img
                                             v-if="team?.image && team.image?.length > 0"
@@ -129,7 +130,8 @@
                                     <div class="row g-2">
                                         <!-- набор -->
                                         <div class="col-12">
-                                            <router-link :to="'/team/' + team.id">
+                                            <router-link
+                                                    :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
                         <span
                                 v-if="team.title && team.title.length > 50"
                                 class="cardTitle"
@@ -150,16 +152,16 @@
                                 </div>
                             </div>
 
-<!--                            <div class="row mb-2 g-2">-->
-<!--                                <div class="navigation-tags my-2 row g-1">-->
-<!--                                    <Tag-->
-<!--                                            v-for="(item, index) in team.tags"-->
-<!--                                            class="col-auto me-1"-->
-<!--                                            :text="item"-->
-<!--                                            :key="index"-->
-<!--                                    />-->
-<!--                                </div>-->
-<!--                            </div>-->
+                            <!--                            <div class="row mb-2 g-2">-->
+                            <!--                                <div class="navigation-tags my-2 row g-1">-->
+                            <!--                                    <Tag-->
+                            <!--                                            v-for="(item, index) in team.tags"-->
+                            <!--                                            class="col-auto me-1"-->
+                            <!--                                            :text="item"-->
+                            <!--                                            :key="index"-->
+                            <!--                                    />-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
                         </div>
                     </div>
 

@@ -14,3 +14,10 @@ export interface ISearchStandardDto {
     standard_id?:number
 }
 
+export interface ICreateStandardDto {
+    user_id?: number;
+    team_id?: number;
+    value?: number;
+    standard_id?: number;
+}
+

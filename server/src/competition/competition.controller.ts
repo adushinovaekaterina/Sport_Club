@@ -1,4 +1,4 @@
-import {Controller, ForbiddenException, Get, Post, Query, UseGuards} from '@nestjs/common';
+import {Body, Controller, ForbiddenException, Get, Post, Query, UseGuards} from '@nestjs/common';
 import {CompetitionService} from './competition.service';
 import {SearchCompetitionDto} from "./dto/search-competition.dto";
 import {SearchStandardDto} from "./dto/search-standard.dto";
@@ -34,7 +34,7 @@ export class CompetitionController {
     @UseGuards(LocalAuthGuard) // определяет авторизован ли пользователь
     async createOrUpdateStandard(
         @UserDecorator() user: User,
-        @Query() dto: CreateStandardDto) {
+        @Body() dto: CreateStandardDto) {
 
         const hasPermissions = await this.usersService.hasPermissionsSystemOrTeam(
             user,

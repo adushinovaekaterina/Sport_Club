@@ -52,10 +52,17 @@ const router = createRouter({
         {
             path: "/team/:id?",
             name: "Team",
+            props: (route) => ({is_national: route.query.is_national}),
             component: () => import("@/views/teams/TeamPage.vue"),
             meta: {
                 requiresAuth: true,
             },
+        },
+        {
+            path: "/team/:id?/progress",
+            name: "Progress",
+            props: (route) => ({user_id: route.query.user_id}),
+            component: () => import("@/views/teams/UserProgress.vue"),
         },
         {
             // !Ответственный за направления

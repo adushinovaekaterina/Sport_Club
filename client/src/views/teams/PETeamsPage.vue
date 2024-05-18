@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="p-0 col-md-auto d-flex justify-content-center">
-                            <router-link :to="'/team/' + team.id">
+                            <router-link :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
                                 <div class="card__banner">
                                     <img
                                             v-if="team?.image && team.image?.length > 0"
@@ -129,7 +129,8 @@
                                     <div class="row g-2">
                                         <!-- набор -->
                                         <div class="col-12">
-                                            <router-link :to="'/team/' + team.id">
+                                            <router-link
+                                                    :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
                         <span
                                 v-if="team.title && team.title.length > 50"
                                 class="cardTitle"
@@ -149,17 +150,6 @@
                                     </div>
                                 </div>
                             </div>
-
-<!--                            <div class="row mb-2 g-2">-->
-<!--                                <div class="navigation-tags my-2 row g-1">-->
-<!--                                    <Tag-->
-<!--                                            v-for="(item, index) in team.tags"-->
-<!--                                            class="col-auto me-1"-->
-<!--                                            :text="item"-->
-<!--                                            :key="index"-->
-<!--                                    />-->
-<!--                                </div>-->
-<!--                            </div>-->
                         </div>
                     </div>
 
@@ -187,7 +177,6 @@ import {onBeforeMount, ref} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import CheckBox_Menu from "@/components/CheckBoxMenu.vue";
 import _ from "lodash";
-import {DirectionName} from "@/store/enums/enum_teams";
 import Pagination from "@/components/PaginationElem.vue";
 import {useTeamStore} from "@/store/team_store";
 import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
@@ -197,6 +186,7 @@ import Search from "@/components/SearchField.vue";
 import type {ITeam} from "@/store/models/teams/team.model";
 import type {Ref} from "vue";
 import LoadingElem from "@/components/LoadingElem.vue";
+import {useRoute} from "vue-router";
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
@@ -271,7 +261,6 @@ async function fetchTeams() {
 async function handleEventSetFilters() {
     menu_items.value.forEach((el) => {
         let open = undefined;
-        let directions: number[] = [];
 
         switch (el.id) {
             // is open
@@ -288,53 +277,6 @@ async function handleEventSetFilters() {
                 break;
             // directions
             case 2:
-                // пройтись по элементам меню
-                el.menu_types.forEach((elType) => {
-                    // пройтись по направлениям
-                    foundDirections.value.forEach((direction) => {
-                        let dir = -1;
-
-                        if (elType.checked) {
-                            switch (elType.id) {
-                                case 1:
-                                    dir =
-                                        direction.shortname == DirectionName.NID
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 2:
-                                    dir =
-                                        direction.shortname == DirectionName.UD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 3:
-                                    dir =
-                                        direction.shortname == DirectionName.OD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 4:
-                                    dir =
-                                        direction.shortname == DirectionName.SD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                                case 5:
-                                    dir =
-                                        direction.shortname == DirectionName.KTD
-                                            ? direction.idDB
-                                            : -1;
-                                    break;
-                            }
-                        }
-
-                        if (dir > 0) directions.push(dir);
-                    });
-                });
-
-                // задать выбранные направления
-                filterTeam.value.directions = directions;
                 break;
             // archive
             case 3:

@@ -11,16 +11,6 @@
             </div>
         </div>
 
-<!--        <div v-if="can('can edit own teams')" class="col-auto justify-content-end">-->
-<!--            <button-->
-<!--                    type="button"-->
-<!--                    class="btn-custom-neutral"-->
-<!--                    data-bs-toggle="modal"-->
-<!--                    data-bs-target="#editTeamModal"-->
-<!--            >-->
-<!--                <FontAwesomeIcon icon="pencil" size="2x"/>-->
-<!--            </button>-->
-<!--        </div>-->
     </div>
     <hr/>
     <div class="block-title">О команде</div>
@@ -104,6 +94,7 @@ import {useTeamStore} from "@/store/team_store";
 
 const props = defineProps<{
     teamId: number;
+    isNational:boolean
     onUpdateTeam: () => void;
 }>();
 

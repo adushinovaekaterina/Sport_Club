@@ -47,16 +47,16 @@
         <TeamSchedule :dates="dates" :team-id="teamId"/>
     </div>
     <!--  user  competitions-->
-    <div class="row">
-        <UserCompetitions :team-id="teamId"/>
+    <div class="row" v-if="!can('can edit own teams')">
+        <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
     </div>
     <!--  visits-->
     <div class="row">
-        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"/>
+        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"  :is-national="isNational"/>
     </div>
     <!-- standard user -->
     <div class="row" v-if="!can('can edit own teams')">
-        <StandardUser :team-id="teamId"/>
+        <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
     </div>
 
 </template>
@@ -77,6 +77,7 @@ import StandardUser from "@/views/teams/schedule/StandardUser.vue";
 
 const props = defineProps<{
     teamId: number;
+    isNational:boolean
 }>();
 
 const permissions_store = usePermissionsStore();

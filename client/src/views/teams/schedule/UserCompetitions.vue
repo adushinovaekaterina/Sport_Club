@@ -88,6 +88,7 @@ const can = permissions_store.can;
 
 const props = defineProps<{
     teamId: number;
+    userId:number;
 }>();
 
 const uCompetitions = ref<IUserCompetition[]>([]);
@@ -98,7 +99,7 @@ onBeforeMount(() => {
 
 async function getUserCompetitions() {
     await competitionsStore.getAllUserCompetitions(
-        {user_id: permissions_store.user_id}
+        {user_id: props.userId}
     ).then((res) => {
         uCompetitions.value = res
     })

@@ -13,21 +13,6 @@
         </div>
       </div>
 
-
-<!--  <div>-->
-<!--    <div class="image-container" :style="getImageStyle()">-->
-<!--      <div v-for="(item, index) in team?.image" :key="index">-->
-<!--        <img :src="item" v-if="currentPage === index" alt=""/>-->
-<!--      </div>-->
-<!--      &lt;!&ndash; Ваш контент здесь &ndash;&gt;-->
-<!--      <div class="text-area">-->
-<!--        <div class="container" v-if="team && team.title">-->
-<!--          <p>{{ team.title }}</p>-->
-<!--          <ModalQuestionnaire v-model="team.title"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
     <div v-if="show" class="wrapper-team__content wrapper-content border-block">
       <!-- Навигация -->
       <div class="wrapper-second__navigation">
@@ -46,35 +31,23 @@
 
       <!--Главная страница команды-->
       <div v-if="selectedItem === 0">
-        <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId"/>
+        <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId" :is-national="isNational"/>
       </div>
 
       <!--Блок с расписанием-->
       <div v-if="selectedItem === 1">
-        <TeamSchedule :team-id="teamId"/>
-        <!--<TeamNews :idTeam="idTeam" />-->
+        <TeamSchedule :team-id="teamId" :is-national="isNational"/>
       </div>
 
       <!--участники-->
       <div v-if="selectedItem === 2">
-        <ParticipationsPage :idTeam="teamId"/>
-        <!--<TeamSchedule :team-id="teamId"/>-->
+        <ParticipationsPage :idTeam="teamId" :is-national="isNational"/>
       </div>
 
       <!-- заявки -->
       <div v-if="selectedItem === 3">
-        <TeamRequests :idTeam="teamId"/>
-        <!--        <ParticipationsPage :idTeam="teamId" />-->
+        <TeamRequests :idTeam="teamId" :is-national="isNational"/>
       </div>
-
-      <!--      <div v-if="selectedItem === 4">-->
-      <!--        <Ankets />-->
-      <!--      </div>-->
-
-      <!--      &lt;!&ndash; заявки &ndash;&gt;-->
-      <!--      <div v-if="selectedItem == 5">-->
-      <!--        <TeamRequests :idTeam="teamId" />-->
-      <!--      </div>-->
     </div>
   </div>
 </template>
@@ -83,7 +56,7 @@
 import "@/assets/nav-second.scss";
 import TeamSchedule from "@/views/teams/schedule/MainPage.vue";
 
-import {onBeforeMount, ref} from "vue";
+import {computed, onBeforeMount, ref} from "vue";
 
 import axios from "axios";
 import {useRoute} from "vue-router";
@@ -96,6 +69,13 @@ import type {Ref} from "vue";
 import ParticipationsPage from "@/views/teams/ParticipationsPage.vue";
 
 const route = useRoute();
+// это сборная?
+const isNational = computed(() => {
+    const param = String(route.query.is_national);
+    return param === 'true'; // Convert to boolean
+});
+
+
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
 

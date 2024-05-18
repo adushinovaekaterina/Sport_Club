@@ -221,6 +221,7 @@ const teamStore = useTeamStore();
 useUserFunctionsStore();
 const props = defineProps<{
   idTeam: number;
+  isNational:boolean
 }>();
 
 const sendCommentReqId = ref(-1);

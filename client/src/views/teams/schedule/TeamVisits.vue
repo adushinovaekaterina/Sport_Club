@@ -12,7 +12,7 @@
                 <tr>
                     <th></th>
                     <th v-for="(date, index2) in dates.dateRange" v-bind:key="index2">
-                        <div class="text-center" > {{ formatDayOfWeek(date) }}</div>
+                        <div class="text-center"> {{ formatDayOfWeek(date) }}</div>
                         <div class="text-center"> {{ date.toLocaleDateString() }}</div>
                     </th>
                 </tr>
@@ -20,15 +20,25 @@
                 </thead>
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td>{{ participant.user.fullname }} <span class="text-danger">({{participant.counter}} / {{ maxVisits }})</span></td>
+                    <td v-if="!isNational" >
+                        <router-link :to="{name:'Progress', params:{id:teamId}, query:{user_id: participant.user.id}}">
+                            {{ participant.user.fullname }} <span class="text-danger">({{ participant.counter }} / {{
+                                maxVisits
+                            }})</span>
+                        </router-link>
+                    </td>
+                    <td v-else>
+                        {{ participant.user.fullname }} <span
+                            class="text-danger">({{ participant.counter }} / {{ maxVisits }})</span>
+                    </td>
 
                     <td v-for="(date, index) in dates.dateRange" :key="index">
                         <label class="checkbox-label col-auto">
                             <input type="checkbox" :checked="participant.days[formatDate(date)]"
                                    @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
 
-                          <div class ="checkbox-custom">
-                          </div>
+                            <div class="checkbox-custom">
+                            </div>
                         </label>
                     </td>
 
@@ -66,6 +76,7 @@ const can = permissions_store.can;
 const props = defineProps<{
     teamId: number,
     maxVisits: number,
+    isNational: boolean,
     dates: {
         dateStart: Date;
         dateEnd: Date;
@@ -133,31 +144,30 @@ async function fetchVisits() {
     await setDataPie()
 }
 
-async function setDataPie()
-{
-  dataPie.value = []
-  let usrV = userVisits.value[permissions_store.user_id]
-  let freeVisits = 0
-  let half = maxPoints.value
+async function setDataPie() {
+    dataPie.value = []
+    let usrV = userVisits.value[permissions_store.user_id]
+    let freeVisits = 0
+    let half = maxPoints.value
 
-  //let minimumVisits = Math.round((half*94)/100) // минимум занятий, которое надо посетить для получения 3 баллов
-  let minimumVisits = 0
-  // Посещения
-  dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Занятий посещено'})
+    //let minimumVisits = Math.round((half*94)/100) // минимум занятий, которое надо посетить для получения 3 баллов
+    let minimumVisits = 0
+    // Посещения
+    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Занятий посещено'})
 
-  if (usrV.counter < half) {
-    minimumVisits = Math.round((half*94)/100) - usrV.counter
-  }
+    if (usrV.counter < half) {
+        minimumVisits = Math.round((half * 94) / 100) - usrV.counter
+    }
 
-  dataPie.value.push({value: minimumVisits, name: 'Занятий осталось посетить для получения зачета'})
+    dataPie.value.push({value: minimumVisits, name: 'Занятий осталось посетить для получения зачета'})
 
-  if (minimumVisits < half) {
-    freeVisits = half - (minimumVisits + usrV.counter)
-  }
-  dataPie.value.push({value: freeVisits, name: 'Всего занятий, помимо посещенных и тех, которые надо посетить'})
+    if (minimumVisits < half) {
+        freeVisits = half - (minimumVisits + usrV.counter)
+    }
+    dataPie.value.push({value: freeVisits, name: 'Всего занятий, помимо посещенных и тех, которые надо посетить'})
 
-  //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
-  //dataPie.value.push({value: half, name: ''})
+    //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
+    //dataPie.value.push({value: half, name: ''})
 }
 
 
@@ -242,5 +252,3 @@ input[type="checkbox"] {
   }
 }
 </style>
-<script setup lang="ts">
-</script>
