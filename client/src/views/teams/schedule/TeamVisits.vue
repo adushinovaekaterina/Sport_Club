@@ -20,7 +20,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td v-if="!isNational" >
+                    <td v-if="!isNational">
                         <router-link :to="{name:'Progress', params:{id:teamId}, query:{user_id: participant.user.id}}">
                             {{ participant.user.fullname }} <span class="text-danger">({{ participant.counter }} / {{
                                 maxVisits
@@ -63,6 +63,8 @@ import {TeamRoles} from "@/store/enums/team_roles";
 import type {ITeam} from "@/store/models/teams/team.model";
 import EHalfPie from "@/components/charts/EHalfPie.vue";
 import {usePermissionsStore} from "@/store/permissions_store";
+import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
+import {useCompetitionStore} from "@/store/competition/competition_store";
 
 interface Participant {
     [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean }, counter: number }
@@ -70,6 +72,7 @@ interface Participant {
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
+const competitionsStore = useCompetitionStore();
 
 const can = permissions_store.can;
 
@@ -90,10 +93,10 @@ const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
 const userVisits: Ref = ref<Participant>({});
+const uCompetitions = ref<IUserCompetition[]>([]);
+const sumCompVisitsPercents = ref(0)
 
 const currUserF = ref<IUserFunction>({})
-
-const maxPoints = ref(30)
 
 const dataPie = ref<{
     value: number,
@@ -101,6 +104,7 @@ const dataPie = ref<{
 } []>([])
 
 onBeforeMount(async () => {
+    await getUserCompetitions()
     await fetchUsers();
     await fetchVisits()
 });
@@ -146,28 +150,41 @@ async function fetchVisits() {
 
 async function setDataPie() {
     dataPie.value = []
+    // userVisits
     let usrV = userVisits.value[permissions_store.user_id]
     let freeVisits = 0
-    let half = maxPoints.value
+    let maxVisits = props.maxVisits
 
-    //let minimumVisits = Math.round((half*94)/100) // минимум занятий, которое надо посетить для получения 3 баллов
     let minimumVisits = 0
     // Посещения
-    dataPie.value.push({value: (usrV.counter < half ? usrV.counter : half), name: 'Занятий посещено'})
+    // сколько 1 визит в процентах
+    let onePerVisit = 100 / props.maxVisits
+    // получить соревнования проценты с ограничением 20%
+    let competitionPercents = sumCompVisitsPercents.value > 20 ? 20 : sumCompVisitsPercents.value
+    // перевести соревнования из процентов в посещения
+    let competitionInVisits = Math.round(competitionPercents / onePerVisit)
+    console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
+    // сложить посещения и участия в соревнованиях
+    let visitedWithCompetition = Math.round(usrV.counter + competitionInVisits)
+    dataPie.value.push({
+        value: (usrV.counter < maxVisits ? usrV.counter : maxVisits),
+        name: 'Занятий посещено'
+    })
 
-    if (usrV.counter < half) {
-        minimumVisits = Math.round((half * 94) / 100) - usrV.counter
-    }
+    dataPie.value.push({
+        value: (competitionInVisits < maxVisits ? competitionInVisits : maxVisits),
+        name: 'Соревнования'
+    })
 
-    dataPie.value.push({value: minimumVisits, name: 'Занятий осталось посетить для получения зачета'})
 
-    if (minimumVisits < half) {
-        freeVisits = half - (minimumVisits + usrV.counter)
-    }
+    // минимум занятий, которое надо посетить для получения 3 баллов - visitedWithCompetition
+    minimumVisits = Math.round(((maxVisits / 100) * 94))
+    // осталось посетить
+    const needVisit = minimumVisits - visitedWithCompetition
+    dataPie.value.push({value: needVisit, name: 'Занятий осталось посетить для получения зачета'})
+    // можно не ходить
+    freeVisits = maxVisits - minimumVisits
     dataPie.value.push({value: freeVisits, name: 'Всего занятий, помимо посещенных и тех, которые надо посетить'})
-
-    //dataPie.value.push({value: 0, name: 'Участия в соревнованиях'})
-    //dataPie.value.push({value: half, name: ''})
 }
 
 
@@ -201,6 +218,30 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
         })
     })
 
+}
+
+
+async function getUserCompetitions() {
+    await competitionsStore.getAllUserCompetitions(
+        {user_id: permissions_store.user_id}
+    ).then((res) => {
+        uCompetitions.value = res
+        uCompetitions.value.forEach((el) => {
+            if (el.competition?.date_start && el.competition?.date_end) {
+                const dS = new Date(el.competition.date_start)
+                const dE = new Date(el.competition.date_end)
+                const per = percentVisits(dS, dE)
+                sumCompVisitsPercents.value += per
+            }
+        })
+    })
+}
+
+function percentVisits(dateStart: Date, dateEnd: Date) {
+    let t = dateEnd.getTime() - dateStart.getTime()
+    let days = t / (1000 * 60 * 60 * 24)
+    // in percents +1 (include start date)
+    return (days + 1) * 3
 }
 
 </script>

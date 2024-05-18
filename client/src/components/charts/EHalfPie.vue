@@ -34,7 +34,7 @@ const props = defineProps<{
     name: string;
 }>();
 
-const colors = ['#4797ff', '#afafaf', '#ffa57f', '#afafaf']; // Red for berry, Gold for strawberry, AquaMarine for other
+const colors = ['#abde63', '#ffce2d', '#afafaf', '#5780c9']; // Red for berry, Gold for strawberry, AquaMarine for other
 
 // computed
 const options = computed(() => {
