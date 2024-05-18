@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import 'floating-vue/dist/style.css';
-import {onBeforeMount, ref} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
@@ -96,6 +96,15 @@ const uCompetitions = ref<IUserCompetition[]>([]);
 onBeforeMount(() => {
     getUserCompetitions()
 });
+
+watch(
+    () => props.userId,
+    async (value) => {
+        if (value) {
+            await getUserCompetitions();
+        }
+    },
+);
 
 async function getUserCompetitions() {
     await competitionsStore.getAllUserCompetitions(

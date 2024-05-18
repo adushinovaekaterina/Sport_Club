@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 
 import type {Ref} from "vue";
-import {onBeforeMount, ref} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
@@ -61,6 +61,15 @@ onBeforeMount(async () => {
     await fetchUserStandards();
 });
 
+
+watch(
+    () => props.userId,
+    async (value) => {
+        if (value) {
+            await fetchUserStandards();
+        }
+    },
+);
 
 async function fetchUserStandards() {
     const data = await competitionsStore.getUserStandards({user_id: props.userId});
