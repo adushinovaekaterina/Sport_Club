@@ -47,7 +47,7 @@
         <TeamSchedule :dates="dates" :team-id="teamId"/>
     </div>
     <!--  user  competitions-->
-    <div class="row" v-if="!can('can edit own teams')">
+    <div class="row" v-if="!can('can create teams') && !can('can create team roles') && !isNational">
         <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
     </div>
     <!--  visits-->
@@ -55,7 +55,7 @@
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"  :is-national="isNational"/>
     </div>
     <!-- standard user -->
-    <div class="row" v-if="!can('can edit own teams')">
+    <div class="row" v-if="!can('can create teams') && !can('can create team roles')">
         <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
     </div>
 

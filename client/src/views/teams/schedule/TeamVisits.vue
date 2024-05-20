@@ -1,5 +1,6 @@
 <template>
     <h6 class="fw-bold my-4">ПОСЕЩАЕМОСТЬ</h6>
+    <p> Всего занятий: {{ maxVisits }}</p>
     <div class="row">
         <div class="chart-container">
             <EHalfPie :data="dataPie" :name="'Прогресс'"/>
@@ -173,7 +174,7 @@ async function setDataPie() {
 
     dataPie.value.push({
         value: (competitionInVisits < maxVisits ? competitionInVisits : maxVisits),
-        name: 'Соревнования'
+        name: 'Закрытая посещаемость за счет участия в соревнованиях'
     })
 
 
@@ -184,7 +185,7 @@ async function setDataPie() {
     dataPie.value.push({value: needVisit, name: 'Занятий осталось посетить для получения зачета'})
     // можно не ходить
     freeVisits = maxVisits - minimumVisits
-    dataPie.value.push({value: freeVisits, name: 'Всего занятий, помимо посещенных и тех, которые надо посетить'})
+    dataPie.value.push({value: freeVisits, name: 'Оставшиеся занятия'})
 }
 
 

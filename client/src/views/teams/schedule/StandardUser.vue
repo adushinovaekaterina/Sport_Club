@@ -13,10 +13,13 @@
                 <tbody>
                 <tr v-for="el in standardsALL" :key="el.standard.class_id">
                     <td>{{ el.standard.name }}</td>
-                    <td v-if="!can('can edit own teams')">{{ el.userStandard.value }}</td>
+                    <td v-if="can('can edit own teams')">
+                      <input type="number" :value="el.userStandard.value"
+                             @change="(e)=>changeValue(e, el.standard.id ?? -1)"/>
+                    </td>
                     <td v-else>
-                        <input type="number" :value="el.userStandard.value"
-                               @change="(e)=>changeValue(e, el.standard.id ?? -1)"/></td>
+                      {{ el.userStandard.value }}
+                    </td>
                     <td></td>
                 </tr>
                 </tbody>

@@ -204,11 +204,10 @@
                                 <CheckboxBtn title="Сборная" :on-change="(checked)=>is_national = checked"
                                              :is-checked="is_national"/>
 
-
                                 <!-- main photos -->
                                 <div
                                         class="row g-2 mb-4"
-                                        v-if="can('can edit own teams') && isEditTeam"
+                                        v-if="can('can create teams') && isEditTeam"
                                 >
                                     <b>Заглавные фотографии: </b>
                                     <!--       images      -->

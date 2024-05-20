@@ -1,14 +1,14 @@
 <template>
   <button
-    v-if="userReq == null || userReq.length <= 0"
-    type="button"
-    data-bs-toggle="modal"
-    data-bs-target="#exampleModal"
+      v-if="userReq == null || userReq.length <= 0"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
   >
     Подать заявку
   </button>
   <div v-else class="">
-    Заявка "{{ userReq[0].status ? userReq[0].status.name : "Подана" }}"
+    Заявка "{{ userReq[0].status ? userReq[0].status.name : 'Подана' }}"
     <FontAwesomeIcon icon="feather" />
   </div>
 
@@ -74,6 +74,8 @@ import type { ICreateRequisition } from "@/store/models/forms/requisition-fields
 import LoadingElem from "@/components/LoadingElem.vue";
 
 const permissions_store = usePermissionsStore();
+const can = permissions_store.can;
+
 const exampleModal = ref(null);
 
 const teamStore = useTeamStore();

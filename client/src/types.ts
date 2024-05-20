@@ -28,4 +28,7 @@ export type Permission =
 
   // Пользователь
   | "can create events"
-  | "can edit own events";
+  | "can edit own events"
+
+  // Студент
+  | "can student";

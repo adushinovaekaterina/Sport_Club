@@ -13,15 +13,31 @@ export const usePermissionsStore = defineStore("permissionsStore", () => {
   const permissions = ref<Array<Permission>>([]);
   const isLogged = ref(false);
 
-  // проверить есть ли у залогиненого юзера данное разрешение
   function can(permission: Permission) {
-    // проверить наличие данного разрешения у пользователя
-    return (
-      permissions.value &&
-      (permissions.value.includes(permission) ||
-        permissions.value.includes("can all"))
-    );
+    // Проверить, есть ли у пользователя разрешения
+    if (!permissions.value) {
+        // Устанавливаем разрешение "can student"
+        permissions.value = ["can student"];
+        // Возвращаем true, так как теперь у студента есть разрешение "can student"
+    }
+    else
+    // Проверить наличие данного разрешения у пользователя
+      return (
+        permissions.value &&
+        (permissions.value.includes(permission) ||
+          permissions.value.includes("can all"))
+      );
   }
+
+  // // проверить есть ли у залогиненого юзера данное разрешение
+  // function can(permission: Permission) {
+  //   // проверить наличие данного разрешения у пользователя
+  //   return (
+  //     permissions.value &&
+  //     (permissions.value.includes(permission) ||
+  //       permissions.value.includes("can all"))
+  //   );
+  // }
 
   // получить нужные данные от юзера
   async function checkLogin() {

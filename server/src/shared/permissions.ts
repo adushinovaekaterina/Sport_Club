@@ -22,4 +22,7 @@ export enum Permissions {
   // USER
   CAN_CREATE_EVENTS = 'can create events',
   CAN_VIEW_DIRECTIONS = 'can view directions',
+
+  // STUDENT
+  CAN_STUDENT = '',
 }

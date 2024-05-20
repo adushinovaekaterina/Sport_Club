@@ -1,5 +1,5 @@
 <template>
-    <button class="btn-icon-rounded position-fixed start-0 btn-float" @click="goBack"><font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/> Назад</button>
+<!--    <button class="btn-icon-rounded position-fixed start-0 btn-float" @click="goBack"><font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/> Назад</button>-->
     <div class="border-block bg-white p-4">
         <h2>ПРОГРЕСС</h2>
         <div class="row my-3">
@@ -26,7 +26,8 @@
 <script setup lang="ts">
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
-import {onBeforeMount, ref} from "vue";
+import { onBeforeMount, ref, onMounted, watch } from "vue"; // Добавлен импорт onMounted
+// import {onBeforeMount, ref} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import {useRoute, useRouter} from "vue-router";
 import StandardUser from "@/views/teams/schedule/StandardUser.vue";
@@ -35,7 +36,7 @@ import {useUserStore} from "@/store/user_store";
 import type {IUser} from "@/store/models/user/user.model";
 import {FilterUser} from "@/store/models/user.model";
 import _ from "lodash";
-import {watch} from "vue";
+// import {watch} from "vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -100,6 +101,11 @@ async function onTextChange(e: InputEvent) {
     searchTxtUser.value = el.value;
     timerFetchUsers();
 }
+
+// Программная прокрутка к началу страницы при монтировании компонента
+onMounted(() => {
+  window.scrollTo(0, 0);
+});
 
 </script>
 

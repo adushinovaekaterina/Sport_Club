@@ -26,4 +26,6 @@ export const PermissionsRoles = {
     Permissions.CAN_EDIT_OWN_TEAMS,
   ],
   USER: [Permissions.CAN_CREATE_EVENTS, Permissions.CAN_VIEW_DIRECTIONS],
+
+  STUDENT: [Permissions.CAN_STUDENT],
 };
