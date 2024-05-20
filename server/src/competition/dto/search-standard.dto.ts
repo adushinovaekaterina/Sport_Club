@@ -11,4 +11,14 @@ export class SearchStandardDto {
   @Type(() => Number)
   @IsNumber()
   standard_id:number
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  semester: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  team_id: number;
 }

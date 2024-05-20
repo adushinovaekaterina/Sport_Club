@@ -47,20 +47,18 @@
         <TeamSchedule :dates="dates" :team-id="teamId"/>
     </div>
     <!-- if its member of team-->
-    <template v-if="currUserFunctions == TeamRoles.Member">
-        <!--  user  competitions-->
-        <div class="row" v-if="!can('can create teams') && !can('can create team roles') && !isNational">
-            <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
-        </div>
-        <!-- visits-->
-        <div class="row">
-            <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"/>
-        </div>
-        <!-- standard user -->
-        <div class="row" v-if="!can('can create teams') && !can('can create team roles')">
-            <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
-        </div>
-    </template>
+    <!--  user  competitions-->
+    <div v-if="currUserFunctions == TeamRoles.Member && !isNational" class="row">
+        <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
+    </div>
+    <!-- visits-->
+    <div class="row" v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
+        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"/>
+    </div>
+    <!-- standard user -->
+    <div class="row" v-if="currUserFunctions == TeamRoles.Member">
+        <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
+    </div>
 
 </template>
 

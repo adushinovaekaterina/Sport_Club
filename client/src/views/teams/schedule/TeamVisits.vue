@@ -1,7 +1,7 @@
 <template>
     <h6 class="fw-bold my-4">ПОСЕЩАЕМОСТЬ</h6>
     <p> Всего занятий: {{ maxVisits }}</p>
-    <div class="row">
+    <div class="row" >
         <div class="chart-container">
             <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         </div>

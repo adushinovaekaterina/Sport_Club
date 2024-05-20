@@ -12,11 +12,14 @@ export interface IStandardUser {
 export interface ISearchStandardDto {
     user_id?: number;
     standard_id?:number
+    semester?: number;
+    team_id?: number;
 }
 
 export interface ICreateStandardDto {
     user_id?: number;
     team_id?: number;
+    semester?: number;
     value?: number;
     standard_id?: number;
 }

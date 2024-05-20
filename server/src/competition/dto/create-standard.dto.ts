@@ -21,5 +21,10 @@ export class CreateStandardDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
+  semester: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   standard_id: number;
 }

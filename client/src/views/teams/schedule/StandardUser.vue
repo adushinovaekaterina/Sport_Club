@@ -1,5 +1,24 @@
 <template>
     <h6 class="fw-bold my-4">НОРМАТИВЫ</h6>
+
+    <div class="row my-3 justify-content-end">
+        <div class="col-auto">
+            <div class="mb-3">
+                <label class="form-label">Семестр</label>
+                <select
+                        class="form-select"
+                        v-model="semester"
+                        @change="fetchUserStandards()"
+                >
+                    <option v-for="(val, index) in semesters" v-bind:key="index" :value="val.value">
+                        {{ val.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
     <div class="row">
         <div class="col-12 overflow-scroll">
             <table class="table">
@@ -14,11 +33,11 @@
                 <tr v-for="el in standardsALL" :key="el.standard.class_id">
                     <td>{{ el.standard.name }}</td>
                     <td v-if="can('can edit own teams')">
-                      <input type="number" :value="el.userStandard.value"
-                             @change="(e)=>changeValue(e, el.standard.id ?? -1)"/>
+                        <input type="number" :value="el.userStandard.value"
+                               @change="(e)=>changeValue(e, el.standard.id ?? -1)"/>
                     </td>
                     <td v-else>
-                      {{ el.userStandard.value }}
+                        {{ el.userStandard.value }}
                     </td>
                     <td></td>
                 </tr>
@@ -35,7 +54,11 @@ import {onBeforeMount, ref, watch} from "vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
-import type {ICreateStandardDto, IStandardUser} from "@/store/models/competition/standard-user.model";
+import type {
+    ICreateStandardDto,
+    ISearchStandardDto,
+    IStandardUser
+} from "@/store/models/competition/standard-user.model";
 import {useCompetitionStore} from "@/store/competition/competition_store";
 import {useDictionaryStore} from "@/store/dictionary_store";
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
@@ -52,7 +75,20 @@ const props = defineProps<{
     userId: number,
 }>();
 
+const semesters = [
+    {name: "1 семестр", value: 1},
+    {name: "2 семестр", value: 2},
+    {name: "3 семестр", value: 3},
+    {name: "4 семестр", value: 4},
+    {name: "5 семестр", value: 5},
+    {name: "6 семестр", value: 6},
+    {name: "7 семестр", value: 7},
+    {name: "8 семестр", value: 8},
+    {name: "9 семестр", value: 9},
+    {name: "10 семестр", value: 10}];
+
 const team: Ref<ITeam> = ref({});
+const semester = ref<number>(1);
 const updateUS: Ref<ICreateStandardDto> = ref({});
 const standardsNames: Ref<IDictionary[]> = ref([]);
 const changedValue = ref<number>();
@@ -75,8 +111,14 @@ watch(
 );
 
 async function fetchUserStandards() {
-    const data = await competitionsStore.getUserStandards({user_id: props.userId});
-    const userStandards: IStandardUser[] = data
+
+   const uS:ISearchStandardDto = {
+        user_id: props.userId,
+        semester: semester.value,
+        team_id: props.teamId,
+    }
+
+    const userStandards: IStandardUser[] = await competitionsStore.getUserStandards(uS)
     const standards: IDictionary[] = standardsNames.value
     const standardsCombined: { standard: IDictionary, userStandard: IStandardUser }[] = []
 
@@ -100,7 +142,13 @@ async function fetchNamesStandards() {
 
 async function changeValue(e: any, standardId: number) {
     changedValue.value = Number(e.target?.value)
-    updateUS.value = {user_id: props.userId, value: changedValue.value, standard_id: standardId, team_id: props.teamId}
+    updateUS.value = {
+        user_id: props.userId,
+        value: changedValue.value,
+        standard_id: standardId,
+        team_id: props.teamId,
+        semester: semester.value,
+    }
     await updateCreateUserStandard()
 }
 
