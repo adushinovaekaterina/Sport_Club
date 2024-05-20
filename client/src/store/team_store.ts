@@ -73,6 +73,11 @@ export const useTeamStore = defineStore("teams", () => {
         return res.data;
     }
 
+    async function fetchUserOfTeam(idTeam: number, idUser: number) {
+        const res = await axios.get(`/api/teams/${idTeam}/users/${idUser}`);
+        return res.data;
+    }
+
     async function fetchTeam(id: number) {
         return apiRequest.handleApiRequest(async () => {
             return await axios.get("/api/teams/" + id);
@@ -345,6 +350,7 @@ export const useTeamStore = defineStore("teams", () => {
         refresh,
         setVisit,
         setMaxVisits,
+        fetchUserOfTeam,
 
         layout,
         menu_items,

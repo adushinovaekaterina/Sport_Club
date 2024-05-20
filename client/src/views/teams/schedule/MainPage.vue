@@ -46,18 +46,21 @@
     <div class="row my-3">
         <TeamSchedule :dates="dates" :team-id="teamId"/>
     </div>
-    <!--  user  competitions-->
-    <div class="row" v-if="!can('can create teams') && !can('can create team roles') && !isNational">
-        <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
-    </div>
-    <!--  visits-->
-    <div class="row">
-        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0"  :is-national="isNational"/>
-    </div>
-    <!-- standard user -->
-    <div class="row" v-if="!can('can create teams') && !can('can create team roles')">
-        <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
-    </div>
+    <!-- if its member of team-->
+    <template v-if="currUserFunctions == TeamRoles.Member">
+        <!--  user  competitions-->
+        <div class="row" v-if="!can('can create teams') && !can('can create team roles') && !isNational">
+            <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
+        </div>
+        <!-- visits-->
+        <div class="row">
+            <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"/>
+        </div>
+        <!-- standard user -->
+        <div class="row" v-if="!can('can create teams') && !can('can create team roles')">
+            <StandardUser :team-id="teamId" :user-id="permissions_store.user_id"/>
+        </div>
+    </template>
 
 </template>
 
@@ -74,10 +77,12 @@ import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
 import UserCompetitions from "@/views/teams/schedule/UserCompetitions.vue";
 import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import StandardUser from "@/views/teams/schedule/StandardUser.vue";
+import {TeamRoles} from "@/store/enums/team_roles";
 
 const props = defineProps<{
     teamId: number;
-    isNational:boolean
+    isNational: boolean;
+    currUserFunctions: TeamRoles | undefined;
 }>();
 
 const permissions_store = usePermissionsStore();

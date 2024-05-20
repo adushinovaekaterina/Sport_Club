@@ -404,6 +404,29 @@ export class TeamsService {
         return await query.getManyAndCount();
     }
 
+
+    //найти юзера в комманде
+    async teamWithUser(idTeam: number, idUser: number) {
+        // console.log("data", idTeam, idUser)
+        const query = this.userFunctionsRepository
+
+            .createQueryBuilder('user_functions')
+            .select([
+                'user_functions.dateStart',
+                'user_functions.dateEnd',
+                'user_functions.dateCreate',
+                'user_functions.dateUpdate',
+            ])
+            .leftJoinAndSelect('user_functions.user', 'user')
+            .innerJoin('user_functions.function', 'function')
+            .addSelect('function.title')
+            .innerJoin('function.team', 'team')
+            .where('team.id = :idTeam', {idTeam:idTeam})
+            .andWhere('user.id = :idUser', {idUser:idUser})
+
+        return await query.getOne();
+    }
+
     // ----------------------------------------------------------------------------
     // requisition ------------------------------------------------------------------
 

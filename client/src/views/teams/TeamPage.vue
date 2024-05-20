@@ -1,57 +1,58 @@
 <template>
-<!--   Это вся обертка-->
-    <div class="wrapper-team">
-      <!-- Обертка карточек коллективов -->
-      <div class="full-width">
-        <div class="wrapper-team__top-panel">
-          <div class="text-area">
-            <div class="container" v-if="team && team.title">
-              <p>{{ team.title }}</p>
-              <div v-if="!can('can create teams') && !can('can create team roles')">
-              <ModalQuestionnaire v-model="team.title" />
-            </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-    <div v-if="show" class="wrapper-team__content wrapper-content border-block">
-      <!-- Навигация -->
-      <div class="wrapper-second__navigation">
-        <template v-for="(item, index) in itemList" :key="index">
-          <a
-              v-if="item.permission"
-              @click="
+    <!--   Это вся обертка-->
+    <div class="wrapper-team">
+        <!-- Обертка карточек коллективов -->
+        <div class="full-width">
+            <div class="wrapper-team__top-panel">
+                <div class="text-area">
+                    <div class="container" v-if="team && team.title">
+                        <p>{{ team.title }}</p>
+                        <div v-if="!can('can create teams') && !can('can create team roles')">
+                            <ModalQuestionnaire v-model="team.title"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="show" class="wrapper-team__content wrapper-content border-block">
+            <!-- Навигация -->
+            <div class="wrapper-second__navigation">
+                <template v-for="(item, index) in itemList" :key="index">
+                    <a
+                            v-if="item.permission"
+                            @click="
               selectItem(index);
               showCreate = false;
             "
-              :class="{ active: index == selectedItem }"
-          >{{ item.name }}</a
-          >
-        </template>
-      </div>
+                            :class="{ active: index == selectedItem }"
+                    >{{ item.name }}</a
+                    >
+                </template>
+            </div>
 
-      <!--Главная страница команды-->
-      <div v-if="selectedItem === 0">
-        <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId" :is-national="isNational"/>
-      </div>
+            <!--Главная страница команды-->
+            <div v-if="selectedItem === 0">
+                <TeamMain :onUpdateTeam="handleUpdateTeam" :teamId="teamId" :is-national="isNational"/>
+            </div>
 
-      <!--Блок с расписанием-->
-      <div v-if="selectedItem === 1">
-        <TeamSchedule :team-id="teamId" :is-national="isNational"/>
-      </div>
+            <!--Блок с расписанием-->
+            <div v-if="selectedItem === 1">
+                <TeamSchedule :team-id="teamId" :is-national="isNational" :curr-user-functions="currentUserTeamRole"/>
+            </div>
 
-      <!--участники-->
-      <div v-if="selectedItem === 2">
-        <ParticipationsPage :idTeam="teamId" :is-national="isNational"/>
-      </div>
+            <!--участники-->
+            <div v-if="selectedItem === 2">
+                <ParticipationsPage :idTeam="teamId" :is-national="isNational"/>
+            </div>
 
-      <!-- заявки -->
-      <div v-if="selectedItem === 3">
-        <TeamRequests :idTeam="teamId" :is-national="isNational"/>
-      </div>
+            <!-- заявки -->
+            <div v-if="selectedItem === 3">
+                <TeamRequests :idTeam="teamId" :is-national="isNational"/>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -69,6 +70,9 @@ import TeamMain from "./TeamMain.vue";
 import type {ITeam} from "@/store/models/teams/team.model";
 import type {Ref} from "vue";
 import ParticipationsPage from "@/views/teams/ParticipationsPage.vue";
+import {useTeamStore} from "@/store/team_store";
+import type {IUserFunction} from "@/store/models/user/user-functions.model";
+import type {TeamRoles} from "@/store/enums/team_roles";
 
 const route = useRoute();
 // это сборная?
@@ -77,6 +81,8 @@ const isNational = computed(() => {
     return param === 'true'; // Convert to boolean
 });
 
+const currentUserTeamRole = ref<TeamRoles | undefined>()
+const teamStore = useTeamStore();
 
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
@@ -88,48 +94,48 @@ const team: Ref<ITeam> = ref({});
 
 // const currentPage = ref(0);
 
-onBeforeMount(async () => {
-  await fetchCurrentTeam();
-});
+onBeforeMount(() => {
+    fetchCurrentUserOfTeam();
+    fetchCurrentTeam();
+})
 
 async function fetchCurrentTeam() {
-  await axios.get("/api/teams/" + route.params.id).then((respose) => {
-    team.value = respose.data;
-  });
+    await axios.get("/api/teams/" + route.params.id).then((respose) => {
+        team.value = respose.data;
+    });
 }
+
+async function fetchCurrentUserOfTeam() {
+    const teamId = Number(route.params.id)
+    const userId = permissions_store.user_id
+    const userF: IUserFunction = await teamStore.fetchUserOfTeam(teamId, userId)
+    currentUserTeamRole.value = userF.function?.title as TeamRoles
+}
+
 
 const selectedItem = ref(0);
 const showCreate = ref(false);
 
 const itemList = [
-  {name: "Главная", permission: true},
-  // { name: "Новости", permission: true },
-  {name: "Занятия", permission: true},
-  {name: "Участники", permission: true},
-  // { name: "Редактор анкеты", permission: can("can create questionnaires") },
-  {name: "Заявки", permission: can("can edit status requisitions")},
+    {name: "Главная", permission: true},
+    // { name: "Новости", permission: true },
+    {name: "Занятия", permission: true},
+    {name: "Участники", permission: true},
+    // { name: "Редактор анкеты", permission: can("can create questionnaires") },
+    {name: "Заявки", permission: can("can edit status requisitions")},
 ];
 
 const selectItem = (i: number) => {
-  selectedItem.value = i;
+    selectedItem.value = i;
 };
 
 itemList.forEach((item, index) => {
-  return item == itemList[index];
+    return item == itemList[index];
 });
 
 async function handleUpdateTeam() {
-  await fetchCurrentTeam();
+    await fetchCurrentTeam();
 }
-
-// function getImageStyle() {
-//   return {
-//     'background-image': `url("${team.value.image[currentPage]}")`,
-//     'background-size': 'cover',
-//     overflow: 'hidden',
-//     'border-radius': '25px',
-//   };
-// }
 
 </script>
 
@@ -187,17 +193,17 @@ async function handleUpdateTeam() {
 
   .wrapper-team__top-panel {
     background-image: linear-gradient(
-            to right,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(255, 255, 255, 0.6) 10%,
-            rgba(255, 255, 255, 0.5) 50%,
-            rgba(255, 255, 255, 0) 100%
+                    to right,
+                    rgba(255, 255, 255, 1) 0%,
+                    rgba(255, 255, 255, 0.6) 10%,
+                    rgba(255, 255, 255, 0.5) 50%,
+                    rgba(255, 255, 255, 0) 100%
     ),
     url("");
     //url("https://sun9-70.userapi.com/impg/hoGoGUgoywvDUTx8l17HB-5Rnpn3xKM7M1IP0Q/aRoqzu5at1s.jpg?size=2560x1707&quality=95&sign=f10e37ffd001af7dbd3cd5ab53041dee&type=album");
     background-size: 100% auto;
-    background: rgb(2,0,36);
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
+    background: rgb(2, 0, 36);
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
     background-position: center;
     height: 250px;
     width: 100%;

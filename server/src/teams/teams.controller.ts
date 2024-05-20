@@ -12,7 +12,6 @@ import {
   Req,
   SetMetadata,
   UploadedFile,
-  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -46,7 +45,6 @@ import { User } from '../users/entities/user.entity';
 import { UserFunctionDto } from '../users/dto/user-functions.dto';
 import { AssignDirectionTeamLeaderDto } from '../users/dto/direction-leader.dto';
 import { TeamRoles } from '../shared/teamRoles';
-import { extname } from 'path';
 import { TeamPermissions } from '../shared/teamPermissions';
 
 
@@ -172,6 +170,19 @@ export class TeamsController {
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   teamsAndUsers(@Param('id') id: number, @Query() uFDto: UserFunctionDto) {
     return this.teamsService.teamWithUsers(id, uFDto);
+  }
+
+  //по ид команды и id юзера найти есть ли юзер в вкомманде
+  @Get(':id/users/:id_user')
+  @ApiOperation({ summary: 'Получение участника коллектива по id коллектива и id участника' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Успешно',
+    type: UserFunction,
+  })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  teamsAndUser(@Param('id') id: number, @Param('id_user') idUser: number) {
+    return this.teamsService.teamWithUser(id, idUser);
   }
 
   @Get(':id')
