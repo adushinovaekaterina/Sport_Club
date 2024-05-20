@@ -4,6 +4,7 @@ export enum Permissions {
 
   // RESP IRNITU
   CAN_ASSIGN_LEADER_DIRECTIONS = 'can assign leader directions',
+  CAN_EDIT_STATUS_REQUISITIONS_ALL = 'can edit status requisitions all',
 
   // RESP DIRECTION
   CAN_CREATE_TEAMS = 'can create teams',
