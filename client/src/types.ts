@@ -1,10 +1,11 @@
 export type Permission =
-    // admin
+// admin
     | 'can all'
 
     | 'can view statistics' //+
     // Отвественный за ИРНИТУ
     | 'can assign direction leaders' //+
+    | 'can edit status requisitions all'
 
     // Отвественный по направлению
     // also can assign leader of team'
@@ -16,19 +17,19 @@ export type Permission =
     | 'can view reports'
     | 'can edit status events'
 
-  // Руководитель коллектива
-  | "can edit own teams" //+
-  | "can edit status requisitions"
-  | "can create questionnaires"
-  | "can create team roles"
-  | ""
+    // Руководитель коллектива
+    | "can edit own teams" //+
+    | "can edit status requisitions"
+    | "can create questionnaires"
+    | "can create team roles"
+    | ""
 
-  // Руководитель коллектива
-  | "can view teams reports"
+    // Руководитель коллектива
+    | "can view teams reports"
 
-  // Пользователь
-  | "can create events"
-  | "can edit own events"
+    // Пользователь
+    | "can create events"
+    | "can edit own events"
 
-  // Студент
-  | "can student";
+    // Студент
+    | "can student";
