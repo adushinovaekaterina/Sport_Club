@@ -30,6 +30,7 @@ import { UserFunctionDto } from '../users/dto/user-functions.dto';
 import { PermissionsGuard } from '../users/guard/check-permissions.guard';
 import { Permissions } from '../shared/permissions';
 import { PermissionsActions } from '../general/enums/action-permissions';
+import {FindUserDto} from "../users/dto/find-user.dto";
 
 @ApiTags('accounts') // <---- Отдельная секция в Swagger для всех методов контроллера
 @Controller('accounts')
@@ -59,7 +60,12 @@ export class AccountsController {
     const offset: number = params.offset;
     const searchTxt: string = params.searchTxt;
 
-    return await this.usersService.findUser(limit, offset, searchTxt);
+    const dto = new FindUserDto()
+    dto.limit = limit
+    dto.offset = offset
+    dto.searchTxt = searchTxt
+
+    return await this.usersService.findUser(dto);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -245,7 +251,7 @@ export class AccountsController {
   })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   createUserFunction(@Body() createUserFunctionDto: CreateUserFunctionDto) {
-    return this.usersService.createUserFunctionOrUpdate(createUserFunctionDto);
+    return this.usersService.createUserOrUpdate(createUserFunctionDto);
   }
 
   @Delete('user-functions/:id')

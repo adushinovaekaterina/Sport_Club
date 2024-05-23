@@ -107,6 +107,12 @@ textarea {
   background: var(--main-color);
 }
 
+.btn-primary-bordered {
+  border: 1px solid var(--main-color);
+  background: transparent;
+  color: var(--main-color);
+}
+
 // hover without styles
 .btn-custom-neutral {
   border-radius: var(--border-radius);

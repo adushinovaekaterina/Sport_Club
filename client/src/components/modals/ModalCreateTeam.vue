@@ -514,7 +514,7 @@ async function getUsers() {
     let filterUser = new FilterUser();
     filterUser.limit = 5;
     filterUser.searchTxt = searchTxtUser.value;
-    let r = await useUserStore().getUsersByNameEmail(filterUser);
+    let r = await useUserStore().findUsers(filterUser);
 
     //получить всех найденных юзеров
     let users = r.data[0];

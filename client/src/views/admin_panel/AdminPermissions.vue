@@ -118,7 +118,7 @@ async function handleTimerSearch(userTxt: string) {
 
 async function fetchUsers() {
   loading.value = true;
-  let res = await userStore.getUsersByNameEmail(filterUser.value);
+  let res = await userStore.findUsers(filterUser.value);
   data.value = res.data[0];
 
   const teamsCount = res.data[1];

@@ -810,7 +810,7 @@ export class TeamsService {
 
             // find existing user function or update
             try {
-                await this.usersService.createUserFunctionOrUpdate(ufDto);
+                await this.usersService.createUserOrUpdate(ufDto);
             } catch (e) {
             }
         }

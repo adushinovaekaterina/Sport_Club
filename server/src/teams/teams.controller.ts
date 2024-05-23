@@ -371,11 +371,10 @@ export class TeamsController {
             );
     }
 
-    // team avs
-    // ------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------
+// requisition
+// --------------------------------------------------------------------------------------------------------------
 
-    // ----------------------------------------------------------------------------
-    // requisition ------------------------------------------------------------------
     @Get('/:team_id/requisition')
     @ApiOperation({
         summary: 'Получить список заявок в коллектив по ид колектива',
@@ -493,10 +492,8 @@ export class TeamsController {
         user = await this.usersService.findById(user.userId);
         return await this.teamsService.createRequisitionOrUpdate(dto, user);
     }
-
-    // requisition --------------------------------------------------------------------
-
     // assign team roles --------------------------------------------------------------------
+
     @Post('user-functions/new-participant')
     @UseGuards(LocalAuthGuard, PermissionsGuard)
     @ApiOperation({summary: 'создать нового участника коллектива'})
@@ -530,8 +527,6 @@ export class TeamsController {
         directionTeamLeaderDto.roleName = TeamRoles.Member;
 
         // назначить нового пользвоателя
-        // await this.teamsService.assignTeamRole(user, directionTeamLeaderDto);
-
         return await this.teamsService.assignTeamRole(user, directionTeamLeaderDto);
     }
 

@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   BeforeInsert,
   Column,
-  Entity,
+  Entity, JoinColumn, ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -11,6 +11,7 @@ import * as argon2 from 'argon2';
 import { Journal } from '../../events/entities/journal.entity';
 import { Requisitions } from '../../teams/entities/requisition.entity';
 import { Event } from '../../events/entities/event.entity';
+import {Dictionary} from "../../general/entities/dictionary.entity";
 
 @Entity('users')
 export class User {
@@ -40,10 +41,6 @@ export class User {
 
   @ApiProperty()
   @Column({ nullable: true })
-  institute: string;
-
-  @ApiProperty()
-  @Column({ nullable: true })
   gender: string;
 
   @ApiProperty()
@@ -55,8 +52,8 @@ export class User {
   password: string;
 
   @ApiProperty()
-  @Column({ type: 'date', nullable: true })
-  birthdate: string;
+  @Column({nullable: true })
+  birthdate: Date;
 
   @ApiProperty()
   @Column({ nullable: true })
@@ -97,6 +94,21 @@ export class User {
   @ApiProperty()
   @OneToMany(() => Event, (event) => event.user, { cascade: true })
   events: Event[];
+
+  @ApiProperty()
+  @ManyToOne(() => Dictionary, (d) => d.id)
+  @JoinColumn([{ name: 'health_group_id' }])
+  health_group: Dictionary;
+
+  @ApiProperty()
+  @ManyToOne(() => Dictionary, (d) => d.id)
+  @JoinColumn([{ name: 'state_id' }])
+  state: Dictionary;
+
+  @ApiProperty()
+  @ManyToOne(() => Dictionary, (d) => d.id)
+  @JoinColumn([{ name: 'institute_id' }])
+  institute: Dictionary;
 
   // @OneToMany(() => TeamSchedule, (team_schedule) => team_schedule.user, {
   //   cascade: true,

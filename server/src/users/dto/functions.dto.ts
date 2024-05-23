@@ -6,7 +6,6 @@ export class FunctionDto {
   title: string;
 
   @IsOptional()
-  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   team: number;

@@ -1,5 +1,6 @@
 <template>
-<!--    <button class="btn-icon-rounded position-fixed start-0 btn-float" @click="goBack"><font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/> Назад</button>-->
+<!--    go back -->
+    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack"><font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/> Назад</button>
     <div class="border-block bg-white p-4">
         <h2>ПРОГРЕСС</h2>
         <div class="row my-3">
@@ -77,7 +78,7 @@ async function getUsers() {
     let filterUser = new FilterUser();
     filterUser.limit = 5;
     filterUser.searchTxt = searchTxtUser.value;
-    let r = await useUserStore().getUsersByNameEmail(filterUser);
+    let r = await useUserStore().findUsers(filterUser);
 
     //получить всех найденных юзеров
     let users:IUser[] = r.data[0];

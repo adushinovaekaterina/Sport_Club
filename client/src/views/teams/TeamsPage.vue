@@ -189,7 +189,6 @@ import {onBeforeMount, ref} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import CheckBox_Menu from "@/components/CheckBoxMenu.vue";
 import _ from "lodash";
-import {DirectionName} from "@/store/enums/enum_teams";
 import Pagination from "@/components/PaginationElem.vue";
 import {useTeamStore} from "@/store/team_store";
 import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";

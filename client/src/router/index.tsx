@@ -65,6 +65,12 @@ const router = createRouter({
             component: () => import("@/views/teams/UserProgress.vue"),
         },
         {
+            path: "/team/:id?/add-participants",
+            props: (route) => ({team_title: route.query.team_title}),
+            name: "AddParticipants",
+            component: () => import("@/views/teams/AddParticipantsPage.vue"),
+        },
+        {
             // !Ответственный за направления
             path: "/directions",
 
