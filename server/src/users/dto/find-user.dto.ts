@@ -13,12 +13,12 @@ export class FindUserDto {
   searchTxt?:string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  course:number
+  @IsArray()
+  courses:number[]
 
   @IsOptional()
-  gender:string
+  @IsArray()
+  genders:string[]
 
   @IsOptional()
   @IsArray()

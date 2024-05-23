@@ -6,6 +6,8 @@ export class FilterUser {
   health_groups?:number[];
   institutes?:number[];
   states?:number[];
+  courses?:number[];
+  genders?:string[];
 
   limit = 5;
   offset = 0;

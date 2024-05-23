@@ -5,54 +5,89 @@
         Назад
     </button>
     <div class="border-block bg-white p-4">
-        <h4 class="fw-bold">Добавление студентов в сборную комманду "{{ team.title }}" </h4>
-        <div class="my-3">
-            <SearchField :handle-timer-search="handleTimerSearch"/>
-        </div>
+
+
         <div class="row">
             <!--    filters    -->
-            <div class="col-sm-3 col-12">
-                <CheckBox_Menu
-                        :menu_items="filters"
-                        :handleEventSetFilters="handleEventSetFilters"
-                        :handleEventResetFilters="handleEventResetFilters"
-                />
+            <div class="col-md-3 col-12">
+                <div class="nav-collapse collapse" id="collapseCkecker">
+                    <div class="filters-block  border-1 border-end p-3">
+                        <CheckBox_Menu
+                                :menu_items="filters"
+                                :handleEventSetFilters="handleEventSetFilters"
+                                :handleEventResetFilters="handleEventResetFilters"
+                        />
+                    </div>
+                </div>
             </div>
 
             <!--   users-->
-            <div class="col overflow-scroll">
-                <table class="table fw-bold">
-                    <thead>
-                    <tr>
-                        <th class="header">Студент</th>
-                        <th class="header">День рождения</th>
-                        <th class="header">Группа</th>
-                        <th class="header">Номер телефона</th>
-                        <td></td>
-                    </tr>
-                    </thead>
-                    <tbody>
+            <div class="col-md-9 col-12">
+                <h4 class="fw-bold">Добавление студентов в сборную комманду "{{ team.title }}" </h4>
+                <div class="row">
+                    <div class="col my-3">
+                        <SearchField :handle-timer-search="handleTimerSearch"/>
+                    </div>
 
-                    <tr v-for="el in foundUsers.users" :key="el.id">
-                        <td>{{ el.fullname }}</td>
-                        <td>{{ el.birthdate }}</td>
-                        <td>{{ el.education_group }}</td>
-                        <td>{{ el.phone }}</td>
-                        <td>
-                            <!-- add new-->
-                            <div v-if="!userInTeam(el.id ?? -1)">
-                                <button class="btn-primary-bordered"
-                                        @click="addNewParticipant(el.id ?? -1)">Добавить
-                                </button>
-                            </div>
-                            <!-- already added-->
-                            <div v-else class="justify-content-center align-items-center d-flex">
-                                <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>
-                            </div>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <!-- фильтры в модальнос окне -->
+                    <div class="col-auto align-items-center d-flex">
+                        <div class="d-md-none">
+                            <button
+                                    type="button"
+                                    class="btn-icon-rounded"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#filtersModal"
+                            >
+                                <font-awesome-icon class="ic fa-lg" icon="filter"/>
+                            </button>
+                        </div>
+
+                        <ModalFull modal-id="filtersModal">
+                            <template #header> Фильтры</template>
+                            <template #body>
+                                <CheckBox_Menu
+                                        :menu_items="filters"
+                                        :handleEventSetFilters="handleEventSetFilters"
+                                        :handleEventResetFilters="handleEventResetFilters"
+                                />
+                            </template>
+                        </ModalFull>
+                    </div>
+                </div>
+                <div class="overflow-x-scroll">
+                    <table class="table table-bordered fw-bold">
+                        <thead>
+                        <tr>
+                            <th class="header">Студент</th>
+                            <th class="header">День рождения</th>
+                            <th class="header">Группа</th>
+                            <th class="header">Номер телефона</th>
+                            <td></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr v-for="el in foundUsers.users" :key="el.id">
+                            <td class="header">{{ el.fullname }}</td>
+                            <td>{{ el.birthdate }}</td>
+                            <td>{{ el.education_group }}</td>
+                            <td>{{ el.phone }}</td>
+                            <td>
+                                <!-- add new-->
+                                <div v-if="!userInTeam(el.id ?? -1)">
+                                    <button class="btn-primary-bordered"
+                                            @click="addNewParticipant(el.id ?? -1)">Добавить
+                                    </button>
+                                </div>
+                                <!-- already added-->
+                                <div v-else class="justify-content-center align-items-center d-flex">
+                                    <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -75,6 +110,7 @@ import {HEALTH_GROUP, INSTITUTE, STATE} from "@/store/constants/constants_class_
 import {useDictionaryStore} from "@/store/dictionary_store";
 import CheckBox_Menu from "@/components/CheckBoxMenu.vue";
 import type {IMENU,} from "@/store/models/other";
+import ModalFull from "@/components/modals/ModalFull.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -93,12 +129,6 @@ const permissions_store = usePermissionsStore();
 const userStore = useUserStore();
 const can = permissions_store.can;
 
-
-// selects
-// const institutes = ref<IDictionary[]>([]);
-// const states = ref<IDictionary[]>([]);
-// const healthGroup = ref<IDictionary[]>([]);
-
 const filters = ref<IMENU[]>([
     {
         id: 1,
@@ -116,6 +146,18 @@ const filters = ref<IMENU[]>([
         id: 3,
         title: "Состояние",
         hidden: true,
+        menu_types: [],
+    },
+    {
+        id: 4,
+        title: "Курс",
+        hidden: true,
+        menu_types: [],
+    },
+    {
+        id: 5,
+        title: "Пол",
+        hidden: false,
         menu_types: [],
     },
 ]);
@@ -148,7 +190,7 @@ onBeforeMount(() => {
 
 
 const initDropdowns = async () => {
-    const initMenu = (index:number, dictionary:IDictionary[]) =>{
+    const initMenu = (index: number, dictionary: IDictionary[]) => {
         (filters.value)[index].menu_types = dictionary.map((el) => {
             return {id: el.id ?? -1, title: el.name ?? "", checked: false}
         })
@@ -163,6 +205,19 @@ const initDropdowns = async () => {
     initMenu(0, healthGroupD)
     initMenu(1, institutesD)
     initMenu(2, statesD)
+
+    filters.value[3].menu_types = [
+        {id: 1, title: "1", checked: false},
+        {id: 2, title: "2", checked: false},
+        {id: 3, title: "3", checked: false},
+        {id: 4, title: "4", checked: false},
+        {id: 5, title: "5", checked: false},
+    ]
+
+    filters.value[4].menu_types = [
+        {id: 1, title: "женский", checked: false},
+        {id: 2, title: "мужской", checked: false},
+    ]
 
 }
 
@@ -216,10 +271,14 @@ const fetchUsers = async () => {
     let healthGroups = fls[0].menu_types.filter(el => el.checked).map(el => el.id);
     let institutes = fls[1].menu_types.filter(el => el.checked).map(el => el.id);
     let states = fls[2].menu_types.filter(el => el.checked).map(el => el.id);
+    let cources = fls[3].menu_types.filter(el => el.checked).map(el => el.id);
+    let genders = fls[4].menu_types.filter(el => el.checked).map(el => el.title);
 
     filterUser.health_groups = healthGroups
     filterUser.institutes = institutes
     filterUser.states = states
+    filterUser.courses = cources
+    filterUser.genders = genders
 
     let r = await userStore.findUsers(filterUser);
 
@@ -230,6 +289,10 @@ const fetchUsers = async () => {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  background: #e6e6e6;
+}
+
 .btn-float {
   top: 100px
 }

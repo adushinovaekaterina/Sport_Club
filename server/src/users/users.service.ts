@@ -140,10 +140,10 @@ export class UsersService {
         }
 
         //  course
-        dto.course ? query.andWhere("users.course = :course", {course: dto.course}) : null
+        dto.courses ? query.andWhere("users.course in (:...courses)", {courses: dto.courses}) : null
 
         //  gender
-        dto.gender ? query.andWhere("users.gender = :gender", {gender: dto.gender}) : null
+        dto.genders ? query.andWhere("users.gender in (:...genders)", {genders: dto.genders}) : null
 
         // institutes
         dto.institutes
