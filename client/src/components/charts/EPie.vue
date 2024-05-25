@@ -76,6 +76,7 @@ const options = computed(() => {
   width: 100%;
   height: 100%;
   /* background-color: aqua; */
+    min-width: 100px;
   min-height: 300px;
 }
 

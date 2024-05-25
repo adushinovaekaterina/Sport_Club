@@ -28,7 +28,7 @@ app.use(router);
 app.use(VCalendar, {});
 app.use(FloatingVue)
 // popover
-app.component('VDropdown', Dropdown)
+// app.component('VDropdown', Dropdown)
 
 // Кастомная директива на clickOutside
 app.directive("click-outside", {

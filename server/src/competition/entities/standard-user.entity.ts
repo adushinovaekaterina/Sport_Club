@@ -15,7 +15,7 @@ export class StandardUserEntity {
     value: number;
 
     @ApiProperty()
-    @Column({default:1})
+    @Column({type: 'float', default:1.0})
     semester: number;
 
     @ApiProperty()

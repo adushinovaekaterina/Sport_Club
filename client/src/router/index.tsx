@@ -61,8 +61,8 @@ const router = createRouter({
         {
             path: "/team/:id?/progress",
             name: "Progress",
-            props: (route) => ({user_id: route.query.user_id}),
-            component: () => import("@/views/teams/UserProgress.vue"),
+            // props: (route) => ({user_id: route.query.user_id}),
+            component: () => import("@/views/teams/progress/UserProgress.vue"),
         },
         {
             path: "/team/:id?/add-participants",

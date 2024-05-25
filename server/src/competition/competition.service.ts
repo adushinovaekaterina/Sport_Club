@@ -52,8 +52,12 @@ export class CompetitionService {
         dto.user_id ? query.andWhere('user.id = :user_id', {user_id: dto.user_id}) : null
         // standard_id
         dto.standard_id ? query.andWhere('standard.id = :standard_id', {standard_id: dto.standard_id}) : null
-        // semester
-        dto.semester ? query.andWhere('standard_user.semester = :semester', {semester: dto.semester}) : null
+        // semesters
+        dto.semesters.length > 0
+            ? query.andWhere('standard_user.semester in (:...semesters)', {
+                semesters: dto.semesters,
+            })
+            : query;
         // team_id
         dto.team_id ? query.andWhere('team.id = :team', {team: dto.team_id}) : null
 
@@ -62,7 +66,7 @@ export class CompetitionService {
 
     async createOrUpdateStandard(dto: CreateStandardDto) {
 
-        const existStandards = await this.findAllStandards({...dto})
+        const existStandards = await this.findAllStandards({...dto, semesters: [dto.semester]})
 
         const existStandard = existStandards[0]
 
@@ -80,7 +84,7 @@ export class CompetitionService {
             const team = await this.entityManager.findOneBy(Team, {id: dto.team_id});
 
             const standard = await this.dictionaryService.findOne(dto.standard_id)
-            await this.standardUserRepository.insert({user: user, standard:standard, team:team, ...dto}).then(() => {
+            await this.standardUserRepository.insert({user: user, standard: standard, team: team, ...dto}).then(() => {
                 res.message = "Сохранено"
             })
         }

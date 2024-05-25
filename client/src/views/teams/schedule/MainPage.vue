@@ -72,9 +72,9 @@ import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
-import UserCompetitions from "@/views/teams/schedule/UserCompetitions.vue";
+import UserCompetitions from "@/views/teams/progress/UserCompetitions.vue";
 import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
-import StandardUser from "@/views/teams/schedule/StandardUser.vue";
+import StandardUser from "@/views/teams/progress/StandardUser.vue";
 import {TeamRoles} from "@/store/enums/team_roles";
 
 const props = defineProps<{

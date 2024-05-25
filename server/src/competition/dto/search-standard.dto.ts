@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import {IsArray, IsNumber, IsOptional} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchStandardDto {
@@ -13,9 +13,8 @@ export class SearchStandardDto {
   standard_id:number
 
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  semester: number;
+  @IsArray()
+  semesters: number[];
 
   @IsOptional()
   @Type(() => Number)

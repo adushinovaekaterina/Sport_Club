@@ -1,11 +1,14 @@
 <template>
-<!--    go back -->
-    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack"><font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/> Назад</button>
+    <!--    go back -->
+    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">
+        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>
+        Назад
+    </button>
     <div class="border-block bg-white p-4">
         <h2>ПРОГРЕСС</h2>
         <div class="row my-3">
             <div class="col-auto">
-               <div class="my-2 fw-bold">Студент</div>
+                <div class="my-2 fw-bold">Студент</div>
                 <v-select
                         class="v-select"
                         label="data"
@@ -14,30 +17,32 @@
                         :options="foundUsers"
                         v-model="selectedUser"
                 ></v-select>
-              </div>
+            </div>
             <div class="col"></div>
             <div class="col"></div>
         </div>
 
         <UserCompetitions :team-id="teamId" :user-id="userId"/>
         <StandardUser :team-id="teamId" :user-id="userId"/>
+
     </div>
 </template>
 
 <script setup lang="ts">
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
-import { onBeforeMount, ref, onMounted, watch } from "vue"; // Добавлен импорт onMounted
+import {onBeforeMount, ref, onMounted, watch} from "vue"; // Добавлен импорт onMounted
 // import {onBeforeMount, ref} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import {useRoute, useRouter} from "vue-router";
-import StandardUser from "@/views/teams/schedule/StandardUser.vue";
-import UserCompetitions from "@/views/teams/schedule/UserCompetitions.vue";
+import StandardUser from "@/views/teams/progress/StandardUser.vue";
+import UserCompetitions from "@/views/teams/progress/UserCompetitions.vue";
 import {useUserStore} from "@/store/user_store";
 import type {IUser} from "@/store/models/user/user.model";
 import {FilterUser} from "@/store/models/user.model";
 import _ from "lodash";
-// import {watch} from "vue";
+import ELine from "@/components/charts/ELine.vue";
+import EPie from "@/components/charts/EPie.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -47,8 +52,8 @@ const teamId = Number(route.params.id);
 const teamStore = useTeamStore();
 
 const team = ref<ITeam>({}); //коллектив
-const selectedUser = ref<{data: string, user:IUser}>({data:"", user:{}});
-const foundUsers = ref<{data: string, user: IUser}[]>([]);
+const selectedUser = ref<{ data: string, user: IUser }>({data: "", user: {}});
+const foundUsers = ref<{ data: string, user: IUser }[]>([]);
 
 const permissions_store = usePermissionsStore();
 const userStore = useUserStore();
@@ -56,7 +61,7 @@ const can = permissions_store.can;
 
 const searchTxtUser = ref();
 
-onBeforeMount(()=>{
+onBeforeMount(() => {
     getUser()
     getUsers()
 })
@@ -81,16 +86,16 @@ async function getUsers() {
     let r = await useUserStore().findUsers(filterUser);
 
     //получить всех найденных юзеров
-    let users:IUser[] = r.data[0];
-    users.forEach((usr)=>{
-        foundUsers.value.push({data:usr.fullname + ' ' + usr.education_group, user:usr})
+    let users: IUser[] = r.data[0];
+    users.forEach((usr) => {
+        foundUsers.value.push({data: usr.fullname + ' ' + usr.education_group, user: usr})
     })
 }
 
 const getUser = async () => {
     const res = await userStore.getUser(userId.value)
     const user = res.data
-    selectedUser.value = {data: user.fullname + ' ' +  user.education_group, user: user.value }
+    selectedUser.value = {data: user.fullname + ' ' + user.education_group, user: user.value}
 };
 
 const timerFetchUsers = _.debounce(() => {
@@ -105,13 +110,15 @@ async function onTextChange(e: InputEvent) {
 
 // Программная прокрутка к началу страницы при монтировании компонента
 onMounted(() => {
-  window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
 });
 
 </script>
 
 <style lang="scss" scoped>
-.btn-float{
-  top:100px
+
+
+.btn-float {
+  top: 100px
 }
 </style>

@@ -10,3 +10,9 @@ export interface IMenuTypes {
     title: string
     checked: boolean
 }
+
+export interface ISeriesLine {
+    name: string;
+    data: number[],
+    type: 'line'
+}
