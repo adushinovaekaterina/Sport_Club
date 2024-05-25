@@ -1,6 +1,5 @@
 <template>
     <h6 class="fw-bold my-4">НОРМАТИВЫ</h6>
-
     <div class="row my-3 justify-content-end">
         <div class="col-auto">
             <div class="mb-3">
@@ -30,15 +29,134 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="el in standardsFound.startSem" :key="el.standard.class_id">
+                <tr v-for="(el, index) in standardsFound.selected" :key="el.standard.class_id">
                     <td>{{ el.standard.name }}</td>
                     <td v-if="can('can edit own teams')">
-                        <input type="number" :value="el.userStandard.value"
-                               @change="(e)=>changeValue(e, el.standard.id ?? -1)"/>
+                        <input type="number" step="any" min="0" max="100" :value="el.userStandard.value"
+                               @change="(e) => changeValue(e, el.standard.id ?? -1)"/>
                     </td>
                     <td v-else>
                         {{ el.userStandard.value }}
                     </td>
+                    <td>
+                        <!— Используем индекс строки для определения критериев —>
+                        <template v-if="index === 0">
+                            <!— Критерии для первой строки (сгибание и разгибание рук) —>
+                            <span v-if="el.userStandard.value < 21">{{  1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 21 && el.userStandard.value <= 25">{{
+                                     2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 26 && el.userStandard.value <= 38">{{
+                                     3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 39 && el.userStandard.value <= 43">{{
+                                    4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value > 43">{{  5 }}</span>
+                        </template>
+                        <template v-else-if="index === 1">
+                            <!— Критерии для второй строки (поднимание туловища из положения лежа) —>
+                            <span v-if="el.userStandard.value < 25">{{ 1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 25 && el.userStandard.value <= 33">{{
+                                   2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 34 && el.userStandard.value <= 46">{{
+                                  3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 46 && el.userStandard.value <= 47">{{
+                                   4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value > 47">{{  5 }}</span>
+                        </template>
+                        <template v-else-if="index === 2">
+                            <!— Критерии для третьей строки (наклон вперед) —>
+                            <span v-if="el.userStandard.value < 5">{{ 1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 5 && el.userStandard.value <= 7">{{
+                                    2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 8 && el.userStandard.value <= 10">{{
+                                   3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 11 && el.userStandard.value <= 15">{{
+                                    4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value > 16">{{ 5 }}</span>
+                        </template>
+                        <template v-else-if="index === 3">
+                            <!— Критерии для четвертой строки (прыжок в длину с места) —>
+                            <span v-if="el.userStandard.value < 133">{{  1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 133 && el.userStandard.value <= 143">{{
+                                    2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 144 && el.userStandard.value <= 170">{{
+                                     3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 171 && el.userStandard.value <= 182">{{
+                                    4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value > 182">{{ 5 }}</span>
+                        </template>
+                        <template v-else-if="index === 4">
+                            <!— Критерии для пятой строки (челночный бег) —>
+                            <span v-if="el.userStandard.value > 23.2">{{  1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 22.3 && el.userStandard.value <= 23.2">{{
+                                     2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 20.1 && el.userStandard.value <= 22.2">{{
+                                  3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 19.0 && el.userStandard.value <= 20.0">{{
+                                    4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value < 19.0">{{  5 }}</span>
+                        </template>
+                        <template v-else-if="index === 5">
+                            <!— Критерии для шестой строки (бег 100 м) —>
+                            <span v-if="el.userStandard.value > 18.0">{{  1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 17.6 && el.userStandard.value <= 18.0">{{
+                                    2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 17.1 && el.userStandard.value <= 17.5">{{
+                                   3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 16.6 && el.userStandard.value <= 17.0">{{
+                                   4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value <= 16.5">{{ 5 }}</span>
+                        </template>
+                        <template v-else-if="index === 6">
+                            <!— Критерии для седьмой строки (бег 1000 м) —>
+                            <span v-if="el.userStandard.value
+> 8.21">{{1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 7.29 && el.userStandard.value <= 8.23">{{
+                                     2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 5.37 && el.userStandard.value <= 7.28">{{
+                                    3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 4.01 && el.userStandard.value <= 5.36">{{
+                                   4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value < 4.01">{{  5 }}</span>
+                        </template>
+                        <template v-else-if="index === 7">
+                            <!— Критерии для восьмой строки (бег 2000 м) —>
+                            <span v-if="el.userStandard.value > 14.00">{{  1 }}</span>
+                            <span v-else-if="el.userStandard.value >= 13.11 && el.userStandard.value <= 14.00">{{
+                                    2
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 12.31 && el.userStandard.value <= 13.10">{{
+                                   3
+                                }}</span>
+                            <span v-else-if="el.userStandard.value >= 10.50 && el.userStandard.value <= 12.30">{{
+                                     4
+                                }}</span>
+                            <span v-else-if="el.userStandard.value < 10.50">{{  5 }}</span>
+                        </template>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="fw-bold">Итого среднее арифметическое:</td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -120,12 +238,15 @@ const standardsNames: Ref<IDictionary[]> = ref([]);
 const changedValue = ref<number>();
 
 const standardsFound = ref<{
+    selected: {
+        standard: IDictionary, userStandard: IStandardUser
+    }[],
     startSem: {
         standard: IDictionary, userStandard: IStandardUser
     }[], endSem: {
         standard: IDictionary, userStandard: IStandardUser
     }[]
-}>({startSem: [], endSem: []});
+}>({selected: [], startSem: [], endSem: []});
 
 // graphics
 const graphics = ref<{
@@ -228,10 +349,9 @@ async function fetchUserStandards() {
     standards.forEach((el) => {
         let foundedStandard: { start: IStandardUser, end: IStandardUser } = {start: {}, end: {}}
         userStandards.forEach((uS) => {
-            const semesterSelected = semester.value.selected.value
             if (el.id == uS.standard?.id) {
                 // start
-                if (uS.semester == semesterSelected) {
+                if (uS.semester == semester.value.start.value) {
                     foundedStandard.start = uS
                     // end
                 } else {
@@ -243,8 +363,17 @@ async function fetchUserStandards() {
         standardsCombined.startSem.push({standard: el, userStandard: foundedStandard.start})
         standardsCombined.endSem.push({standard: el, userStandard: foundedStandard.end})
     })
+
+    // selected semester
+    if (semester.value.selected.start) {
+        standardsFound.value.selected = standardsCombined.startSem
+    } else {
+        standardsFound.value.selected = standardsCombined.endSem
+    }
+
     standardsFound.value.startSem = standardsCombined.startSem
     standardsFound.value.endSem = standardsCombined.endSem
+
     // fill graphic
     await fillStandards()
 }
