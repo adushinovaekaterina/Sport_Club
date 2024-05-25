@@ -48,8 +48,9 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
             trigger: 'axis'
         },
         legend: {
-            data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
-
+            data: ['Series 1', 'Series 2', 'Series 3', 'Average Line'],
+            top: 'top',
+            left: 'center'
         },
         grid: {
             left: '3%',
@@ -65,8 +66,21 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
         xAxis: {
             type: 'category',
             boundaryGap: false,
-            // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            data: props.xAxis
+            data: props.xAxis,
+            axisLabel: {
+                rotate: 90, // Rotate the labels by -45 degrees
+                formatter: function (value) {
+                    // Set the maximum length of the label
+                    const maxLength = 10;
+                    // Check if the label length exceeds the maximum length
+                    if (value.length > maxLength) {
+                        // Shorten the label and add ellipsis
+                        return value.substring(0, maxLength) + '...';
+                    } else {
+                        return value;
+                    }
+                }
+            }
         },
         yAxis: {
             type: 'value'

@@ -73,6 +73,7 @@ import {useDictionaryStore} from "@/store/dictionary_store";
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import ELine from "@/components/charts/ELine.vue";
 import type {ISeriesLine} from "@/store/models/other";
+import {convertValueToPoint} from "@/views/teams/progress/standardUser";
 
 const competitionsStore = useCompetitionStore();
 const dictStore = useDictionaryStore();
@@ -179,14 +180,14 @@ async function fillStandards() {
         st.startSem.forEach((stS) => {
             if (stS.userStandard.value && el.id == stS.userStandard?.standard?.id) {
                 // add user result
-                dataStandardS[index] = stS.userStandard?.value
+                dataStandardS[index] = convertValueToPoint(el.name, stS.userStandard?.value)
             }
         })
         // end semester
         st.endSem.forEach((stE) => {
                 if (stE.userStandard.value && el.id == stE.userStandard?.standard?.id) {
                     // add user result
-                    dataStandardE[index] = stE.userStandard?.value
+                    dataStandardE[index] = convertValueToPoint(el.name, stE.userStandard?.value)
                 }
             }
         )
