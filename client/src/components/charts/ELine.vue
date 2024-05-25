@@ -48,9 +48,10 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
             trigger: 'axis'
         },
         legend: {
-            data: ['Series 1', 'Series 2', 'Series 3', 'Average Line'],
+            data: props.legend,
             top: 'top',
-            left: 'center'
+            right: 'right', // Position the legend to the right
+            orient: 'vertical' // Display the legend vertically
         },
         grid: {
             left: '3%',
