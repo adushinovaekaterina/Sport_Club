@@ -4,11 +4,9 @@
         <div class="col-auto">
             <div class="mb-3">
                 <label class="form-label">Семестр</label>
-                <select
-                        class="form-select"
+                <select class="form-select"
                         v-model="semester.selected"
-                        @change="fetchUserStandards()"
-                >
+                        @change="fetchUserStandards()">
                     <option v-for="(val, index) in semesters" v-bind:key="index" :value="val">
                         {{ val.name }}
                     </option>
@@ -143,6 +141,7 @@ import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import ELine from "@/components/charts/ELine.vue";
 import type {ISeriesLine} from "@/store/models/other";
 import {convertValueToPoint} from "@/views/teams/progress/standardUser";
+import type {IUser} from "@/store/models/user/user.model";
 
 const competitionsStore = useCompetitionStore();
 const dictStore = useDictionaryStore();
@@ -319,12 +318,13 @@ async function fillGraphicStandards() {
 async function fetchUserStandards() {
 
     const uS: ISearchStandardDto = {
-        user_id: props.userId,
+        user_ids: [props.userId],
         semesters: [semester.value.start.semester, semester.value.end.semester],
         team_id: props.teamId,
     }
 
-    const userStandards: IStandardUser[] = await competitionsStore.getUserStandards(uS)
+    const data:IUser =  await competitionsStore.getUserStandards(uS)
+    const userStandards: IStandardUser[] = data[0].standard_user
     const standards: IDictionary[] = standardsNames.value
     const standardsCombined: {
         startSem: { standard: IDictionary, userStandard: IStandardUser }[],

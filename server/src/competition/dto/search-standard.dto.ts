@@ -8,6 +8,10 @@ export class SearchStandardDto {
   user_id: number;
 
   @IsOptional()
+  @IsArray()
+  user_ids?: number[];
+
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
   standard_id:number

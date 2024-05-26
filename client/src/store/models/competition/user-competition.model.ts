@@ -9,5 +9,5 @@ export interface IUserCompetition {
     competition?: ICompetition;
 
     // addition
-    user_id?: number
+    user_ids?: number[]
 }

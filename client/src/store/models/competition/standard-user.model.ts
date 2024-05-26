@@ -11,7 +11,7 @@ export interface IStandardUser {
 }
 
 export interface ISearchStandardDto {
-    user_id?: number;
+    user_ids?: number[];
     standard_id?:number
     semesters?: number[];
     team_id?: number;

@@ -1,4 +1,5 @@
 ### competition
-GET http://localhost:3000/api/competition
+GET http://localhost:3000/api/competition?user_ids[]=16
+
 ### standard
-GET http://localhost:3000/api/competition/standard?user_id=3
+GET http://localhost:3000/api/competition/standard?user_ids[]=16

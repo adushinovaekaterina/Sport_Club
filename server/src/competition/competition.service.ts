@@ -4,12 +4,12 @@ import {EntityManager, Repository} from "typeorm";
 import {UserCompetition} from "./entities/user-competition.entity";
 import {SearchCompetitionDto} from "./dto/search-competition.dto";
 import {SearchStandardDto} from "./dto/search-standard.dto";
-import {StandardUserEntity} from "./entities/standard-user.entity";
 import {CreateStandardDto} from "./dto/create-standard.dto";
 import {UsersService} from "../users/users.service";
 import {GeneralService} from "../general/general.service";
-import {TeamSchedule} from "../schedule/entities/schedule.entity";
 import {Team} from "../teams/entities/team.entity";
+import {StandardUser} from "./entities/standard-user.entity";
+import {User} from "../users/entities/user.entity";
 
 @Injectable()
 export class CompetitionService {
@@ -17,8 +17,10 @@ export class CompetitionService {
     constructor(
         @InjectRepository(UserCompetition)
         private readonly userCompetitionRepository: Repository<UserCompetition>,
-        @InjectRepository(StandardUserEntity)
-        private readonly standardUserRepository: Repository<StandardUserEntity>,
+        @InjectRepository(StandardUser)
+        private readonly standardUserRepository: Repository<StandardUser>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
         @Inject(forwardRef(() => UsersService))
         private readonly usersService: UsersService,
         private readonly dictionaryService: GeneralService,
@@ -28,34 +30,44 @@ export class CompetitionService {
     }
 
     async findAllCompetitions(dto: SearchCompetitionDto) {
-        const query = this.userCompetitionRepository
-            .createQueryBuilder('user_competition')
+        const query = this.userRepository
+            .createQueryBuilder('users')
+            .leftJoinAndSelect('users.user_competition', 'user_competition')
             .leftJoinAndSelect('user_competition.competition', 'competition')
             .leftJoinAndSelect('user_competition.user', 'user')
             .leftJoinAndSelect('competition.level', 'level')
 
-        // user_id
-        dto.user_id ? query.andWhere('user.id = :user', {user: dto.user_id}) : null
-
+        // user_ids
+        dto.user_ids && dto.user_ids.length > 0
+            ? query.andWhere('users.id in (:...user_ids)', {
+                user_ids: dto.user_ids,
+            })
+            : query;
         return await query.getMany();
     }
 
     async findAllStandards(dto: SearchStandardDto) {
 
-        const query = this.standardUserRepository
-            .createQueryBuilder('standard_user')
+        const query = this.userRepository
+            .createQueryBuilder('users')
+            .leftJoinAndSelect('users.standard_user', 'standard_user')
             .leftJoinAndSelect('standard_user.standard', 'standard')
-            .leftJoinAndSelect('standard_user.user', 'user')
-            .leftJoinAndSelect('standard_user.team', 'team')
+            .leftJoin('standard_user.team', 'team')
 
         // user_id
-        dto.user_id ? query.andWhere('user.id = :user_id', {user_id: dto.user_id}) : null
+        // dto.user_id ? query.andWhere('user.id = :user_id', {user_id: dto.user_id}) : null
         // standard_id
         dto.standard_id ? query.andWhere('standard.id = :standard_id', {standard_id: dto.standard_id}) : null
         // semesters
-        dto.semesters.length > 0
+        dto.semesters && dto.semesters.length > 0
             ? query.andWhere('standard_user.semester in (:...semesters)', {
                 semesters: dto.semesters,
+            })
+            : query;
+        // user_ids
+        dto.user_ids && dto.user_ids.length > 0
+            ? query.andWhere('users.id in (:...user_ids)', {
+                user_ids: dto.user_ids,
             })
             : query;
         // team_id
@@ -66,7 +78,9 @@ export class CompetitionService {
 
     async createOrUpdateStandard(dto: CreateStandardDto) {
 
-        const existStandards = await this.findAllStandards({...dto, semesters: [dto.semester]})
+        const sSDto:SearchStandardDto = {...dto, semesters: [dto.semester]}
+
+        const existStandards = await this.findAllStandards(sSDto)
 
         const existStandard = existStandards[0]
 

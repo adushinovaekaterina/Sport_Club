@@ -108,9 +108,9 @@ watch(
 
 async function getUserCompetitions() {
     await competitionsStore.getAllUserCompetitions(
-        {user_id: props.userId}
+        {user_ids:[ props.userId]}
     ).then((res) => {
-        uCompetitions.value = res
+        uCompetitions.value = res[0].user_competition
     })
 }
 

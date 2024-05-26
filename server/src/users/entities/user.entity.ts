@@ -6,12 +6,13 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserFunction } from './user_function.entity';
 import * as argon2 from 'argon2';
 import { Journal } from '../../events/entities/journal.entity';
 import { Requisitions } from '../../teams/entities/requisition.entity';
 import { Event } from '../../events/entities/event.entity';
 import {Dictionary} from "../../general/entities/dictionary.entity";
+import {StandardUser} from "../../competition/entities/standard-user.entity";
+import {UserCompetition} from "../../competition/entities/user-competition.entity";
 
 @Entity('users')
 export class User {
@@ -78,10 +79,8 @@ export class User {
   @Column({ nullable: true, unique: true })
   bitrix_id: number;
 
-  @OneToMany(() => UserFunction, (user_func) => user_func.function, {
-    cascade: true,
-  })
-  user_function: UserFunction[];
+  // @OneToMany(() => UserFunction, (user_func) => user_func.function)
+  // user_function: UserFunction[];
 
   @OneToMany(() => Journal, (journal) => journal.user, { cascade: true })
   journal: Journal[];
@@ -94,6 +93,14 @@ export class User {
   @ApiProperty()
   @OneToMany(() => Event, (event) => event.user, { cascade: true })
   events: Event[];
+
+  @ApiProperty()
+  @OneToMany(() => StandardUser, (sU) => sU.user, { cascade: true })
+  standard_user: StandardUser[];
+
+  @ApiProperty()
+  @OneToMany(() => UserCompetition, (u) => u.user, { cascade: true })
+  user_competition: UserCompetition[];
 
   @ApiProperty()
   @ManyToOne(() => Dictionary, (d) => d.id)

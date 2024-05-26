@@ -1,4 +1,6 @@
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
+import type {IStandardUser} from "@/store/models/competition/standard-user.model";
+import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 
 export interface IUser {
   id?: number;
@@ -14,4 +16,6 @@ export interface IUser {
   course?: number;
   health_group?: IDictionary;
   state?: IDictionary;
+  standard_user?:IStandardUser
+  user_competition?:IUserCompetition
 }

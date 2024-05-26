@@ -1,9 +1,7 @@
-import { IsNumber, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import {IsArray, IsOptional} from 'class-validator';
 
 export class SearchCompetitionDto {
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  user_id: number;
+  @IsArray()
+  user_ids?: number[];
 }

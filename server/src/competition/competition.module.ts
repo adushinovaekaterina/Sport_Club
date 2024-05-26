@@ -6,25 +6,19 @@ import {Team} from "../teams/entities/team.entity";
 import {User} from "../users/entities/user.entity";
 import {UserFunction} from "../users/entities/user_function.entity";
 import {TeamFunction} from "../users/entities/function.entity";
-import {Requisitions} from "../teams/entities/requisition.entity";
 import {Dictionary} from "../general/entities/dictionary.entity";
-import {Form} from "../forms/entities/form.entity";
-import {RequisitionFields} from "../forms/entities/requisition_fields.entity";
-import {FormField} from "../forms/entities/form_field.entity";
-import {TeamPhoto} from "../teams/entities/team-photo.entity";
 import {Competition} from "./entities/competition.entity";
 import {UserCompetition} from "./entities/user-competition.entity";
-import {StandardUserEntity} from "./entities/standard-user.entity";
 import {UsersService} from "../users/users.service";
-import {UploadsService} from "../uploads/uploads.service";
 import {GeneralService} from "../general/general.service";
+import {StandardUser} from "./entities/standard-user.entity";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([
             Competition,
             UserCompetition,
-            StandardUserEntity,
+            StandardUser,
             User,
             Dictionary,
             UserFunction,
