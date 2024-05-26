@@ -18,6 +18,7 @@
                         <div class="text-center"> {{ date.toLocaleDateString() }}</div>
                     </th>
                     <th>Нормативы (3 балла для зачета) начало/конец семестра</th>
+                    <th> Посещаемость (94% для зачета)</th>
                 </tr>
 
                 </thead>
@@ -48,6 +49,9 @@
                     <td> {{ standardsAvgPoints[participant.user.id]?.avgStart }}
                         / {{ standardsAvgPoints[participant.user.id]?.avgEnd }}
                     </td>
+                    <td>
+
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -71,13 +75,12 @@ import EHalfPie from "@/components/charts/EHalfPie.vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 import {useCompetitionStore} from "@/store/competition/competition_store";
-import {semesters} from "@/store/constants/other";
 import type {ISemester} from "@/store/models/other";
 import type {IUser} from "@/store/models/user/user.model";
 import type {ISearchStandardDto} from "@/store/models/competition/standard-user.model";
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import {useDictionaryStore} from "@/store/dictionary_store";
-import {convertValueToPoint} from "@/views/teams/progress/standardUser";
+import {convertValueToPoint} from "@/views/teams/progress/functions";
 
 interface Participant {
     [idUser: number]: {
@@ -113,7 +116,7 @@ const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
 const userVisits = ref<Participant>({});
-const uCompetitions = ref<IUserCompetition[]>([]);
+const uCompetitionsCurrent = ref<IUserCompetition[]>([]);
 const sumCompVisitsPercents = ref(0)
 
 const currUserF = ref<IUserFunction>({})
@@ -128,6 +131,20 @@ const dataPie = ref<{
 
 
 const standardsAvgPoints = ref<IUserAvgPoints>([]);
+
+interface IUserAvgPoints {
+    [userId: number]: {
+        avgStart: number,
+        avgEnd: number
+    }
+}
+
+interface IUserVisits {
+    [userId: number]: {
+        percentCompetitions: number,
+        visits: number,
+    }
+}
 
 
 onBeforeMount(async () => {
@@ -146,6 +163,13 @@ watch(() => props.dates.dateRange, async () => {
 watch(() => props.semester, async () => {
     await fetchUserStandards()
 })
+
+async function getUserCompetitions(userIds: number[]) {
+
+    return await competitionsStore.getAllUserCompetitions(
+        {user_ids: userIds}
+    )
+}
 
 
 async function onChangeVisit(userId: number, visited: boolean | undefined, dateVisit: Date) {
@@ -171,6 +195,23 @@ async function fetchUsers() {
 }
 
 async function fetchVisits() {
+    let usrIds = Object.keys(userVisits.value).map(Number);
+    const userCompetitions: IUser[] = await getUserCompetitions(usrIds)
+    const usrVisits: IUserVisits = {}
+    // users
+    userCompetitions.forEach((userComp) => {
+        if (userComp.id) {
+            usrVisits[userComp.id] = {percentCompetitions: 0, visits: 0}
+            // competition
+            userComp.user_competition?.forEach((competition) => {
+                const dS = new Date(competition.competition?.date_start ?? 0)
+                const dE = new Date(competition.competition?.date_end ?? 0)
+                const persVisits = datesCompetInPercents(dS, dE)
+            })
+        }
+
+    })
+
     const currDateStart = props.dates.dateStart
     const currentYear = currDateStart.getFullYear()
     const startOfYear = new Date(currentYear, 0, 1)
@@ -181,6 +222,7 @@ async function fetchVisits() {
     await userVisitsFormat(data[0])
     await setDataPie()
 }
+
 
 async function setDataPie() {
     dataPie.value = []
@@ -260,23 +302,16 @@ async function getUserCompetitionsCurrentUser() {
     await competitionsStore.getAllUserCompetitions(
         {user_ids: [permissions_store.user_id]}
     ).then((res: IUser[]) => {
-        uCompetitions.value = res[0].user_competition ?? []
-        uCompetitions.value.forEach((el) => {
+        uCompetitionsCurrent.value = res[0].user_competition ?? []
+        uCompetitionsCurrent.value.forEach((el) => {
             if (el.competition?.date_start && el.competition?.date_end) {
                 const dS = new Date(el.competition.date_start)
                 const dE = new Date(el.competition.date_end)
-                const per = percentVisits(dS, dE)
+                const per = datesCompetInPercents(dS, dE)
                 sumCompVisitsPercents.value += per
             }
         })
     })
-}
-
-interface IUserAvgPoints {
-    [userId: number]: {
-        avgStart: number,
-        avgEnd: number
-    }
 }
 
 async function fetchUserStandards() {
@@ -311,7 +346,7 @@ async function fetchUserStandards() {
                 user?.standard_user?.forEach((userStandard) => {
 
                     if (standard.id == userStandard.standard?.id && userStandard?.semester && userStandard.value) {
-                       // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
+                        // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
                         // start
                         if (userStandard?.semester < props.semester?.semester) {
                             sumPointsStart += convertValueToPoint(standard.name, userStandard.value)
@@ -331,7 +366,7 @@ async function fetchUserStandards() {
     standardsAvgPoints.value = dataStandard
 }
 
-function percentVisits(dateStart: Date, dateEnd: Date) {
+function datesCompetInPercents(dateStart: Date, dateEnd: Date) {
     let t = dateEnd.getTime() - dateStart.getTime()
     let days = t / (1000 * 60 * 60 * 24)
     // in percents +1 (include start date)

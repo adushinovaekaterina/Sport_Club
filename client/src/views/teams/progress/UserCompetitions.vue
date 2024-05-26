@@ -79,6 +79,7 @@ import {usePermissionsStore} from "@/store/permissions_store";
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 import {useCompetitionStore} from "@/store/competition/competition_store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import {percentVisits} from "./functions";
 
 
 const competitionsStore = useCompetitionStore();
@@ -114,12 +115,6 @@ async function getUserCompetitions() {
     })
 }
 
-function percentVisits(dateStart: Date, dateEnd: Date) {
-    let t = dateEnd.getTime() - dateStart.getTime()
-    let days = t / (1000 * 60 * 60 * 24)
-    // in percents +1 (include start date)
-    return (days + 1) * 3
-}
 </script>
 
 <style lang="scss" scoped>

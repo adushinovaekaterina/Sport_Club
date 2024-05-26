@@ -121,3 +121,10 @@ export function convertValueToPoint(name: string, value: number) {
     return score
 
 }
+
+export function percentVisits(dateStart: Date, dateEnd: Date) {
+    let t = dateEnd.getTime() - dateStart.getTime()
+    let days = t / (1000 * 60 * 60 * 24)
+    // in percents +1 (include start date)
+    return (days + 1) * 3
+}

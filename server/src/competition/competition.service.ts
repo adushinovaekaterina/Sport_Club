@@ -10,7 +10,6 @@ import {GeneralService} from "../general/general.service";
 import {Team} from "../teams/entities/team.entity";
 import {StandardUser} from "./entities/standard-user.entity";
 import {User} from "../users/entities/user.entity";
-import postgres from "postgres";
 
 
 @Injectable()

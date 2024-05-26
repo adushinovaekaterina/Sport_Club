@@ -41,8 +41,7 @@ import {useUserStore} from "@/store/user_store";
 import type {IUser} from "@/store/models/user/user.model";
 import {FilterUser} from "@/store/models/user.model";
 import _ from "lodash";
-import ELine from "@/components/charts/ELine.vue";
-import EPie from "@/components/charts/EPie.vue";
+
 
 const router = useRouter();
 const route = useRoute();

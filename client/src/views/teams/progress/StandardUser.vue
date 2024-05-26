@@ -140,7 +140,7 @@ import {useDictionaryStore} from "@/store/dictionary_store";
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import ELine from "@/components/charts/ELine.vue";
 import type {ISeriesLine} from "@/store/models/other";
-import {convertValueToPoint} from "@/views/teams/progress/standardUser";
+import {convertValueToPoint} from "@/views/teams/progress/functions";
 import type {IUser} from "@/store/models/user/user.model";
 import {semestersHalfed} from "@/store/constants/other";
 
