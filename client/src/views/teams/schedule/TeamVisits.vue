@@ -118,7 +118,6 @@ const sumCompVisitsPercents = ref(0)
 
 const currUserF = ref<IUserFunction>({})
 
-const semester = ref(semesters[0])
 
 const standardsNames: Ref<IDictionary[]> = ref([]);
 
@@ -142,6 +141,10 @@ onBeforeMount(async () => {
 
 watch(() => props.dates.dateRange, async () => {
     await fetchVisits()
+})
+
+watch(() => props.semester, async () => {
+    await fetchUserStandards()
 })
 
 
@@ -279,9 +282,10 @@ interface IUserAvgPoints {
 async function fetchUserStandards() {
     let usrIds = Object.keys(userVisits.value).map(Number);
 
+    // console.log(props.semester.semester, semester.value.semester)
     const uS: ISearchStandardDto = {
         user_ids: usrIds,
-        semestersRange: [semester.value.semester - 1, semester.value.semester],
+        semestersRange: [props.semester.semester - 1, props.semester.semester],
         team_id: props.teamId,
     }
 
@@ -309,7 +313,7 @@ async function fetchUserStandards() {
                     if (standard.id == userStandard.standard?.id && userStandard?.semester && userStandard.value) {
                        // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
                         // start
-                        if (userStandard?.semester < semester.value?.semester) {
+                        if (userStandard?.semester < props.semester?.semester) {
                             sumPointsStart += convertValueToPoint(standard.name, userStandard.value)
                             // end
                         } else {

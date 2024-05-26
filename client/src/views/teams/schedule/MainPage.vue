@@ -23,6 +23,7 @@
                     </select>
                 </div>
             </div>
+            <!--  calendar -->
             <div class="col-auto">
                 <div class="mb-3">
                     <label class="form-label">Дата </label>

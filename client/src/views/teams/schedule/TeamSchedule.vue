@@ -39,16 +39,7 @@
                             :key="index2"
                             class="p-0 position-relative week-cell"
                     >
-                        <!--  cell settings -->
-                        <!--                        <div-->
-                        <!--                                v-if="can('can edit own teams')"-->
-                        <!--                                class="cell-settings position-absolute top-0 start-0 p-2"-->
-                        <!--                        >-->
-                        <!--                <div class="btn-search mb-3">-->
-                        <!--                  <FontAwesomeIcon icon="search" />-->
-                        <!--                </div>-->
-                        <!--                <button class="btn-order">Забронировать</button>-->
-                        <!--                        </div>-->
+
                         <!--  data-->
                         <div v-if="timeDayWeek[week] && timeDayWeek[week][hour]">
                             <div
