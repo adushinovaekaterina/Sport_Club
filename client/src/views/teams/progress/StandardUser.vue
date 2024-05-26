@@ -7,7 +7,7 @@
                 <select class="form-select"
                         v-model="semester.selected"
                         @change="fetchUserStandards()">
-                    <option v-for="(val, index) in semesters" v-bind:key="index" :value="val">
+                    <option v-for="(val, index) in semestersHalfed" v-bind:key="index" :value="val">
                         {{ val.name }}
                     </option>
                 </select>
@@ -142,6 +142,7 @@ import ELine from "@/components/charts/ELine.vue";
 import type {ISeriesLine} from "@/store/models/other";
 import {convertValueToPoint} from "@/views/teams/progress/standardUser";
 import type {IUser} from "@/store/models/user/user.model";
+import {semestersHalfed} from "@/store/constants/other";
 
 const competitionsStore = useCompetitionStore();
 const dictStore = useDictionaryStore();
@@ -155,41 +156,10 @@ const props = defineProps<{
     userId: number,
 }>();
 
-
-interface ISemester {
-    id: number
-    name: string
-    isStart: boolean
-    semester: number
-}
-
-const semesters:ISemester[] = [
-    {id: 0, name: "1 семестр (начало)", isStart: true, semester: 0.5},
-    {id: 1, name: "1 семестр (конец) ", isStart: false, semester: 1},
-    {id: 2, name: "2 семестр (начало)", isStart: true, semester: 1.5},
-    {id: 3, name: "2 семестр (конец)", isStart: false, semester: 2},
-    {id: 4, name: "3 семестр (начало)", isStart: true, semester: 2.5},
-    {id: 5, name: "3 семестр (конец)", isStart: false, semester: 3},
-    {id: 6, name: "4 семестр (начало)", isStart: true, semester: 3.5},
-    {id: 7, name: "4 семестр (конец)", isStart: false, semester: 4},
-    {id: 8, name: "5 семестр (начало)", isStart: true, semester: 4.5},
-    {id: 9, name: "5 семестр (конец)", isStart: false, semester: 5},
-
-    {id: 10, name: "6 семестр (начало)", isStart: true, semester: 5.5},
-    {id: 11, name: "6 семестр (конец)", isStart: false, semester: 6},
-    {id: 12, name: "7 семестр (начало)", isStart: true, semester: 6.5},
-    {id: 13, name: "7 семестр (конец)", isStart: false, semester: 7},
-    {id: 14, name: "8 семестр (начало)", isStart: true, semester: 7.5},
-    {id: 15, name: "8 семестр (конец)", isStart: false, semester: 8},
-    {id: 16, name: "9 семестр (начало)", isStart: true, semester: 8.5},
-    {id: 17, name: "9 семестр (конец)", isStart: false, semester: 9},
-    {id: 18, name: "10 семестр (начало)", isStart: true, semester: 9.5},
-    {id: 19, name: "10 семестр (конец)", isStart: false, semester: 10}];
-
 const team: Ref<ITeam> = ref({});
 const semester = ref({
-    selected: semesters[0],
-    start: semesters[0], end: semesters[1]
+    selected: semestersHalfed[0],
+    start: semestersHalfed[0], end: semestersHalfed[1]
 });
 const updateUS: Ref<ICreateStandardDto> = ref({});
 const standardsNames: Ref<IDictionary[]> = ref([]);
@@ -252,9 +222,9 @@ watch(
     async (value) => {
         if (value.isStart) {
             semester.value.start = value
-            semester.value.end = semesters[value.id + 1]
+            semester.value.end = semestersHalfed[value.id + 1]
         } else {
-            semester.value.start = semesters[value.id - 1]
+            semester.value.start = semestersHalfed[value.id - 1]
             semester.value.end = value
         }
     },
@@ -323,8 +293,8 @@ async function fetchUserStandards() {
         team_id: props.teamId,
     }
 
-    const data:IUser =  await competitionsStore.getUserStandards(uS)
-    const userStandards: IStandardUser[] = data[0].standard_user
+    const data:IUser[] =  await competitionsStore.getUserStandards(uS)
+    const userStandards: IStandardUser[] =  data[0]?.standard_user ?? []
     const standards: IDictionary[] = standardsNames.value
     const standardsCombined: {
         startSem: { standard: IDictionary, userStandard: IStandardUser }[],

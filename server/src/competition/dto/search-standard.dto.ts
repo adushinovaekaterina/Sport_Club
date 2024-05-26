@@ -20,6 +20,11 @@ export class SearchStandardDto {
   @IsArray()
   semesters: number[];
 
+  // 2 values
+  @IsOptional()
+  @IsArray()
+  semestersRange?: number[];
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()

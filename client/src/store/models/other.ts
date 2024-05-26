@@ -16,3 +16,16 @@ export interface ISeriesLine {
     data: number[],
     type: 'line'
 }
+
+export interface ISemesterHalfed {
+    id: number
+    name: string
+    isStart: boolean
+    semester: number
+}
+
+export interface ISemester{
+    id: number
+    name: string
+    semester: number
+}

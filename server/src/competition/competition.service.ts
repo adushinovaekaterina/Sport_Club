@@ -10,6 +10,8 @@ import {GeneralService} from "../general/general.service";
 import {Team} from "../teams/entities/team.entity";
 import {StandardUser} from "./entities/standard-user.entity";
 import {User} from "../users/entities/user.entity";
+import postgres from "postgres";
+
 
 @Injectable()
 export class CompetitionService {
@@ -43,7 +45,30 @@ export class CompetitionService {
                 user_ids: dto.user_ids,
             })
             : query;
+        // date_start
+        dto.date_start ? query.andWhere('competition.date_start >= :date_start', {
+            date_start: dto.date_start,
+        }) : query;
+        // date_end
+        dto.date_end ? query.andWhere('competition.date_end <= :date_end', {
+            date_end: dto.date_end,
+        }) : query;
         return await query.getMany();
+    }
+
+    async findOneUserStandard(dto: CreateStandardDto) {
+        // console.log(dto.standard_id, dto.user_id, dto.team_id)
+        return await this.standardUserRepository
+            .createQueryBuilder('standard_user')
+            .leftJoinAndSelect('standard_user.standard', 'standard')
+            .leftJoinAndSelect('standard_user.user', 'user')
+            .leftJoin('standard_user.team', 'team')
+            .where("standard.id = :standard_id", {standard_id: dto.standard_id})
+            .andWhere("user.id = :user_id", {user_id: dto.user_id})
+            .andWhere("team.id = :team_id", {team_id: dto.team_id})
+            .andWhere("standard_user.semester = :semester_id", {semester_id: dto.semester})
+            .getOne()
+
     }
 
     async findAllStandards(dto: SearchStandardDto) {
@@ -54,14 +79,19 @@ export class CompetitionService {
             .leftJoinAndSelect('standard_user.standard', 'standard')
             .leftJoin('standard_user.team', 'team')
 
-        // user_id
-        // dto.user_id ? query.andWhere('user.id = :user_id', {user_id: dto.user_id}) : null
         // standard_id
         dto.standard_id ? query.andWhere('standard.id = :standard_id', {standard_id: dto.standard_id}) : null
         // semesters
         dto.semesters && dto.semesters.length > 0
             ? query.andWhere('standard_user.semester in (:...semesters)', {
                 semesters: dto.semesters,
+            })
+            : query;
+        // semestersRange
+        dto.semestersRange && dto.semestersRange.length > 1
+            ? query.andWhere('standard_user.semester <= :semestersRangeEnd and standard_user.semester >= :semestersRangeStart', {
+                semestersRangeStart: dto.semestersRange[0],
+                semestersRangeEnd: dto.semestersRange[1],
             })
             : query;
         // user_ids
@@ -78,14 +108,13 @@ export class CompetitionService {
 
     async createOrUpdateStandard(dto: CreateStandardDto) {
 
-        const sSDto:SearchStandardDto = {...dto, semesters: [dto.semester]}
 
-        const existStandards = await this.findAllStandards(sSDto)
-
-        const existStandard = existStandards[0]
+        const existStandards = await this.findOneUserStandard(dto)
+        const existStandard = existStandards
 
         let res = {message: ""}
         if (existStandard) {
+            // console.log(existStandard, dto.value, existStandard.id)
             //  update
             await this.standardUserRepository.update(existStandard.id, {
                 value: dto.value

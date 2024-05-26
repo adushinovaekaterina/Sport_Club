@@ -1,7 +1,8 @@
 <template>
+    standardsAvgPoints {{ standardsAvgPoints }}
     <h6 class="fw-bold my-4">ПОСЕЩАЕМОСТЬ</h6>
     <p> Всего занятий: {{ maxVisits }}</p>
-    <div class="row" >
+    <div class="row">
         <div class="chart-container">
             <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         </div>
@@ -16,6 +17,7 @@
                         <div class="text-center"> {{ formatDayOfWeek(date) }}</div>
                         <div class="text-center"> {{ date.toLocaleDateString() }}</div>
                     </th>
+                    <th>Нормативы (3 балла для зачета) начало/конец семестра</th>
                 </tr>
 
                 </thead>
@@ -43,6 +45,9 @@
                         </label>
                     </td>
 
+                    <td> {{ standardsAvgPoints[participant.user.id]?.avgStart }}
+                        / {{ standardsAvgPoints[participant.user.id]?.avgEnd }}
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -66,14 +71,26 @@ import EHalfPie from "@/components/charts/EHalfPie.vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 import {useCompetitionStore} from "@/store/competition/competition_store";
+import {semesters} from "@/store/constants/other";
+import type {ISemester} from "@/store/models/other";
+import type {IUser} from "@/store/models/user/user.model";
+import type {ISearchStandardDto} from "@/store/models/competition/standard-user.model";
+import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
+import {useDictionaryStore} from "@/store/dictionary_store";
+import {convertValueToPoint} from "@/views/teams/progress/standardUser";
 
 interface Participant {
-    [idUser: number]: { user: IUserFunction, days: { [day: string]: string | boolean }, counter: number }
+    [idUser: number]: {
+        user: IUserFunction,
+        days: { [day: string]: string | boolean },
+        counter: number
+    }
 }
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
 const competitionsStore = useCompetitionStore();
+const dictStore = useDictionaryStore();
 
 const can = permissions_store.can;
 
@@ -88,26 +105,39 @@ const props = defineProps<{
         weeks: string[];
         formattedDate: string;
     };
+    semester: ISemester,
+
 }>();
 
 const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
-const userVisits: Ref = ref<Participant>({});
+const userVisits = ref<Participant>({});
 const uCompetitions = ref<IUserCompetition[]>([]);
 const sumCompVisitsPercents = ref(0)
 
 const currUserF = ref<IUserFunction>({})
+
+const semester = ref(semesters[0])
+
+const standardsNames: Ref<IDictionary[]> = ref([]);
 
 const dataPie = ref<{
     value: number,
     name: string
 } []>([])
 
+
+const standardsAvgPoints = ref<IUserAvgPoints>([]);
+
+
 onBeforeMount(async () => {
-    await getUserCompetitions()
+    await getUserCompetitionsCurrentUser()
     await fetchUsers();
-    await fetchVisits()
+    await fetchVisits();
+
+    await fetchNamesStandards()
+    await fetchUserStandards();
 });
 
 watch(() => props.dates.dateRange, async () => {
@@ -153,10 +183,10 @@ async function setDataPie() {
     dataPie.value = []
     // userVisits
     let usrV = userVisits.value[permissions_store.user_id]
-    let freeVisits = 0
+    let freeVisits: number
     let maxVisits = props.maxVisits
 
-    let minimumVisits = 0
+    let minimumVisits: number
     // Посещения
     // сколько 1 визит в процентах
     let onePerVisit = 100 / props.maxVisits
@@ -164,28 +194,29 @@ async function setDataPie() {
     let competitionPercents = sumCompVisitsPercents.value > 20 ? 20 : sumCompVisitsPercents.value
     // перевести соревнования из процентов в посещения
     let competitionInVisits = Math.round(competitionPercents / onePerVisit)
-    console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
-    // сложить посещения и участия в соревнованиях
-    let visitedWithCompetition = Math.round(usrV.counter + competitionInVisits)
-    dataPie.value.push({
-        value: (usrV.counter < maxVisits ? usrV.counter : maxVisits),
-        name: 'Занятий посещено'
-    })
+    // console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
+    if (usrV && usrV.counter) {
+        // сложить посещения и участия в соревнованиях
+        let visitedWithCompetition = Math.round(usrV.counter + competitionInVisits)
+        dataPie.value.push({
+            value: (usrV.counter < maxVisits ? usrV.counter : maxVisits),
+            name: 'Занятий посещено'
+        })
 
-    dataPie.value.push({
-        value: (competitionInVisits < maxVisits ? competitionInVisits : maxVisits),
-        name: 'Закрытая посещаемость за счет участия в соревнованиях'
-    })
+        dataPie.value.push({
+            value: (competitionInVisits < maxVisits ? competitionInVisits : maxVisits),
+            name: 'Закрытая посещаемость за счет участия в соревнованиях'
+        })
 
-
-    // минимум занятий, которое надо посетить для получения 3 баллов - visitedWithCompetition
-    minimumVisits = Math.round(((maxVisits / 100) * 94))
-    // осталось посетить
-    const needVisit = minimumVisits - visitedWithCompetition
-    dataPie.value.push({value: needVisit, name: 'Занятий осталось посетить для получения зачета'})
-    // можно не ходить
-    freeVisits = maxVisits - minimumVisits
-    dataPie.value.push({value: freeVisits, name: 'Оставшиеся занятия'})
+        // минимум занятий, которое надо посетить для получения 3 баллов - visitedWithCompetition
+        minimumVisits = Math.round(((maxVisits / 100) * 94))
+        // осталось посетить
+        const needVisit = minimumVisits - visitedWithCompetition
+        dataPie.value.push({value: needVisit, name: 'Занятий осталось посетить для получения зачета'})
+        // можно не ходить
+        freeVisits = maxVisits - minimumVisits
+        dataPie.value.push({value: freeVisits, name: 'Оставшиеся занятия'})
+    }
 }
 
 
@@ -200,8 +231,8 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
             currUserF.value = userFunction
         }
 
-        if (tUser?.id && userFunction.function?.title != TeamRoles.Leader)
-            userVisits.value[tUser.id] = {user: userFunction.user, days: {}, counter: 0}
+        if (tUser?.id && userFunction.function?.title != TeamRoles.Leader && userFunction?.user)
+            userVisits.value[tUser.id] = {user: userFunction?.user, days: {}, counter: 0}
 
         usersVisits.forEach((visit) => {
             const usrVisit = visit.user
@@ -222,11 +253,11 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
 }
 
 
-async function getUserCompetitions() {
+async function getUserCompetitionsCurrentUser() {
     await competitionsStore.getAllUserCompetitions(
-        {user_id: permissions_store.user_id}
-    ).then((res) => {
-        uCompetitions.value = res
+        {user_ids: [permissions_store.user_id]}
+    ).then((res: IUser[]) => {
+        uCompetitions.value = res[0].user_competition ?? []
         uCompetitions.value.forEach((el) => {
             if (el.competition?.date_start && el.competition?.date_end) {
                 const dS = new Date(el.competition.date_start)
@@ -238,11 +269,73 @@ async function getUserCompetitions() {
     })
 }
 
+interface IUserAvgPoints {
+    [userId: number]: {
+        avgStart: number,
+        avgEnd: number
+    }
+}
+
+async function fetchUserStandards() {
+    let usrIds = Object.keys(userVisits.value).map(Number);
+
+    const uS: ISearchStandardDto = {
+        user_ids: usrIds,
+        semestersRange: [semester.value.semester - 1, semester.value.semester],
+        team_id: props.teamId,
+    }
+
+    const usersStandards: IUser[] = await competitionsStore.getUserStandards(uS)
+
+    const standards: IDictionary[] = standardsNames.value
+
+    const dataStandard: IUserAvgPoints = {}
+
+    // go throught each user
+    usersStandards.forEach((user) => {
+        let sumPointsStart = 0
+        let sumPointsEnd = 0
+        const userId = user?.id
+
+        if (userId) {
+            dataStandard[userId] = {avgStart: 0, avgEnd: 0}
+
+            // in each standard
+            standards.forEach((standard) => {
+
+                // go throught each user value standard
+                user?.standard_user?.forEach((userStandard) => {
+
+                    if (standard.id == userStandard.standard?.id && userStandard?.semester && userStandard.value) {
+                       // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
+                        // start
+                        if (userStandard?.semester < semester.value?.semester) {
+                            sumPointsStart += convertValueToPoint(standard.name, userStandard.value)
+                            // end
+                        } else {
+                            sumPointsEnd += convertValueToPoint(standard.name, userStandard.value)
+                        }
+                    }
+                })
+            })
+            // console.log("end", sumPointsStart, sumPointsEnd)
+            dataStandard[userId].avgStart = sumPointsStart / standards.length
+            dataStandard[userId].avgEnd = sumPointsEnd / standards.length
+        }
+    })
+
+    standardsAvgPoints.value = dataStandard
+}
+
 function percentVisits(dateStart: Date, dateEnd: Date) {
     let t = dateEnd.getTime() - dateStart.getTime()
     let days = t / (1000 * 60 * 60 * 24)
     // in percents +1 (include start date)
     return (days + 1) * 3
+}
+
+async function fetchNamesStandards() {
+    standardsNames.value = await dictStore.getFromDictionaryByClassID(8)
 }
 
 </script>

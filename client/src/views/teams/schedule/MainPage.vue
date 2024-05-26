@@ -1,27 +1,42 @@
 <template>
     <!--    calendar-->
     <div class="my-4">
-
-        <div class="row">
-            <div class="col-auto">
-                <DropdownBtn>
-                    <template #img>
-                        <FontAwesomeIcon icon="calendar"/>
-                    </template>
-                    <template #title>{{ selectedWeekStart.toLocaleDateString() }}</template>
-                    <template #body>
-                        <DatePicker v-model="selectedWeekStart"/>
-                    </template>
-                </DropdownBtn>
+        <!--   Задать число посещений за семестр -->
+        <div class="row" v-if="can('can create teams')">
+            <div class="col  align-items-end d-flex">
+                <div class="mb-3">
+                    <label class="form-label">Задать число посещений за семестр:</label>
+                    <input v-model="maxVisits" type="number"/>
+                    <button type="button" class=" btn-custom-accept mx-2" @click="setMaxVisits()">Сохранить</button>
+                </div>
             </div>
-            <template v-if="can('can create teams')">
-                <div class="col justify-content-end align-items-center d-flex">
-                    <b class="mx-3">Задать число посещений за семестр: </b><input v-model="maxVisits" type="number"/>
+
+            <!--  Семестр -->
+            <div class="col-auto">
+                <div class="mb-3">
+                    <label class="form-label">Семестр</label>
+                    <select class="form-select"
+                            v-model="semester">
+                        <option v-for="(val, index) in semesters" v-bind:key="index" :value="val">
+                            {{ val.name }}
+                        </option>
+                    </select>
                 </div>
-                <div class="col-auto">
-                    <button type="button" class=" btn-custom-accept" @click="setMaxVisits()">Сохранить</button>
+            </div>
+            <div class="col-auto">
+                <div class="mb-3">
+                    <label class="form-label">Дата </label>
+                    <DropdownBtn>
+                        <template #img>
+                            <FontAwesomeIcon icon="calendar"/>
+                        </template>
+                        <template #title>{{ selectedWeekStart.toLocaleDateString() }}</template>
+                        <template #body>
+                            <DatePicker v-model="selectedWeekStart"/>
+                        </template>
+                    </DropdownBtn>
                 </div>
-            </template>
+            </div>
         </div>
 
     </div>
@@ -52,8 +67,10 @@
         <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
     </div>
     <!-- visits-->
-    <div class="row" v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
-        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"/>
+    <div class="row"
+         v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
+        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"
+                    :semester="semester"/>
     </div>
     <!-- standard user -->
     <div class="row" v-if="currUserFunctions == TeamRoles.Member">
@@ -76,6 +93,7 @@ import UserCompetitions from "@/views/teams/progress/UserCompetitions.vue";
 import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import StandardUser from "@/views/teams/progress/StandardUser.vue";
 import {TeamRoles} from "@/store/enums/team_roles";
+import {semesters} from "@/store/constants/other";
 
 const props = defineProps<{
     teamId: number;
@@ -91,6 +109,9 @@ const can = permissions_store.can;
 const selectedWeekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника
 const maxVisits = ref(0); // Используем функцию для получения понедельника
 const team = ref<ITeam>({}); // Используем функцию для получения понедельника
+
+const semester = ref(semesters[0]);
+
 
 onBeforeMount(() => {
     getTeam()
@@ -137,6 +158,7 @@ function nextWeek() {
         selectedWeekStart.value.getTime() + 7 * 24 * 60 * 60 * 1000,
     );
 }
+
 </script>
 
 <style lang="scss" scoped>

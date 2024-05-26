@@ -16,6 +16,6 @@ export interface IUser {
   course?: number;
   health_group?: IDictionary;
   state?: IDictionary;
-  standard_user?:IStandardUser
-  user_competition?:IUserCompetition
+  standard_user?:IStandardUser[]
+  user_competition?:IUserCompetition[]
 }

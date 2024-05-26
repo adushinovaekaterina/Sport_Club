@@ -15,6 +15,9 @@ export interface ISearchStandardDto {
     standard_id?:number
     semesters?: number[];
     team_id?: number;
+
+    // 2 values
+    semestersRange?:number[]
 }
 
 export interface ICreateStandardDto {
