@@ -1,4 +1,4 @@
-import {IsArray, IsNumber, IsOptional} from "class-validator";
+import {IsArray, IsOptional} from "class-validator";
 
 export class SearchSemesterDto {
   @IsOptional()

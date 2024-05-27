@@ -10,7 +10,7 @@
             </div>
 
             <!--     time   -->
-            <div class="mb-3">
+            <div v-if="mode == Mode.EDIT" class="mb-3">
                 <label class="form-label">Семестр</label>
                 <select class="form-select"
                         v-model="selectedSemester">
@@ -19,6 +19,13 @@
                     </option>
                 </select>
             </div>
+
+            <!--   create new -->
+            <div  v-if="mode == Mode.CREATE" class=" my-2">
+                <input type="number" v-model="selectedSemester.value" />
+
+            </div>
+            <!--  semester  set dates -->
             <div class="row g-2 my-2">
                 <div class="col-auto">
                     <div class="form-label">Дата начала</div>
@@ -30,10 +37,29 @@
                 </div>
 
                 <div class="row g-2 justify-content-end mt-4">
+                    <!--   Создать новый-->
+                    <div class="col-auto" v-if="mode == Mode.EDIT">
+                        <button
+                                class="btn-custom-primary"
+                                @click="mode = Mode.CREATE"
+                        >
+                            Создать новый
+                        </button>
+                    </div>
+                    <!--    Редактировать -->
+
+                    <div class="col-auto" v-if="mode == Mode.CREATE">
+                        <button
+                                class="btn-custom-primary"
+                                @click="mode = Mode.EDIT"
+                        >
+                            Редактировать
+                        </button>
+                    </div>
                     <div class="col-auto">
                         <button
                                 class="btn-custom-accept"
-                                @click="updateSemester()"
+                                @click="updateCreateSemester()"
                         >
                             Сохранить
                         </button>
@@ -49,10 +75,11 @@
 
 <script setup lang="ts">
 import ModalFull from "@/components/modals/ModalFull.vue";
-import {computed, onBeforeMount, ref, watch} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
 import {useSemesterStore} from "@/store/schedule/semesters_store";
 import type {ICreatSemester} from "@/store/models/schedule/semester.model";
 import {ISemester} from "@/store/models/schedule/semester.model";
+import {Mode} from "@/store/enums/enum-mode";
 
 const props = defineProps<{
     modalId: string;
@@ -66,6 +93,8 @@ const dateStart = ref(new Date())
 const dateEnd = ref(new Date());
 
 const foundSemesters = ref<ISemester[]>();
+
+const mode = ref(Mode.EDIT);
 
 onBeforeMount(() => {
     getSemesters()
@@ -82,7 +111,7 @@ async function getSemesters() {
     selectedSemester.value = (foundSemesters.value)[0]
 }
 
-async function updateSemester() {
+async function updateCreateSemester() {
     const editingSemester: ICreatSemester = {
         ...selectedSemester.value
     };
