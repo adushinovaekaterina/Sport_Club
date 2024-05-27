@@ -40,8 +40,8 @@ import {FindRequisitionDto} from '../forms/dto/find-requisition.dto';
 import {CreateFormDto} from '../forms/dto/create-form.dto';
 import {TeamPhoto} from './entities/team-photo.entity';
 import {UploadsService} from '../uploads/uploads.service';
-import {ScheduleService} from '../schedule/schedule.service';
 import {TeamSchedule} from '../schedule/entities/schedule.entity';
+import {CreatSemesterDto} from "../schedule/dto/create-semester.dto";
 
 @Injectable()
 export class TeamsService {
@@ -867,4 +867,6 @@ export class TeamsService {
             );
         }
     }
+
+
 }

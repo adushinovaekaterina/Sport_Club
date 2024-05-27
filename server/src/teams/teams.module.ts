@@ -16,6 +16,7 @@ import { RequisitionFields } from 'src/forms/entities/requisition_fields.entity'
 import { FormField } from 'src/forms/entities/form_field.entity';
 import { FormsService } from 'src/forms/forms.service';
 import { TeamPhoto } from './entities/team-photo.entity';
+import {Semester} from "../schedule/entities/semester.entity";
 
 @Module({
   imports: [

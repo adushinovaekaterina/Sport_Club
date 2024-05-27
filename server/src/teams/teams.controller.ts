@@ -40,6 +40,7 @@ import {UserFunctionDto} from '../users/dto/user-functions.dto';
 import {AssignDirectionTeamLeaderDto} from '../users/dto/direction-leader.dto';
 import {TeamRoles} from '../shared/teamRoles';
 import {TeamPermissions} from '../shared/teamPermissions';
+import {CreatSemesterDto} from "../schedule/dto/create-semester.dto";
 
 
 @ApiTags('teams') //<---- Отдельная секция в Swagger для всех методов контроллера
@@ -539,4 +540,6 @@ export class TeamsController {
     ) {
         return this.teamsService.assignTeamRole(user, directionTeamLeaderDto);
     }
+
+
 }

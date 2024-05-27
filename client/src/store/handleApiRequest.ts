@@ -13,7 +13,8 @@ export class ApiRequest {
     try {
       const response = await apiCall();
       // if there is some message
-      this.message = response.data?.message;
+
+      this.message.value = response.data?.message ;
       return response.data;
     } catch (err) {
 

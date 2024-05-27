@@ -21,6 +21,7 @@ import { Cabinets } from './entities/cabinets.entity';
 import { TeamPhoto } from '../teams/entities/team-photo.entity';
 import { UploadsService } from '../uploads/uploads.service';
 import { CabinetsTime } from './entities/cabinets-time.entity';
+import {Semester} from "./entities/semester.entity";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { CabinetsTime } from './entities/cabinets-time.entity';
       RequisitionFields,
       FormField,
       TeamPhoto,
+      Semester,
 
       TeamSchedule,
       TeamVisits,

@@ -24,8 +24,9 @@ export interface ISemesterHalfed {
     semester: number
 }
 
-export interface ISemester{
+export interface ISemesterTemp {
     id: number
     name: string
     semester: number
+
 }

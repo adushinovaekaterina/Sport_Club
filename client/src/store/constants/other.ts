@@ -1,4 +1,4 @@
-import type {ISemester, ISemesterHalfed} from "@/store/models/other";
+import type {ISemesterTemp, ISemesterHalfed} from "@/store/models/other";
 
 export const standards = [
     {id: 0, name: "Сгибание и разгибание рук в упоре лежа на коленях (раз)"},
@@ -36,7 +36,7 @@ export const semestersHalfed:ISemesterHalfed[] = [
     // {id: 19, name: "10 семестр (конец)", isStart: false, semester: 10}
 ];
 
-export const semesters:ISemester[] = [
+export const semesters:ISemesterTemp[] = [
     {id: 0, name: "1 семестр",  semester: 1},
     {id: 2, name: "2 семестр",  semester: 2},
     {id: 4, name: "3 семестр", semester: 3},

@@ -22,6 +22,9 @@ import {CabinetsTime} from './entities/cabinets-time.entity';
 import {Dictionary} from '../general/entities/dictionary.entity';
 import {UpdateCabinetTimeDto} from './dto/update-cabinet-time.dto';
 import {Team} from "../teams/entities/team.entity";
+import {CreatSemesterDto} from "./dto/create-semester.dto";
+import {Semester} from "./entities/semester.entity";
+import {SearchSemesterDto} from "./dto/search-semester.dto";
 
 @Injectable()
 export class ScheduleService {
@@ -37,6 +40,9 @@ export class ScheduleService {
         @InjectRepository(Dictionary)
         private readonly dictionaryRepository: Repository<Dictionary>,
         private readonly usersService: UsersService,
+
+        @InjectRepository(Semester)
+        private readonly semesterRepository: Repository<Semester>,
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {
@@ -278,5 +284,36 @@ export class ScheduleService {
         }
 
         return {message: message};
+    }
+
+    // --------------------------------------------------------------------------------------------------------------
+    // semester
+    // --------------------------------------------------------------------------------------------------------------
+
+    async createOrUpdateSemester(createSemesterDto: CreatSemesterDto) {
+        const existSemester = await this.semesterRepository.findOneBy({value:createSemesterDto.value});
+        let msg: string
+        if(existSemester){
+            await this.semesterRepository.update(existSemester.id, {...createSemesterDto});
+        }else{
+             await this.semesterRepository.insert({...createSemesterDto});
+        }
+        msg = "Сохранено"
+
+        return {message: msg}
+    }
+
+    async findSemesters(searchSemesterDto: SearchSemesterDto) {
+        const query = this.semesterRepository
+            .createQueryBuilder('semester')
+
+        // values
+        searchSemesterDto.values
+            ? query.where('semester.value IN (:...values)', {
+                values: searchSemesterDto.values,
+            })
+            : null;
+
+        return query.getMany()
     }
 }

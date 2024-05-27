@@ -13,6 +13,7 @@ import { Journal } from '../../events/entities/journal.entity';
 import { Form } from '../../forms/entities/form.entity';
 import { Requisitions } from './requisition.entity';
 import { TeamPhoto } from './team-photo.entity';
+import {Semester} from "../../schedule/entities/semester.entity";
 
 @Entity('teams')
 export class Team {
@@ -85,6 +86,7 @@ export class Team {
   @Column({ nullable: true })
   charter_team: string;
 
+
   @ApiProperty()
   @Column({ nullable: true })
   document: string;
@@ -96,6 +98,10 @@ export class Team {
   @ManyToOne(() => Team, (team) => team.id)
   @JoinColumn([{ name: 'id_parent' }])
   id_parent: Team;
+
+  @ManyToOne(() => Semester, (s) => s.id)
+  @JoinColumn([{ name: 'id_semester' }])
+  semester: Semester;
 
   @OneToMany(() => TeamFunction, (func) => func.team, { cascade: true })
   functions: TeamFunction[];

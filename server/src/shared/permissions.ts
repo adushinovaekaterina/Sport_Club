@@ -2,6 +2,8 @@ export enum Permissions {
   // ADMIN
   CAN_ALL = 'can all',
 
+  CAN_CHANGE_SEMESTER = 'can change semester',
+
   // RESP IRNITU
   CAN_ASSIGN_LEADER_DIRECTIONS = 'can assign leader directions',
   CAN_EDIT_STATUS_REQUISITIONS_ALL = 'can edit status requisitions all',
