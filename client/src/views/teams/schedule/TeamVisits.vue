@@ -1,5 +1,4 @@
 <template>
-    standardsAvgPoints {{ standardsAvgPoints }}
     <h6 class="fw-bold my-4">ПОСЕЩАЕМОСТЬ</h6>
     <p> Всего занятий: {{ maxVisits }}</p>
     <div class="row">
@@ -26,14 +25,11 @@
                 <tr v-for="participant in userVisits" :key="participant.name">
                     <td v-if="!isNational">
                         <router-link :to="{name:'Progress', params:{id:teamId}, query:{user_id: participant.user.id}}">
-                            {{ participant.user.fullname }} <span class="text-danger">({{ participant.counter }} / {{
-                                maxVisits
-                            }})</span>
+                            {{ participant.user.fullname }}
                         </router-link>
                     </td>
                     <td v-else>
-                        {{ participant.user.fullname }} <span
-                            class="text-danger">({{ participant.counter }} / {{ maxVisits }})</span>
+                        {{ participant.user.fullname }}
                     </td>
 
                     <td v-for="(date, index) in dates.dateRange" :key="index">
@@ -49,8 +45,13 @@
                     <td> {{ standardsAvgPoints[participant.user.id]?.avgStart }}
                         / {{ standardsAvgPoints[participant.user.id]?.avgEnd }}
                     </td>
+                    <!--   visits-->
                     <td>
-
+<!--     percents          -->
+                        <div>{{ visits[participant.user.id]?.percents }} % </div>
+                        <div> {{ visits[participant.user.id]?.visits }}
+                            ({{userVisits[participant.user.id].counter}}) / {{props.maxVisits}}
+                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -81,6 +82,8 @@ import type {ISearchStandardDto} from "@/store/models/competition/standard-user.
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import {useDictionaryStore} from "@/store/dictionary_store";
 import {convertValueToPoint} from "@/views/teams/progress/functions";
+import type {ISemester} from "@/store/models/schedule/semester.model";
+import {values} from "lodash";
 
 interface Participant {
     [idUser: number]: {
@@ -108,7 +111,7 @@ const props = defineProps<{
         weeks: string[];
         formattedDate: string;
     };
-    semester: ISemesterTemp,
+    semester: ISemester,
 
 }>();
 
@@ -116,6 +119,7 @@ const team: Ref<ITeam> = ref({});
 const filter: Ref<IRUFunction> = ref({});
 const teamUsersFunctions: Ref<IUserFunction[]> = ref([]);
 const userVisits = ref<Participant>({});
+const visits = ref<IUserVisits>({})
 const uCompetitionsCurrent = ref<IUserCompetition[]>([]);
 const sumCompVisitsPercents = ref(0)
 
@@ -141,7 +145,7 @@ interface IUserAvgPoints {
 
 interface IUserVisits {
     [userId: number]: {
-        percentCompetitions: number,
+        percents: number,
         visits: number,
     }
 }
@@ -164,13 +168,62 @@ watch(() => props.semester, async () => {
     await fetchUserStandards()
 })
 
-async function getUserCompetitions(userIds: number[]) {
-
-    return await competitionsStore.getAllUserCompetitions(
-        {user_ids: userIds}
-    )
+async function getUserCompetitions() {
+    let usrIds = Object.keys(userVisits.value).map(Number);
+    let dS = props.semester.date_start
+    // let dE = props.semester.date_end
+    return await competitionsStore.getAllUserCompetitions({user_ids: usrIds, date_start: dS})
 }
 
+
+async function getVisitsWithCompetitions() {
+    const userCompetitions: IUser[] = await getUserCompetitions()
+    const usrVisitsTemp: IUserVisits = {}
+    console.log(userCompetitions)
+    // сколько 1 визит в процентах
+    let onePerVisit = 100 / props.maxVisits
+    // gp through visits
+    for (let key in userVisits.value) {
+
+        let uV = userVisits.value[key]
+
+        if(uV.user.id){
+
+            usrVisitsTemp[uV.user.id] = {percents: 0, visits: uV.counter}
+            // competitions users
+            userCompetitions.forEach((userComp) => {
+                    const usrId = userComp.id
+                    if (usrId && uV.user.id == usrId) {
+                        // visited only train days
+                        let visits = userVisits.value[usrId].counter
+                        let sumCompVisitsPercents = 0
+
+                        // competition
+                        userComp.user_competition?.forEach((competition) => {
+                            const dS = new Date(competition.competition?.date_start ?? 0)
+                            const dE = new Date(competition.competition?.date_end ?? 0)
+                            const percentsVisits = datesCompetInPercents(dS, dE)
+                            sumCompVisitsPercents += percentsVisits
+                        })
+
+                        // получить соревнования проценты с ограничением 20%
+                        let competitionPercents = Math.min(sumCompVisitsPercents, 20)
+                        // перевести соревнования из процентов в посещения
+                        let competitionInVisits = Math.round(competitionPercents / onePerVisit)
+                        // console.log("competitionInVisits", props.maxVisits, onePerVisit, competitionInVisits,
+                        //     competitionPercents, sumCompVisitsPercents)
+
+                        // сложить посещения и участия в соревнованиях
+                        let visitedWithCompetition = Math.round(visits + competitionInVisits)
+                        usrVisitsTemp[usrId] = {percents: Math.round(onePerVisit*visitedWithCompetition), visits: visitedWithCompetition}
+                    }
+                }
+            )
+        }
+    }
+
+    visits.value = usrVisitsTemp
+}
 
 async function onChangeVisit(userId: number, visited: boolean | undefined, dateVisit: Date) {
 
@@ -195,22 +248,6 @@ async function fetchUsers() {
 }
 
 async function fetchVisits() {
-    let usrIds = Object.keys(userVisits.value).map(Number);
-    const userCompetitions: IUser[] = await getUserCompetitions(usrIds)
-    const usrVisits: IUserVisits = {}
-    // users
-    userCompetitions.forEach((userComp) => {
-        if (userComp.id) {
-            usrVisits[userComp.id] = {percentCompetitions: 0, visits: 0}
-            // competition
-            userComp.user_competition?.forEach((competition) => {
-                const dS = new Date(competition.competition?.date_start ?? 0)
-                const dE = new Date(competition.competition?.date_end ?? 0)
-                const persVisits = datesCompetInPercents(dS, dE)
-            })
-        }
-
-    })
 
     const currDateStart = props.dates.dateStart
     const currentYear = currDateStart.getFullYear()
@@ -220,6 +257,7 @@ async function fetchVisits() {
     const data = await teamStore.fetchVisits(startOfYear.toISOString(), endOfYear.toISOString(), props.teamId);
 
     await userVisitsFormat(data[0])
+    await getVisitsWithCompetitions()
     await setDataPie()
 }
 
@@ -236,7 +274,7 @@ async function setDataPie() {
     // сколько 1 визит в процентах
     let onePerVisit = 100 / props.maxVisits
     // получить соревнования проценты с ограничением 20%
-    let competitionPercents = sumCompVisitsPercents.value > 20 ? 20 : sumCompVisitsPercents.value
+    let competitionPercents = Math.min(sumCompVisitsPercents.value, 20)
     // перевести соревнования из процентов в посещения
     let competitionInVisits = Math.round(competitionPercents / onePerVisit)
     // console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
@@ -299,8 +337,11 @@ async function userVisitsFormat(usersVisits: IVisit[]) {
 
 
 async function getUserCompetitionsCurrentUser() {
+    let dS = props.semester.date_start
+    // let dE = props.semester.date_end
+
     await competitionsStore.getAllUserCompetitions(
-        {user_ids: [permissions_store.user_id]}
+        {user_ids: [permissions_store.user_id], date_start: dS}
     ).then((res: IUser[]) => {
         uCompetitionsCurrent.value = res[0].user_competition ?? []
         uCompetitionsCurrent.value.forEach((el) => {
@@ -317,10 +358,12 @@ async function getUserCompetitionsCurrentUser() {
 async function fetchUserStandards() {
     let usrIds = Object.keys(userVisits.value).map(Number);
 
+    if (!props.semester.value)
+        return
     // console.log(props.semester.semester, semester.value.semester)
     const uS: ISearchStandardDto = {
         user_ids: usrIds,
-        semestersRange: [props.semester.semester - 1, props.semester.semester],
+        semestersRange: [props.semester.value - 1, props.semester.value],
         team_id: props.teamId,
     }
 
@@ -348,7 +391,7 @@ async function fetchUserStandards() {
                     if (standard.id == userStandard.standard?.id && userStandard?.semester && userStandard.value) {
                         // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
                         // start
-                        if (userStandard?.semester < props.semester?.semester) {
+                        if (props.semester?.value && userStandard?.semester < props.semester?.value) {
                             sumPointsStart += convertValueToPoint(standard.name, userStandard.value)
                             // end
                         } else {

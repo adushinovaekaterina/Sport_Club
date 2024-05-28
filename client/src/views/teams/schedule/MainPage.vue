@@ -13,16 +13,15 @@
 
             <!--  Семестр -->
             <div class="col-auto">
-                <div class="mb-3">
-                    <label class="form-label">Семестр</label>
-                    <select class="form-select"
-                            v-model="semester">
-                        <option v-for="(val, index) in semesters" v-bind:key="index" :value="val">
-                            {{ val.name }}
-                        </option>
-                    </select>
-                </div>
+                <label class="form-label">Семестр</label>
+                <select class="form-select"
+                        v-model="selectedSemester">
+                    <option v-for="(val, index) in foundSemesters" v-bind:key="index" :value="val">
+                        Семестр {{ val.value }}
+                    </option>
+                </select>
             </div>
+
             <!--  calendar -->
             <div class="col-auto">
                 <div class="mb-3">
@@ -71,7 +70,7 @@
     <div class="row"
          v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"
-                    :semester="semester"/>
+                    :semester="selectedSemester"/>
     </div>
     <!-- standard user -->
     <div class="row" v-if="currUserFunctions == TeamRoles.Member">
@@ -95,6 +94,8 @@ import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import StandardUser from "@/views/teams/progress/StandardUser.vue";
 import {TeamRoles} from "@/store/enums/team_roles";
 import {semesters} from "@/store/constants/other";
+import {ISemester} from "@/store/models/schedule/semester.model";
+import {useSemesterStore} from "@/store/schedule/semesters_store";
 
 const props = defineProps<{
     teamId: number;
@@ -104,6 +105,7 @@ const props = defineProps<{
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
+const semestersStore = useSemesterStore();
 
 const can = permissions_store.can;
 
@@ -111,12 +113,18 @@ const selectedWeekStart = ref(getMonday(new Date())); // Используем ф
 const maxVisits = ref(0); // Используем функцию для получения понедельника
 const team = ref<ITeam>({}); // Используем функцию для получения понедельника
 
-const semester = ref(semesters[0]);
-
+const selectedSemester = ref<ISemester>({});
+const foundSemesters = ref<ISemester[]>([]);
 
 onBeforeMount(() => {
     getTeam()
+    getSemesters()
 })
+
+async function getSemesters() {
+    foundSemesters.value = await semestersStore.getSemesters({});
+    selectedSemester.value = (foundSemesters.value)[0]
+}
 
 const weekDays = computed(() => {
     const days: Date[] = [];

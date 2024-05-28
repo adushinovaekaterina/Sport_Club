@@ -3,11 +3,12 @@ import axios from "axios";
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 import type {ICreateStandardDto, ISearchStandardDto} from "@/store/models/competition/standard-user.model";
 import {ApiRequest} from "@/store/handleApiRequest";
+import type {IUser} from "@/store/models/user/user.model";
 
 export const useCompetitionStore = defineStore("competition", () => {
     let apiRequest = new ApiRequest();
 
-    async function getAllUserCompetitions(dto: IUserCompetition) {
+    async function getAllUserCompetitions(dto: IUserCompetition):Promise<IUser[]> {
         const res = await axios.get("/api/competition/", {params: {...dto}});
         return res.data;
     }

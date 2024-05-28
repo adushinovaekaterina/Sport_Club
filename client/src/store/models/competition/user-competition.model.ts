@@ -10,4 +10,6 @@ export interface IUserCompetition {
 
     // addition
     user_ids?: number[]
+    date_start?: Date
+    date_end?: Date
 }
