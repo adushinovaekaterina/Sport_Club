@@ -189,7 +189,7 @@ async function getVisitsWithCompetitions() {
 
         if(uV.user.id){
 
-            usrVisitsTemp[uV.user.id] = {percents: 0, visits: uV.counter}
+            usrVisitsTemp[uV.user.id] = {percents: Math.round(onePerVisit* uV.counter), visits: uV.counter}
             // competitions users
             userCompetitions.forEach((userComp) => {
                     const usrId = userComp.id
