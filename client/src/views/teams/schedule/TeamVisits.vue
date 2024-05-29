@@ -47,10 +47,10 @@
                     </td>
                     <!--   visits-->
                     <td>
-<!--     percents          -->
-                        <div>{{ visits[participant.user.id]?.percents }} % </div>
-                        <div> {{ visits[participant.user.id]?.visits }}
-                            ({{userVisits[participant.user.id].counter}}) / {{props.maxVisits}}
+                        <!--     percents          -->
+                        <div class="text-center">{{ visits[participant.user.id]?.percents }} %</div>
+                        <div class="text-center"> {{ visits[participant.user.id]?.visits }}
+                            ({{ userVisits[participant.user.id].counter }}) из {{ props.maxVisits }}
                         </div>
                     </td>
                 </tr>
@@ -165,18 +165,27 @@ watch(() => props.dates.dateRange, async () => {
 })
 
 watch(() => props.semester, async () => {
+    await getUserCompetitionsCurrentUser()
+    await fetchVisits();
     await fetchUserStandards()
+
 })
 
 async function getUserCompetitions() {
+    const currDateStart = props.dates.dateStart
+    const currentYear = currDateStart.getFullYear()
+    const startOfYear = new Date(currentYear, new Date(props.semester?.date_start ?? 0).getMonth(), new Date(props.semester?.date_start ?? 1).getDate())
+
     let usrIds = Object.keys(userVisits.value).map(Number);
-    let dS = props.semester.date_start
+    // let dS = props.semester.date_start
     // let dE = props.semester.date_end
-    return await competitionsStore.getAllUserCompetitions({user_ids: usrIds, date_start: dS})
+    return await competitionsStore.getAllUserCompetitions({user_ids: usrIds, date_start: startOfYear.toDateString()})
 }
 
 
 async function getVisitsWithCompetitions() {
+
+
     const userCompetitions: IUser[] = await getUserCompetitions()
     const usrVisitsTemp: IUserVisits = {}
     console.log(userCompetitions)
@@ -187,9 +196,9 @@ async function getVisitsWithCompetitions() {
 
         let uV = userVisits.value[key]
 
-        if(uV.user.id){
+        if (uV.user.id) {
 
-            usrVisitsTemp[uV.user.id] = {percents: Math.round(onePerVisit* uV.counter), visits: uV.counter}
+            usrVisitsTemp[uV.user.id] = {percents: Math.round(onePerVisit * uV.counter), visits: uV.counter}
             // competitions users
             userCompetitions.forEach((userComp) => {
                     const usrId = userComp.id
@@ -215,7 +224,10 @@ async function getVisitsWithCompetitions() {
 
                         // сложить посещения и участия в соревнованиях
                         let visitedWithCompetition = Math.round(visits + competitionInVisits)
-                        usrVisitsTemp[usrId] = {percents: Math.round(onePerVisit*visitedWithCompetition), visits: visitedWithCompetition}
+                        usrVisitsTemp[usrId] = {
+                            percents: Math.round(onePerVisit * visitedWithCompetition),
+                            visits: visitedWithCompetition
+                        }
                     }
                 }
             )
@@ -343,7 +355,7 @@ async function getUserCompetitionsCurrentUser() {
     await competitionsStore.getAllUserCompetitions(
         {user_ids: [permissions_store.user_id], date_start: dS}
     ).then((res: IUser[]) => {
-        uCompetitionsCurrent.value = res[0].user_competition ?? []
+        uCompetitionsCurrent.value = res[0]?.user_competition ?? []
         uCompetitionsCurrent.value.forEach((el) => {
             if (el.competition?.date_start && el.competition?.date_end) {
                 const dS = new Date(el.competition.date_start)
