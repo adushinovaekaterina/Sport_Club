@@ -81,7 +81,7 @@ export class ScheduleService {
             ? query.andWhere('team.id = :team_id', {team_id: searchScheduleDto.team_id})
             : query;
 
-        // semester
+        // semester_id
         searchScheduleDto.semester_id
             ? query.andWhere('semester.id = :semester_id', {semester_id: searchScheduleDto.semester_id})
             : query;

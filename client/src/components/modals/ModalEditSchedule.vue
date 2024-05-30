@@ -58,12 +58,15 @@ import type {ICabinetsTimeEdit} from "@/store/models/schedule/cabinets-time.mode
 import {clone} from "lodash";
 import {useAuditoriesStore} from "@/store/schedule/cabinets_store";
 import type {ICabinet} from "@/store/models/schedule/cabinet.model";
+import {ISemester} from "@/store/models/schedule/semester.model";
 
 const props = defineProps<{
     teamId: number; //задать id user
     scheduleId: number;
     modalId: string;
     onSaveChanges: () => void;
+    semester: ISemester,
+
 }>();
 
 const cabinetsStore = useCabinetsTimeStore();
@@ -112,11 +115,6 @@ watch(
     },
 );
 
-// async function fetchS() {
-//     const res = await userStore.getUser(props.userId);
-//     user.value = res.data;
-// }
-
 async function getAuditories() {
     let r = await auditoryStore.getCabinets({});
     foundAuditories.value = r.cabinets;
@@ -127,22 +125,26 @@ async function saveChanges() {
 }
 
 async function addTime() {
-    editTimeCabinet.value.repeat = true
-    editTimeCabinet.value.date = date.value
-    editTimeCabinet.value.id_cabinet = selectedCabinet.value?.id
-    editTimeCabinet.value.time_start = timeStart.value.toLocaleTimeString([], {
+    const eTimeCab =  editTimeCabinet.value
+    eTimeCab.repeat = true
+    eTimeCab.date = date.value
+    eTimeCab.id_cabinet = selectedCabinet.value?.id
+    eTimeCab.team_id= props.teamId
+    eTimeCab.semester_id= props.semester.id
+
+    eTimeCab.time_start = timeStart.value.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'
     })
-    editTimeCabinet.value.time_end = timeEnd.value.toLocaleTimeString([], {
+    eTimeCab.time_end = timeEnd.value.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit'
     })
 
     await cabinetsStore
-        .setCabinetsTime(editTimeCabinet.value)
+        .setCabinetsTime(eTimeCab)
         .then(async () => {
             props.onSaveChanges();
         })

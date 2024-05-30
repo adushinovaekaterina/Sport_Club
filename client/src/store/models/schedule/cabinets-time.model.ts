@@ -17,6 +17,9 @@ export interface ICabinetsTime {
 export interface ICabinetsTimeEdit {
     id_team_schedule?: number,
     id_cabinet?: number,
+    team_id?: number,
+    semester_id?: number,
+
     date?: Date,
     time_start?: string,
     time_end?: string,
@@ -25,7 +28,8 @@ export interface ICabinetsTimeEdit {
 }
 
 export interface ICabinetsTimeSearch {
-    team_id: number;
+    team_id?: number;
+    semester_id?:number
     // for cabinets_time
     day_week_id?: number;
     time_start?: string;

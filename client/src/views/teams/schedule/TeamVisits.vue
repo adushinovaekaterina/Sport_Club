@@ -76,14 +76,12 @@ import EHalfPie from "@/components/charts/EHalfPie.vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import type {IUserCompetition} from "@/store/models/competition/user-competition.model";
 import {useCompetitionStore} from "@/store/competition/competition_store";
-import type {ISemesterTemp} from "@/store/models/other";
 import type {IUser} from "@/store/models/user/user.model";
 import type {ISearchStandardDto} from "@/store/models/competition/standard-user.model";
 import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import {useDictionaryStore} from "@/store/dictionary_store";
 import {convertValueToPoint} from "@/views/teams/progress/functions";
 import type {ISemester} from "@/store/models/schedule/semester.model";
-import {values} from "lodash";
 
 interface Participant {
     [idUser: number]: {

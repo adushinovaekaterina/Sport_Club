@@ -1,10 +1,11 @@
 <template>
+
     <!--    schedule-->
     <!--  time {{ time }} -->
     <!--  timeDayWeek {{ timeDayWeek }}-->
     <div class="row">
         <div class="col-12 justify-content-end d-flex my-3" v-if="can('can create teams')">
-            <button class="btn-custom-primary"  type="button"
+            <button class="btn-custom-primary" type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#editScheduleModal">Добавить занятие
                 <FontAwesomeIcon icon="arrow-right"
@@ -86,20 +87,23 @@
             :is-edit-team="true"
             :team-id="teamId"
             :schedule-id="schedule.id ?? -1"
-            modal-id="editScheduleModal" :on-save-changes="onSaveChanges"/>
+            modal-id="editScheduleModal" :on-save-changes="onSaveChangesModal"
+            :semester="semester"
+    />
 
 </template>
 
 <script lang="ts" setup>
 import {useCabinetsTimeStore} from "@/store/schedule/cabinets-time_store";
 import type {ICabinetsTimeSearch} from "@/store/models/schedule/cabinets-time.model";
-import {onBeforeMount, ref} from "vue";
+import {onBeforeMount, ref, watch} from "vue";
 import type {ISchedule} from "@/store/models/schedule/schedule.model";
 import type {ICabinet} from "@/store/models/schedule/cabinet.model";
 import type {IUser} from "@/store/models/user/user.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import ModalEditSchedule from "@/components/modals/ModalEditSchedule.vue";
+import {ISemester} from "@/store/models/schedule/semester.model";
 
 const cabinetsStore = useCabinetsTimeStore();
 const permissions_store = usePermissionsStore();
@@ -132,9 +136,10 @@ const props = defineProps<{
         weeks: string[];
         formattedDate: string;
     };
+    semester: ISemester,
 }>();
 
-const cabinetsTimeSearch = ref<ICabinetsTimeSearch>({team_id: props.teamId});
+const cabinetsTimeSearch = ref<ICabinetsTimeSearch>({team_id: props.teamId, semester_id: props.semester?.id});
 const schedule = ref<ISchedule>({});
 const timeDayWeek = ref<DayWeek>({});
 
@@ -144,7 +149,12 @@ onBeforeMount(() => {
     getCabinetsTime()
 });
 
-async function onSaveChanges() {
+watch(() => props.semester, async (value) => {
+    cabinetsTimeSearch.value.semester_id = value.id
+    await getCabinetsTime()
+})
+
+async function onSaveChangesModal() {
     await getCabinetsTime()
 }
 

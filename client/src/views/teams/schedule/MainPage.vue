@@ -59,7 +59,7 @@
 
     <!-- schedule-->
     <div class="row my-3">
-        <TeamSchedule :dates="dates" :team-id="teamId"/>
+        <TeamSchedule :dates="dates" :team-id="teamId" :semester="selectedSemester"/>
     </div>
     <!-- if its member of team-->
     <!--  user  competitions-->
