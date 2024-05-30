@@ -17,6 +17,7 @@ import { GeneralService } from '../general/general.service';
 import { FormsService } from '../forms/forms.service';
 import { TeamPhoto } from '../teams/entities/team-photo.entity';
 import { UploadsService } from '../uploads/uploads.service';
+import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UploadsService } from '../uploads/uploads.service';
       Requisitions,
       Function,
       TeamPhoto,
+      TeamSemesterVisits,
 
       Form,
       Dictionary,

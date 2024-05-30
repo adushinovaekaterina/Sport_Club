@@ -14,6 +14,7 @@ import { Form } from '../../forms/entities/form.entity';
 import { Requisitions } from './requisition.entity';
 import { TeamPhoto } from './team-photo.entity';
 import {Semester} from "../../schedule/entities/semester.entity";
+import {TeamSemesterVisits} from "./team-semester-visits.entity";
 
 @Entity('teams')
 export class Team {
@@ -115,10 +116,10 @@ export class Team {
   @OneToMany(() => TeamPhoto, (teamPhoto) => teamPhoto.team, { cascade: true })
   team_photos: TeamPhoto[];
 
-  // @OneToMany(() => TeamSchedule, (team_schedule) => team_schedule.team, {
-  //   cascade: true,
-  // })
-  // team_schedules: TeamSchedule[];
+  @OneToMany(() => TeamSemesterVisits, (t) => t.team, {
+    cascade: true,
+  })
+  team_semester_visits: TeamSemesterVisits[];
 
   @OneToMany(() => Requisitions, (requisition) => requisition.team)
   requisitions: Requisitions[];

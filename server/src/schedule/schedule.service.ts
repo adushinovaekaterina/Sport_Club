@@ -261,7 +261,7 @@ export class ScheduleService {
                 teamSchedule = await this.findSchedule({team_id: dto.team_id, semester_id: dto.semester_id})
             }
 
-            console.log("ex ", teamSchedule, " dto ", dto, " id_team_schedule ", dto.id_team_schedule)
+            // console.log("ex ", teamSchedule, " dto ", dto, " id_team_schedule ", dto.id_team_schedule)
 
             // if team schedule not found create new on base existing from prev semester
             if (!teamSchedule) {
@@ -307,7 +307,7 @@ export class ScheduleService {
             cab.team_schedule = newShed;
         });
 
-        console.log(newShed, cabinetsTime)
+        // console.log(newShed, cabinetsTime)
         // create cabinets
         await this.cabinetsTimeRepository.insert(cabinetsTime)
 

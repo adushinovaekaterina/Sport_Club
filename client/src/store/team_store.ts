@@ -8,6 +8,7 @@ import {ApiRequest} from "@/store/handleApiRequest";
 import type {IRUFunction} from "./models/user/search-user-functions.model";
 import type {ICreateRequisition} from "@/store/models/forms/requisition-fields.model";
 import type {IUpdateVisit} from "@/store/models/schedule/visits.model";
+import type {CreateSemesterVisitsDto, ITeamSemesterVisits} from "@/store/models/teams/team-semester-visits.model";
 
 export const useTeamStore = defineStore("teams", () => {
     const layout = ref(true);
@@ -284,6 +285,26 @@ export const useTeamStore = defineStore("teams", () => {
         layout.value = res;
     }
 
+    // --------------------------------------------------------------------------------------------------------------
+    // SemesterVisits
+    // --------------------------------------------------------------------------------------------------------------
+
+    async function createOrUpdateSemesterVisits(dto: CreateSemesterVisitsDto) {
+        return apiRequest.handleApiRequest(async () => {
+            return await axios.post(`/api/teams/semester-visits`, {...dto});
+        });
+    }
+
+
+    async function fetchSemesterVisits(dto: CreateSemesterVisitsDto): Promise<ITeamSemesterVisits> {
+        const res = await axios.get("/api/teams/semester-visits", {
+            params: dto,
+        });
+
+        return res.data;
+    }
+
+
     const menu_items = [
         {
             id: 1,
@@ -351,6 +372,9 @@ export const useTeamStore = defineStore("teams", () => {
         setVisit,
         setMaxVisits,
         fetchUserOfTeam,
+
+        createOrUpdateSemesterVisits,
+        fetchSemesterMaxVisits: fetchSemesterVisits,
 
         layout,
         menu_items,

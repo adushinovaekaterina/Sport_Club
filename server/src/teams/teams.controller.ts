@@ -41,6 +41,7 @@ import {AssignDirectionTeamLeaderDto} from '../users/dto/direction-leader.dto';
 import {TeamRoles} from '../shared/teamRoles';
 import {TeamPermissions} from '../shared/teamPermissions';
 import {CreatSemesterDto} from "../schedule/dto/create-semester.dto";
+import {CreateSemesterVisitsDto} from "./dto/create-semester-visits.dto";
 
 
 @ApiTags('teams') //<---- Отдельная секция в Swagger для всех методов контроллера
@@ -181,18 +182,6 @@ export class TeamsController {
         return this.teamsService.teamWithUser(id, idUser);
     }
 
-    @Get(':id')
-    @ApiOperation({summary: 'Получение коллектива по id'})
-    @ApiParam({
-        name: 'id',
-        required: true,
-        description: 'Идентификатор коллектива',
-    })
-    @ApiResponse({status: HttpStatus.OK, description: 'Успешно', type: Team})
-    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
-    findOne(@Param('id') id: number) {
-        return this.teamsService.findOne(id);
-    }
 
     @Get(':id/functions')
     @ApiOperation({summary: 'Получение списка должностей в коллективе'})
@@ -493,6 +482,7 @@ export class TeamsController {
         user = await this.usersService.findById(user.userId);
         return await this.teamsService.createRequisitionOrUpdate(dto, user);
     }
+
     // assign team roles --------------------------------------------------------------------
 
     @Post('user-functions/new-participant')
@@ -541,5 +531,42 @@ export class TeamsController {
         return this.teamsService.assignTeamRole(user, directionTeamLeaderDto);
     }
 
+// --------------------------------------------------------------------------------------------------------------
+// team-semester-visits
+// --------------------------------------------------------------------------------------------------------------
+
+    @Post('semester-visits')
+    @UseGuards(LocalAuthGuard, PermissionsGuard)
+    @SetMetadata('permissions', [Permissions.CAN_EDIT_OWN_TEAMS])
+    createSemesterVisits(
+        @UserDecorator() user: User,
+        @Body() createSemesterVisitsDto: CreateSemesterVisitsDto,
+    ) {
+        return this.teamsService.createOrUpdateSemesterVisits(createSemesterVisitsDto);
+    }
+
+    @Get('semester-visits')
+    @ApiOperation({summary: 'получить макс число посещений в семестре'})
+    @ApiResponse({
+        status: HttpStatus.OK,
+        description: 'Успешно',
+    })
+    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
+    async findMaxVisits(@Query() params:CreateSemesterVisitsDto) {
+        return await this.teamsService.findTSV(params);
+    }
+
+    @Get(':id')
+    @ApiOperation({summary: 'Получение коллектива по id'})
+    @ApiParam({
+        name: 'id',
+        required: true,
+        description: 'Идентификатор коллектива',
+    })
+    @ApiResponse({status: HttpStatus.OK, description: 'Успешно', type: Team})
+    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
+    findOne(@Param('id') id: number) {
+        return this.teamsService.findOne(id);
+    }
 
 }

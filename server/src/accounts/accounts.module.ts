@@ -17,6 +17,7 @@ import { UserFunction } from '../users/entities/user_function.entity';
 import { TeamFunction } from '../users/entities/function.entity';
 import { Achievement } from '../users/entities/achievement.entity';
 import { UsersService } from '../users/users.service';
+import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity";
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UsersService } from '../users/users.service';
       Requisitions,
       Function,
       TeamPhoto,
+      TeamSemesterVisits,
 
       Form,
       Dictionary,

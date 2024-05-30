@@ -1,5 +1,4 @@
 <template>
-
     <!--    schedule-->
     <!--  time {{ time }} -->
     <!--  timeDayWeek {{ timeDayWeek }}-->
@@ -49,13 +48,7 @@
                             >
                                 <!--  DATA in cell-->
                                 <div
-                                        v-if="
-                      lesson.repeat ||
-                      checkDatesYMDEquivalent(
-                        lesson.date,
-                        dates.dateRange[index2],
-                      )
-                    "
+                                        v-if="lesson.repeat || checkDatesYMDEquivalent(lesson.date,dates.dateRange[index2],)"
                                         class="selected-day p-1 position-relative"
                                 >
                                     <!-- remove button-->
@@ -83,6 +76,13 @@
         </div>
     </div>
 
+    <!-- visits-->
+    <div class="row"
+         v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
+        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="maxVisits" :is-national="isNational"
+                    :semester="semester" :schedule="schedule" :timeDayWeek="timeDayWeek"/>
+    </div>
+
     <ModalEditSchedule
             :is-edit-team="true"
             :team-id="teamId"
@@ -104,28 +104,16 @@ import {usePermissionsStore} from "@/store/permissions_store";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import ModalEditSchedule from "@/components/modals/ModalEditSchedule.vue";
 import {ISemester} from "@/store/models/schedule/semester.model";
+import {TeamRoles} from "@/store/enums/team_roles";
+import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
+import type {DayWeek} from "@/views/teams/schedule/day.model";
 
 const cabinetsStore = useCabinetsTimeStore();
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
 
-interface TimeData {
-    [time: string]: {
-        id: number;
-        cabinet: ICabinet | null;
-        user: IUser | null;
-        endTime: string;
-        date: Date;
-        repeat: boolean;
-    }[];
-}
-
-interface DayWeek {
-    [dayWeek: string]: TimeData;
-}
 
 const cabinetsTimeStore = useCabinetsTimeStore();
-// const teamStore = useTeamStore();
 
 const props = defineProps<{
     teamId: number;
@@ -136,7 +124,10 @@ const props = defineProps<{
         weeks: string[];
         formattedDate: string;
     };
+    maxVisits: number,
+    isNational: boolean,
     semester: ISemester,
+    currUserFunctions: TeamRoles | undefined
 }>();
 
 const cabinetsTimeSearch = ref<ICabinetsTimeSearch>({team_id: props.teamId, semester_id: props.semester?.id});
@@ -164,11 +155,11 @@ async function getCabinetsTime() {
         cabinetsTimeSearch.value,
     ).then((res) => {
         schedule.value = res
-        formatTime();
+        formatCabinetTime();
     })
 }
 
-async function formatTime() {
+async function formatCabinetTime() {
     time.value = []
     timeDayWeek.value = {}
     const cT = schedule.value.cabinets_time;

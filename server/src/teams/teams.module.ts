@@ -17,6 +17,7 @@ import { FormField } from 'src/forms/entities/form_field.entity';
 import { FormsService } from 'src/forms/forms.service';
 import { TeamPhoto } from './entities/team-photo.entity';
 import {Semester} from "../schedule/entities/semester.entity";
+import {TeamSemesterVisits} from "./entities/team-semester-visits.entity";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import {Semester} from "../schedule/entities/semester.entity";
       Requisitions,
       Dictionary,
       Form,
+      TeamSemesterVisits,
       RequisitionFields,
       FormField,
       TeamPhoto,

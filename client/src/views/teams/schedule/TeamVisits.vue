@@ -32,14 +32,16 @@
                         {{ participant.user.fullname }}
                     </td>
 
-                    <td v-for="(date, index) in dates.dateRange" :key="index">
-                        <label class="checkbox-label col-auto">
-                            <input type="checkbox" :checked="participant.days[formatDate(date)]"
-                                   @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
+                    <td v-for="(date, index) in dates.dateRange" :key="index" class="">
+                        <div v-if="timeDayWeek[dates.weeks[index]]" class="justify-content-center align-items-center d-flex" >
+                            <label class="checkbox-label col-auto" >
+                                <input type="checkbox" :checked="participant.days[formatDate(date)]"
+                                       @change="onChangeVisit( participant.user.id, participant.days[formatDate(date)], date)"/>
 
-                            <div class="checkbox-custom">
-                            </div>
-                        </label>
+                                <div class="checkbox-custom"></div>
+                            </label>
+                        </div>
+
                     </td>
 
                     <td> {{ standardsAvgPoints[participant.user.id]?.avgStart }}
@@ -82,6 +84,8 @@ import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 import {useDictionaryStore} from "@/store/dictionary_store";
 import {convertValueToPoint} from "@/views/teams/progress/functions";
 import type {ISemester} from "@/store/models/schedule/semester.model";
+import type {ISchedule} from "@/store/models/schedule/schedule.model";
+import type {DayWeek} from "@/views/teams/schedule/day.model";
 
 interface Participant {
     [idUser: number]: {
@@ -110,7 +114,8 @@ const props = defineProps<{
         formattedDate: string;
     };
     semester: ISemester,
-
+    schedule: ISchedule,
+    timeDayWeek:DayWeek,
 }>();
 
 const team: Ref<ITeam> = ref({});

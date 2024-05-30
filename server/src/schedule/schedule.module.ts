@@ -22,6 +22,7 @@ import { TeamPhoto } from '../teams/entities/team-photo.entity';
 import { UploadsService } from '../uploads/uploads.service';
 import { CabinetsTime } from './entities/cabinets-time.entity';
 import {Semester} from "./entities/semester.entity";
+import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import {Semester} from "./entities/semester.entity";
       FormField,
       TeamPhoto,
       Semester,
+      TeamSemesterVisits,
 
       TeamSchedule,
       TeamVisits,

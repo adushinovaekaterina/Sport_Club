@@ -42,6 +42,9 @@ import {TeamPhoto} from './entities/team-photo.entity';
 import {UploadsService} from '../uploads/uploads.service';
 import {TeamSchedule} from '../schedule/entities/schedule.entity';
 import {CreatSemesterDto} from "../schedule/dto/create-semester.dto";
+import {CreateSemesterVisitsDto} from "./dto/create-semester-visits.dto";
+import {TeamSemesterVisits} from "./entities/team-semester-visits.entity";
+import {Semester} from "../schedule/entities/semester.entity";
 
 @Injectable()
 export class TeamsService {
@@ -58,6 +61,8 @@ export class TeamsService {
         private readonly requisitionsFieldsRepository: Repository<RequisitionFields>,
         @InjectRepository(TeamPhoto)
         private readonly requisitionsTPhotoRepository: Repository<TeamPhoto>,
+        @InjectRepository(TeamSemesterVisits)
+        private readonly requisitionsTeamSemesterVisits: Repository<TeamSemesterVisits>,
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
         @Inject(forwardRef(() => UsersService))
@@ -101,7 +106,6 @@ export class TeamsService {
                 //     team photos
                 'team_photos.image',
                 'team_photos.id',
-                'teams.max_visits',
             ])
             .where('teams.id = :id', {id: id})
             // .andWhere('teams.type_team = :type', { type: 'teams' })
@@ -154,7 +158,7 @@ export class TeamsService {
             cabinets: createTeamDto.cabinetsAsNumbers,
             image: [],
             tags: [],
-            shortname:'',
+            shortname: '',
             type_team: 'teams',
             creation_date: new Date(),
         });
@@ -421,8 +425,8 @@ export class TeamsService {
             .innerJoin('user_functions.function', 'function')
             .addSelect('function.title')
             .innerJoin('function.team', 'team')
-            .where('team.id = :idTeam', {idTeam:idTeam})
-            .andWhere('user.id = :idUser', {idUser:idUser})
+            .where('team.id = :idTeam', {idTeam: idTeam})
+            .andWhere('user.id = :idUser', {idUser: idUser})
 
         return await query.getOne();
     }
@@ -868,5 +872,44 @@ export class TeamsService {
         }
     }
 
+    // --------------------------------------------------------------------------------------------------------------
+    // team SemesterVisits
+    // --------------------------------------------------------------------------------------------------------------
 
+    public async createOrUpdateSemesterVisits(dto: CreateSemesterVisitsDto) {
+
+        const existingTSV = await this.findTSV(dto)
+        let msg = ""
+
+        if (existingTSV) {
+            await this.requisitionsTeamSemesterVisits.update(existingTSV.id,
+                {max_visits: dto.max_visits})
+            msg = "Обновлено"
+        } else {
+            const team = await this.teamsRepository.findOneBy({id: dto.team_id})
+            const semester = await this.entityManager.findOneBy(Semester, {id: dto.semester_id})
+
+            await this.requisitionsTeamSemesterVisits.insert({
+                team: team,
+                semester: semester,
+                max_visits: dto.max_visits
+            })
+
+            msg = "Сохранено"
+        }
+
+        return {message: msg}
+    }
+
+    public async findTSV(dto: CreateSemesterVisitsDto) {
+        const query = this.requisitionsTeamSemesterVisits.createQueryBuilder("team_semester_visits")
+            .leftJoin("team_semester_visits.team", "team")
+            .leftJoin("team_semester_visits.semester", "semester")
+
+        //  team_id
+        dto.team_id ? query.andWhere('team.id = :team_id', {team_id: dto.team_id,}) : query;
+        //  semester_id
+        dto.semester_id ? query.andWhere('semester.id = :semester_id', {semester_id: dto.semester_id,}) : query;
+        return query.getOne()
+    }
 }

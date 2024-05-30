@@ -3,7 +3,7 @@
     <div class="my-4">
         <!--   Задать число посещений за семестр -->
         <div class="row">
-            <div  v-if="can('can create teams')" class="col  align-items-end d-flex">
+            <div v-if="can('can create teams')" class="col  align-items-end d-flex">
                 <div class="mb-3">
                     <label class="form-label">Задать число посещений за семестр:</label>
                     <input v-model="maxVisits" type="number"/>
@@ -59,18 +59,13 @@
 
     <!-- schedule-->
     <div class="row my-3">
-        <TeamSchedule :dates="dates" :team-id="teamId" :semester="selectedSemester"/>
+        <TeamSchedule :dates="dates" :team-id="teamId" :semester="selectedSemester" :maxVisits="maxVisits"
+                      :is-national="isNational" :curr-user-functions="currUserFunctions"/>
     </div>
     <!-- if its member of team-->
     <!--  user  competitions-->
     <div v-if="currUserFunctions == TeamRoles.Member && !isNational" class="row">
         <UserCompetitions :team-id="teamId" :user-id="permissions_store.user_id"/>
-    </div>
-    <!-- visits-->
-    <div class="row"
-         v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
-        <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="team.max_visits ?? 0" :is-national="isNational"
-                    :semester="selectedSemester"/>
     </div>
     <!-- standard user -->
     <div class="row" v-if="currUserFunctions == TeamRoles.Member">
@@ -88,14 +83,13 @@ import DropdownBtn from "@/components/Buttons/DropdownBtn.vue";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {usePermissionsStore} from "@/store/permissions_store";
-import TeamSchedule from "@/views/teams/schedule/TeamSchedule.vue";
+import TeamSchedule from "@/views/teams/schedule/TeamScheduleVisits.vue";
 import UserCompetitions from "@/views/teams/progress/UserCompetitions.vue";
-import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import StandardUser from "@/views/teams/progress/StandardUser.vue";
 import {TeamRoles} from "@/store/enums/team_roles";
-import {semesters} from "@/store/constants/other";
 import {ISemester} from "@/store/models/schedule/semester.model";
 import {useSemesterStore} from "@/store/schedule/semesters_store";
+import {watch} from "vue";
 
 const props = defineProps<{
     teamId: number;
@@ -119,6 +113,12 @@ const foundSemesters = ref<ISemester[]>([]);
 onBeforeMount(() => {
     getTeam()
     getSemesters()
+})
+
+watch(() => selectedSemester.value, async (value) => {
+    console.log(selectedSemester.value)
+    await getTeam()
+    await getMaxVisits()
 })
 
 async function getSemesters() {
@@ -145,14 +145,24 @@ const dates = computed(() => {
 });
 
 async function setMaxVisits() {
-    const res = await teamStore.setMaxVisits(props.teamId, maxVisits.value).then(async () => {
+    const res = await teamStore.createOrUpdateSemesterVisits({
+        team_id: props.teamId,
+        max_visits: maxVisits.value, semester_id: selectedSemester.value.id
+    }).then(async () => {
         await getTeam()
     })
 }
 
 async function getTeam() {
     team.value = await teamStore.fetchTeam(props.teamId)
-    maxVisits.value = team.value.max_visits ?? 0
+}
+
+async function getMaxVisits() {
+    const smv = await teamStore.fetchSemesterMaxVisits({
+        team_id: props.teamId,
+        max_visits: maxVisits.value, semester_id: selectedSemester.value.id
+    })
+    maxVisits.value = smv.max_visits ?? 0
 }
 
 
