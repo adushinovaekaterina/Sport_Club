@@ -37,15 +37,17 @@ GET http://localhost:3000/api/schedule?team_id=6&time_start='15:00:00'&time_end=
 
 
 ### cabinets-time ------------------------------------------------------------------------------------------------------
+#  "id_team_schedule": 2,
 POST http://localhost:3000/api/schedule/cabinets-time HTTP/1.1
 content-type: application/json
 
 {
-  "id_team_schedule": 2,
-  "id_cabinet": 4,
-  "date": "2024-03-15",
-  "time_start": "18:00:00",
-  "time_end": "19:00:00",
+  "id_cabinet": 5,
+  "team_id": 16,
+  "semester_id": 2,
+  "date": "2024-04-15",
+  "time_start": "10:00:00",
+  "time_end": "16:00:00",
   "user_id": 3,
   "repeat": true
 }

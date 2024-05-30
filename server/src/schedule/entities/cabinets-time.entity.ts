@@ -46,7 +46,7 @@ export class CabinetsTime {
   @JoinColumn([{ name: 'id_user' }])
   user: User;
 
-  @ManyToOne(() => TeamSchedule, (teamSchedule) => teamSchedule.id)
+  @ManyToOne(() => TeamSchedule, (teamSchedule) => teamSchedule.id, { onDelete: 'CASCADE' })
   @JoinColumn([{ name: 'id_team_schedule' }])
   team_schedule: TeamSchedule;
 }

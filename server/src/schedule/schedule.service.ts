@@ -58,6 +58,11 @@ export class ScheduleService {
             {team: team, semester: semester, user: u})
     }
 
+
+    async findScheduleById(id: number) {
+        return await this.teamSchedRepository.findOneBy({id: id})
+    }
+
     async findSchedule(searchScheduleDto: SearchScheduleDto) {
         const query = this.teamSchedRepository
             .createQueryBuilder('team_schedule')
@@ -73,12 +78,12 @@ export class ScheduleService {
 
         // team_id
         searchScheduleDto.team_id
-            ? query.andWhere('team.id = :id', {id: searchScheduleDto.team_id})
+            ? query.andWhere('team.id = :team_id', {team_id: searchScheduleDto.team_id})
             : query;
 
         // semester
         searchScheduleDto.semester_id
-            ? query.andWhere('team_schedule.semester = :id', {id: searchScheduleDto.semester_id})
+            ? query.andWhere('semester.id = :semester_id', {semester_id: searchScheduleDto.semester_id})
             : query;
 
         // day_week_id
@@ -247,14 +252,20 @@ export class ScheduleService {
                     id: dto.id_cabinet,
                 });
 
+            let teamSchedule: TeamSchedule
+            // if we have id team schedule
+            if (dto.id_team_schedule) {
+                teamSchedule = await this.findScheduleById(dto.id_team_schedule)
+                //  team_id and semester_id
+            } else {
+                teamSchedule = await this.findSchedule({team_id: dto.team_id, semester_id: dto.semester_id})
+            }
 
-            let teamSchedule = await this.teamSchedRepository.findOneBy({
-                id: dto.id_team_schedule,
-            });
+            console.log("ex ", teamSchedule, " dto ", dto, " id_team_schedule ", dto.id_team_schedule)
 
             // if team schedule not found create new on base existing from prev semester
             if (!teamSchedule) {
-               teamSchedule = await this.createScheduleOnBaseExisting(user, dto.team_id, dto.semester_id, 1)
+                teamSchedule = await this.createScheduleOnBaseExisting(user, dto.team_id, dto.semester_id, 1)
             }
 
             let leader = null
@@ -277,24 +288,28 @@ export class ScheduleService {
         }
     }
 
-    private async createScheduleOnBaseExisting(user: User, teamId:number, semesterId:number, semesterValPrevSched: number) {
+    private async createScheduleOnBaseExisting(user: User, teamId: number, semesterId: number, semesterValPrevSched: number) {
         // find schedule by semester 1
         let existingShed = await this.findSchedule({
             team_id: teamId,
             semester_value: semesterValPrevSched
         })
+
         // create new schedule
-        const newShed   = await this.createSchedule(user, {
+        const newShed = await this.createSchedule(user, {
             team_id: teamId,
             semester_id: semesterId
         })
-        const cabinetsTime = existingShed.cabinets_time
+
+        const cabinetsTime = existingShed?.cabinets_time ?? []
         // set new schedule for cabinets
         cabinetsTime.forEach(cab => {
             cab.team_schedule = newShed;
         });
+
+        console.log(newShed, cabinetsTime)
         // create cabinets
-        this.cabinetsTimeRepository.create(cabinetsTime)
+        await this.cabinetsTimeRepository.insert(cabinetsTime)
 
         return newShed
     }
