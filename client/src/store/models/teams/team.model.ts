@@ -20,7 +20,6 @@ export interface ITeam {
   short_description?: string;
   set_open?: boolean;
   is_national?: boolean;
-  max_visits?: number;
   team_semester_visits?:ITeamSemesterVisits[]
 
   team_photos?: ITeamPhotos[];

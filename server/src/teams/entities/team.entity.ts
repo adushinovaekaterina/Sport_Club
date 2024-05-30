@@ -51,10 +51,6 @@ export class Team {
   phone: string;
 
   @ApiProperty()
-  @Column({ nullable: true })
-  max_visits: number;
-
-  @ApiProperty()
   @Column({
     type: 'enum',
     enum: ['direction', 'university', 'teams'],
