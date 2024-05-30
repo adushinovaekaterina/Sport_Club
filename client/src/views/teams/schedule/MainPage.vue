@@ -2,8 +2,8 @@
     <!--    calendar-->
     <div class="my-4">
         <!--   Задать число посещений за семестр -->
-        <div class="row" v-if="can('can create teams')">
-            <div class="col  align-items-end d-flex">
+        <div class="row">
+            <div  v-if="can('can create teams')" class="col  align-items-end d-flex">
                 <div class="mb-3">
                     <label class="form-label">Задать число посещений за семестр:</label>
                     <input v-model="maxVisits" type="number"/>

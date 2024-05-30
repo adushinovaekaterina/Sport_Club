@@ -35,11 +35,20 @@ import {User} from "../users/entities/user.entity";
 import {CreatSemesterDto} from "./dto/create-semester.dto";
 import {Permissions} from "../shared/permissions";
 import {SearchSemesterDto} from "./dto/search-semester.dto";
+import {CreateScheduleDto} from "./dto/create-schedule.dto";
 
 @ApiTags('schedule')
 @Controller('schedule')
 export class ScheduleController {
     constructor(private readonly scheduleService: ScheduleService) {
+    }
+
+    @Get('')
+    @ApiOperation({summary: 'Получение расписания по id коллектива'})
+    @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
+    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
+    findSchedule(@Query() searchScheduleDto: SearchScheduleDto) {
+        return this.scheduleService.findSchedule(searchScheduleDto);
     }
 
     @Get('visits')
@@ -49,6 +58,7 @@ export class ScheduleController {
     findVisitsTeam(@Query() searchVisitsDto: SearchVisitsDto) {
         return this.scheduleService.findVisits(searchVisitsDto);
     }
+
 
     @Post('visits')
     @ApiOperation({summary: 'Обновление посещаемости по id коллектива и юзера'})
@@ -104,13 +114,7 @@ export class ScheduleController {
         return this.scheduleService.deleteCabinet(id);
     }
 
-    @Get('')
-    @ApiOperation({summary: 'Получение расписания по id коллектива'})
-    @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
-    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
-    findSchedule(@Query() searchScheduleDto: SearchScheduleDto) {
-        return this.scheduleService.findSchedule(searchScheduleDto);
-    }
+
 
     @Post('cabinets-time')
     @ApiOperation({summary: 'Резервирование аудитории'})
@@ -122,8 +126,8 @@ export class ScheduleController {
         status: HttpStatus.BAD_REQUEST,
         description: 'Bad Request',
     })
-    createCabinetTime(@Body() dto: CreateCabinetTimeDto) {
-        return this.scheduleService.createCabinetTime(dto);
+    createCabinetTime(@UserDecorator() user: User, @Body() dto: CreateCabinetTimeDto) {
+        return this.scheduleService.createCabinetTime(user, dto);
     }
 
     @Delete('cabinets-time/:id')

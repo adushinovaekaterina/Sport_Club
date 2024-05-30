@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException,} from '@nestjs/common';
 import {SearchVisitsDto} from './dto/search-visits.dto';
 import {InjectEntityManager, InjectRepository} from '@nestjs/typeorm';
 import {EntityManager, Repository} from 'typeorm';
@@ -25,6 +21,8 @@ import {Team} from "../teams/entities/team.entity";
 import {CreatSemesterDto} from "./dto/create-semester.dto";
 import {Semester} from "./entities/semester.entity";
 import {SearchSemesterDto} from "./dto/search-semester.dto";
+import {CreateScheduleDto} from "./dto/create-schedule.dto";
+import {User} from "../users/entities/user.entity";
 
 @Injectable()
 export class ScheduleService {
@@ -40,13 +38,76 @@ export class ScheduleService {
         @InjectRepository(Dictionary)
         private readonly dictionaryRepository: Repository<Dictionary>,
         private readonly usersService: UsersService,
-
         @InjectRepository(Semester)
         private readonly semesterRepository: Repository<Semester>,
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {
     }
+
+    // --------------------------------------------------------------------------------------------------------------
+    // schedule
+    // --------------------------------------------------------------------------------------------------------------
+
+    public async createSchedule(user: User, dto: CreateScheduleDto) {
+        const team = await this.entityManager.findOneBy(Team, {id: dto.team_id})
+        const semester = await this.entityManager.findOneBy(Semester, {id: dto.semester_id})
+        const u = await this.entityManager.findOneBy(User, {id: user.userId})
+
+        return await this.teamSchedRepository.save(
+            {team: team, semester: semester, user: u})
+    }
+
+    async findSchedule(searchScheduleDto: SearchScheduleDto) {
+        const query = this.teamSchedRepository
+            .createQueryBuilder('team_schedule')
+            .select(['team_schedule.id', 'user.id', 'user.fullname'])
+            .leftJoin('team_schedule.team', 'team')
+            // cabinets_time
+            .leftJoinAndSelect('team_schedule.cabinets_time', 'cabinets_time')
+            .leftJoinAndSelect('cabinets_time.day_week', 'day_week')
+            .leftJoinAndSelect('cabinets_time.cabinet', 'cabinet')
+            .leftJoinAndSelect('team_schedule.semester', 'semester')
+
+            .leftJoin('cabinets_time.user', 'user');
+
+        // team_id
+        searchScheduleDto.team_id
+            ? query.andWhere('team.id = :id', {id: searchScheduleDto.team_id})
+            : query;
+
+        // semester
+        searchScheduleDto.semester_id
+            ? query.andWhere('team_schedule.semester = :id', {id: searchScheduleDto.semester_id})
+            : query;
+
+        // day_week_id
+        searchScheduleDto.day_week_id
+            ? query.andWhere('day_week.id = :day_week_id', {
+                day_week_id: searchScheduleDto.day_week_id,
+            })
+            : query;
+
+        // time_start
+        searchScheduleDto.time_start
+            ? query.andWhere('cabinets_time.time_start >= :time_start', {
+                time_start: searchScheduleDto.time_start,
+            })
+            : query;
+
+        // time_end
+        searchScheduleDto.time_end
+            ? query.andWhere('cabinets_time.time_end <= :time_end', {
+                time_end: searchScheduleDto.time_end,
+            })
+            : query;
+
+        return await query.orderBy('cabinets_time.time_start', 'ASC').getOne();
+    }
+
+    // --------------------------------------------------------------------------------------------------------------
+    // visits
+    // --------------------------------------------------------------------------------------------------------------
 
     async findVisits(searchVisitsDto: SearchVisitsDto) {
         const res = this.teamVisitsRepository
@@ -89,7 +150,7 @@ export class ScheduleService {
                 user_id: updateVisitsDto.user_id,
             })
             .getOne();
-        console.log(existingVisit)
+        // console.log(existingVisit)
         // existing Visit
         if (existingVisit) {
             res = this.teamVisitsRepository.update(existingVisit.id, {
@@ -165,47 +226,7 @@ export class ScheduleService {
         return {message};
     }
 
-    async findSchedule(searchScheduleDto: SearchScheduleDto) {
-        const query = this.teamSchedRepository
-            .createQueryBuilder('team_schedule')
-            .select(['team_schedule.id', 'user.id', 'user.fullname'])
-            .leftJoin('team_schedule.team', 'team')
-            // cabinets_time
-            .leftJoinAndSelect('team_schedule.cabinets_time', 'cabinets_time')
-            .leftJoinAndSelect('cabinets_time.day_week', 'day_week')
-            .leftJoinAndSelect('cabinets_time.cabinet', 'cabinet')
-            .leftJoin('cabinets_time.user', 'user');
-
-        // team_id
-        searchScheduleDto.team_id
-            ? query.andWhere('team.id = :id', {id: searchScheduleDto.team_id})
-            : query;
-
-        // day_week_id
-        searchScheduleDto.day_week_id
-            ? query.andWhere('day_week.id = :day_week_id', {
-                day_week_id: searchScheduleDto.day_week_id,
-            })
-            : query;
-
-        // time_start
-        searchScheduleDto.time_start
-            ? query.andWhere('cabinets_time.time_start >= :time_start', {
-                time_start: searchScheduleDto.time_start,
-            })
-            : query;
-
-        // time_end
-        searchScheduleDto.time_end
-            ? query.andWhere('cabinets_time.time_end <= :time_end', {
-                time_end: searchScheduleDto.time_end,
-            })
-            : query;
-
-        return await query.orderBy('cabinets_time.time_start', 'ASC').getOne();
-    }
-
-    public async createCabinetTime(dto: CreateCabinetTimeDto) {
+    public async createCabinetTime(user: User, dto: CreateCabinetTimeDto) {
         const daysOfWeek = [
             'Воскресенье',
             'Понедельник',
@@ -226,13 +247,18 @@ export class ScheduleService {
                     id: dto.id_cabinet,
                 });
 
-            const teamSchedule = await this.teamSchedRepository.findOneByOrFail({
+
+            let teamSchedule = await this.teamSchedRepository.findOneBy({
                 id: dto.id_team_schedule,
             });
 
+            // if team schedule not found create new on base existing from prev semester
+            if (!teamSchedule) {
+               teamSchedule = await this.createScheduleOnBaseExisting(user, dto.team_id, dto.semester_id, 1)
+            }
 
-            let user = null
-            if (dto.user_id) user = await this.usersService.findOne(dto.user_id);
+            let leader = null
+            if (dto.user_id) leader = await this.usersService.findOne(dto.user_id);
 
             const dayWeek = await this.dictionaryRepository.findOneBy({
                 name: week,
@@ -241,7 +267,7 @@ export class ScheduleService {
 
             return await this.cabinetsTimeRepository.save({
                 ...dto,
-                user: user,
+                user: leader,
                 cabinet: cabinet,
                 team_schedule: teamSchedule,
                 day_week: dayWeek,
@@ -249,6 +275,28 @@ export class ScheduleService {
         } catch (err) {
             throw new BadRequestException(err);
         }
+    }
+
+    private async createScheduleOnBaseExisting(user: User, teamId:number, semesterId:number, semesterValPrevSched: number) {
+        // find schedule by semester 1
+        let existingShed = await this.findSchedule({
+            team_id: teamId,
+            semester_value: semesterValPrevSched
+        })
+        // create new schedule
+        const newShed   = await this.createSchedule(user, {
+            team_id: teamId,
+            semester_id: semesterId
+        })
+        const cabinetsTime = existingShed.cabinets_time
+        // set new schedule for cabinets
+        cabinetsTime.forEach(cab => {
+            cab.team_schedule = newShed;
+        });
+        // create cabinets
+        this.cabinetsTimeRepository.create(cabinetsTime)
+
+        return newShed
     }
 
     public async deleteCabinetTime(id: number) {
@@ -291,12 +339,12 @@ export class ScheduleService {
     // --------------------------------------------------------------------------------------------------------------
 
     async createOrUpdateSemester(createSemesterDto: CreatSemesterDto) {
-        const existSemester = await this.semesterRepository.findOneBy({value:createSemesterDto.value});
+        const existSemester = await this.semesterRepository.findOneBy({value: createSemesterDto.value});
         let msg: string
-        if(existSemester){
+        if (existSemester) {
             await this.semesterRepository.update(existSemester.id, {...createSemesterDto});
-        }else{
-             await this.semesterRepository.insert({...createSemesterDto});
+        } else {
+            await this.semesterRepository.insert({...createSemesterDto});
         }
         msg = "Сохранено"
 
@@ -315,5 +363,13 @@ export class ScheduleService {
             : null;
 
         return query.getMany()
+    }
+
+    async findSemester(id: number) {
+        const query = this.semesterRepository
+            .createQueryBuilder('semester')
+            .where("semester.id = :id", {id: id})
+
+        return query.getOne()
     }
 }

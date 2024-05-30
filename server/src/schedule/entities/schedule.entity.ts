@@ -11,6 +11,7 @@ import { Team } from '../../teams/entities/team.entity';
 import { User } from '../../users/entities/user.entity';
 import { TeamVisits } from './visits.entity';
 import { CabinetsTime } from './cabinets-time.entity';
+import {Semester} from "./semester.entity";
 
 @Entity('team_schedule')
 export class TeamSchedule {
@@ -25,6 +26,10 @@ export class TeamSchedule {
   @ApiProperty()
   @Column({ nullable: true })
   date_end: Date;
+
+  @ManyToOne(() => Semester, (s) => s.id)
+  @JoinColumn([{ name: 'id_semester' }])
+  semester: Semester;
 
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn([{ name: 'id_user' }])
@@ -43,4 +48,6 @@ export class TeamSchedule {
     cascade: true,
   })
   cabinets_time: CabinetsTime[];
+
+
 }
