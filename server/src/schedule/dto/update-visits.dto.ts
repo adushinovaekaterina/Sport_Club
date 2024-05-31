@@ -8,6 +8,10 @@ export class UpdateVisitsDto {
 
   @IsNumber()
   @Type(() => Number)
+  semester_id: number;
+
+  @IsNumber()
+  @Type(() => Number)
   team_id: number;
 
   @IsString()

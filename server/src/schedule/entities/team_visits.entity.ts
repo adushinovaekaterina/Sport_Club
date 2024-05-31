@@ -9,6 +9,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { TeamSchedule } from './schedule.entity';
 import {Team} from "../../teams/entities/team.entity";
+import {Semester} from "./semester.entity";
 
 @Entity('team_visits')
 export class TeamVisits {
@@ -35,6 +36,11 @@ export class TeamVisits {
   @ManyToOne(() => Team, (team) => team.id)
   @JoinColumn([{ name: 'id_team' }])
   team: Team;
+
+  @ManyToOne(() => Semester, (s) => s.id)
+  @JoinColumn([{ name: 'id_semester' }])
+  semester: Semester;
+
 
   @ManyToOne(() => TeamSchedule, (teamSchedule) => teamSchedule.id)
   @JoinColumn([{ name: 'id_team_schedule' }])

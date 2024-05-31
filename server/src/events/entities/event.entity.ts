@@ -120,21 +120,21 @@ export class Event {
   @OneToMany(() => Journal, (journal) => journal.event, { cascade: true })
   journal: Journal[]; // журнал
 
-  @ApiProperty()
-  @OneToMany(() => Achievement, (achievement) => achievement.event, {
-    cascade: true,
-  })
-  achievement: Achievement;
+  // @ApiProperty()
+  // @OneToMany(() => Achievement, (achievement) => achievement.event, {
+  //   cascade: true,
+  // })
+  // achievement: Achievement;
 
   // creator
   @ManyToOne(() => User, (user) => user.id, { onDelete: 'SET NULL' })
   @JoinColumn([{ name: 'user_id' }])
   user: User;
 
-  @ApiProperty()
-  @ManyToOne(() => Dictionary, (dict) => dict.id)
-  @JoinColumn([{ name: 'status_id' }])
-  status: Dictionary; // формат проведения
+  // @ApiProperty()
+  // @ManyToOne(() => Dictionary, (dict) => dict.id)
+  // @JoinColumn([{ name: 'status_id' }])
+  // status: Dictionary; // формат проведения
 
   @ApiProperty()
   @ManyToOne(() => Dictionary, (dict) => dict.id)

@@ -2,9 +2,15 @@ import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class SearchVisitsDto {
+
   @Type(() => Number)
   @IsNumber()
   team_id: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  semester_id: number;
 
   @IsOptional()
   @IsString()

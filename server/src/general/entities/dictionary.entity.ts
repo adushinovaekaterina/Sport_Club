@@ -45,12 +45,12 @@ export class Dictionary {
   character_event: Event[];
 
   // Achievement
-  @OneToMany(() => Achievement, (achievement) => achievement.direction)
-  directionA: Achievement[];
+  // @OneToMany(() => Achievement, (achievement) => achievement.direction)
+  // directionA: Achievement[];
 
-  @OneToMany(() => Achievement, (achievement) => achievement.status)
-  status: Achievement[];
+  // @OneToMany(() => Achievement, (achievement) => achievement.status)
+  // status: Achievement[];
 
-  @OneToMany(() => Achievement, (achievement) => achievement.type)
-  typeA: Achievement[];
+  // @OneToMany(() => Achievement, (achievement) => achievement.type)
+  // typeA: Achievement[];
 }

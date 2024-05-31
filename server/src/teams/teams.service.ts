@@ -374,7 +374,7 @@ export class TeamsService {
     }
 
     //вывести команду
-    async teamWithUsers(id: number, params: UserFunctionDto) {
+    async teamWithUsers(teamId: number, params: UserFunctionDto) {
         const query = this.userFunctionsRepository
 
             .createQueryBuilder('user_functions')
@@ -390,7 +390,7 @@ export class TeamsService {
             .innerJoin('function.team', 'team')
             .limit(params.limit)
             .offset(params.offset)
-            .where('team.id = :id', {id});
+            .where('team.id = :id', {id: teamId});
 
         // filters
         //date order by

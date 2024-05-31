@@ -3,5 +3,9 @@ content-type: application/json
 
 {
   "filepath":"C:/Users/1/WebstormProjects/Raiting-Teams-Events2/server/public/media/2023.10/21/1697893593876_shh277.webp"
-
 }
+
+### excel/team-visits
+GET http://localhost:3000/api/uploads/excel/team-visits?team_id=16&semester_id=1 HTTP/1.1
+
+

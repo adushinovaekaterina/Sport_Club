@@ -5,7 +5,7 @@ import {EntityManager, Repository} from 'typeorm';
 import {TeamSchedule} from './entities/schedule.entity';
 import {UpdateVisitsDto} from './dto/update-visits.dto';
 import {UsersService} from '../users/users.service';
-import {TeamVisits} from './entities/visits.entity';
+import {TeamVisits} from './entities/team_visits.entity';
 import {Cabinets} from './entities/cabinets.entity';
 import {GetAllCabinetsResponse} from './dto/get-all-cabinets.response';
 import {CreateCabinetDto} from './dto/create-cabinet.dto';
@@ -115,7 +115,7 @@ export class ScheduleService {
     // --------------------------------------------------------------------------------------------------------------
 
     async findVisits(searchVisitsDto: SearchVisitsDto) {
-        const res = this.teamVisitsRepository
+        const query = this.teamVisitsRepository
             .createQueryBuilder('team_visits')
             .select([
                 'user.id',
@@ -128,20 +128,30 @@ export class ScheduleService {
             .leftJoin('team_visits.team', 'team')
             // .leftJoin('team_schedule.team_visits', 'team_visits')
             .leftJoin('team_visits.user', 'user')
+            .leftJoinAndSelect('team_visits.semester', 'semester')
             .where('team.id = :team_id', {team_id: searchVisitsDto.team_id})
-            .andWhere(
+
+        searchVisitsDto.semester_id
+            ? query.andWhere('semester.id = :semester_id', {
+                semester_id: searchVisitsDto.semester_id,
+            })
+            : query;
+
+        searchVisitsDto.date_visit_start && searchVisitsDto.date_visit_end
+            ? query.andWhere(
                 'team_visits.date_visit >= :date_start and team_visits.date_visit <= :date_end',
                 {
                     date_start: new Date(searchVisitsDto.date_visit_start),
                     date_end: new Date(searchVisitsDto.date_visit_end),
                 },
-            );
+            ) : query;
 
-        return await res.getManyAndCount();
+        return await query.getManyAndCount();
     }
 
     async updateVisit(updateVisitsDto: UpdateVisitsDto) {
         let res;
+        const semester = await this.findSemester(updateVisitsDto.semester_id)
 
         const existingVisit = await this.teamVisitsRepository
             .createQueryBuilder('team_visits')
@@ -161,6 +171,7 @@ export class ScheduleService {
             res = this.teamVisitsRepository.update(existingVisit.id, {
                 status_visit: updateVisitsDto.status_visit,
                 comment: updateVisitsDto.comment,
+                semester: semester
             });
         } else {
             const user = await this.usersService.findOne(updateVisitsDto.user_id);
@@ -171,6 +182,7 @@ export class ScheduleService {
                 status_visit: updateVisitsDto.status_visit,
                 date_visit: updateVisitsDto.date_visit,
                 team: team,
+                semester: semester,
                 comment: updateVisitsDto.comment,
             });
         }

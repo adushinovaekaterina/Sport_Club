@@ -249,6 +249,7 @@ async function onChangeVisit(userId: number, visited: boolean | undefined, dateV
     const uV: IUpdateVisit = {}
     uV.date_visit = dateVisit
     uV.status_visit = !v
+    uV.semester_id = props.semester.id;
     uV.team_id = props.teamId
     uV.user_id = userId
     await teamStore.setVisit(uV).then(async () => {
@@ -269,7 +270,7 @@ async function fetchVisits() {
     const startOfYear = new Date(currentYear, 0, 1)
     const endOfYear = new Date(currentYear, 11, 31)
 
-    const data = await teamStore.fetchVisits(startOfYear.toISOString(), endOfYear.toISOString(), props.teamId);
+    const data = await teamStore.fetchVisits(startOfYear.toISOString(), endOfYear.toISOString(), props.teamId, props.semester.id ?? -1);
 
     await userVisitsFormat(data[0])
     await getVisitsWithCompetitions()

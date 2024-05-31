@@ -10,6 +10,7 @@ export interface IVisit {
 export class IUpdateVisit {
     user_id?: number
     team_id?: number;
+    semester_id?:number;
     date_visit?: Date;
     comment?: string;
     status_visit?: boolean;

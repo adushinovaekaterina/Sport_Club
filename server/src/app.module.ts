@@ -12,7 +12,6 @@ import { UploadsModule } from './uploads/uploads.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ScheduleModule } from './schedule/schedule.module';
-import { AccountsModule } from './accounts/accounts.module';
 import { CompetitionModule } from './competition/competition.module';
 
 @Module({
@@ -34,7 +33,6 @@ import { CompetitionModule } from './competition/competition.module';
     GeneralModule,
     UploadsModule,
     ScheduleModule,
-    AccountsModule,
     CompetitionModule,
   ],
   controllers: [AppController],

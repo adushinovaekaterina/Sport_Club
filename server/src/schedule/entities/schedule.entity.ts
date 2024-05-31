@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Team } from '../../teams/entities/team.entity';
 import { User } from '../../users/entities/user.entity';
-import { TeamVisits } from './visits.entity';
+import { TeamVisits } from './team_visits.entity';
 import { CabinetsTime } from './cabinets-time.entity';
 import {Semester} from "./semester.entity";
 

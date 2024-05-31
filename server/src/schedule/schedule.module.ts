@@ -16,7 +16,7 @@ import { UsersService } from '../users/users.service';
 import { GeneralService } from '../general/general.service';
 import { FormsService } from '../forms/forms.service';
 import { TeamSchedule } from './entities/schedule.entity';
-import { TeamVisits } from './entities/visits.entity';
+import { TeamVisits } from './entities/team_visits.entity';
 import { Cabinets } from './entities/cabinets.entity';
 import { TeamPhoto } from '../teams/entities/team-photo.entity';
 import { UploadsService } from '../uploads/uploads.service';
@@ -55,5 +55,6 @@ import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity"
     FormsService,
     UploadsService,
   ],
+  exports:[ScheduleService]
 })
 export class ScheduleModule {}

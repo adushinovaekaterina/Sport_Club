@@ -32,12 +32,13 @@ export const useTeamStore = defineStore("teams", () => {
         });
     }
 
-    async function fetchVisits(date_visit_start: string, date_visit_end: string, team_id: number) {
+    async function fetchVisits(date_visit_start: string, date_visit_end: string, team_id: number, semester_id:number) {
         const res = await axios.get("/api/schedule/visits", {
             params: {
                 date_visit_start,
                 date_visit_end,
                 team_id,
+                semester_id
             },
         });
         return res.data;

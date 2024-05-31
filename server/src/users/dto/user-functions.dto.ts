@@ -5,34 +5,34 @@ export class UserFunctionDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  function: number;
+  function?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  user: number;
+  user?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  team: number;
+  team?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  limit = 5;
+  limit? = 5;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  offset = 0;
+  offset? = 0;
 
   // additional
   @IsOptional()
-  date_create_order: 'ASC' | 'DESC' = 'ASC';
+  date_create_order?: 'ASC' | 'DESC' = 'ASC';
 
   // user
   @Transform(({ value }) => value.toLowerCase())
   @IsOptional()
-  searchTxt: string;
+  searchTxt?: string;
 }
