@@ -114,7 +114,7 @@ export class ScheduleService {
     // visits
     // --------------------------------------------------------------------------------------------------------------
 
-    async findVisits(searchVisitsDto: SearchVisitsDto) {
+    async findTeamVisits(searchVisitsDto: SearchVisitsDto) {
         const query = this.teamVisitsRepository
             .createQueryBuilder('team_visits')
             .select([
@@ -149,7 +149,7 @@ export class ScheduleService {
         return await query.getManyAndCount();
     }
 
-    async updateVisit(updateVisitsDto: UpdateVisitsDto) {
+    async updateTeamVisit(updateVisitsDto: UpdateVisitsDto) {
         let res;
         const semester = await this.findSemester(updateVisitsDto.semester_id)
 

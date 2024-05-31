@@ -56,7 +56,7 @@ export class ScheduleController {
     @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
     @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
     findVisitsTeam(@Query() searchVisitsDto: SearchVisitsDto) {
-        return this.scheduleService.findVisits(searchVisitsDto);
+        return this.scheduleService.findTeamVisits(searchVisitsDto);
     }
 
 
@@ -65,7 +65,7 @@ export class ScheduleController {
     @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
     @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
     updateOneVisit(@Body() updateVisitsDto: UpdateVisitsDto) {
-        return this.scheduleService.updateVisit(updateVisitsDto);
+        return this.scheduleService.updateTeamVisit(updateVisitsDto);
     }
 
     @Get('cabinets')

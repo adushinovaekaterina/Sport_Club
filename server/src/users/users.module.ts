@@ -26,6 +26,9 @@ import {CabinetsTime} from "../schedule/entities/cabinets-time.entity";
 import {Semester} from "../schedule/entities/semester.entity";
 import {Event} from "../events/entities/event.entity";
 import {Journal} from "../events/entities/journal.entity";
+import {CompetitionService} from "../competition/competition.service";
+import {StandardUser} from "../competition/entities/standard-user.entity";
+import {UserCompetition} from "../competition/entities/user-competition.entity";
 
 @Module({
     imports: [
@@ -47,6 +50,10 @@ import {Journal} from "../events/entities/journal.entity";
             Semester,
             TeamSemesterVisits,
 
+            StandardUser,
+            UserCompetition,
+
+
             TeamSchedule,
             TeamVisits,
             CabinetsTime,
@@ -58,6 +65,7 @@ import {Journal} from "../events/entities/journal.entity";
         UsersService,
         TeamsService,
         GeneralService,
+        CompetitionService,
         FormsService,
         ScheduleService,
         UploadsService,

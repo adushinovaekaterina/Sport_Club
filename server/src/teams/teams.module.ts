@@ -23,6 +23,9 @@ import {TeamSchedule} from "../schedule/entities/schedule.entity";
 import {TeamVisits} from "../schedule/entities/team_visits.entity";
 import {Cabinets} from "../schedule/entities/cabinets.entity";
 import {CabinetsTime} from "../schedule/entities/cabinets-time.entity";
+import {StandardUser} from "../competition/entities/standard-user.entity";
+import {UserCompetition} from "../competition/entities/user-competition.entity";
+import {CompetitionService} from "../competition/competition.service";
 
 @Module({
     imports: [
@@ -39,6 +42,9 @@ import {CabinetsTime} from "../schedule/entities/cabinets-time.entity";
             FormField,
             TeamPhoto,
 
+            StandardUser,
+            UserCompetition,
+
             TeamSchedule,
             TeamVisits,
             CabinetsTime,
@@ -50,6 +56,7 @@ import {CabinetsTime} from "../schedule/entities/cabinets-time.entity";
     providers: [
         TeamsService,
         UsersService,
+        CompetitionService,
         ScheduleService,
         UploadsService,
         GeneralService,

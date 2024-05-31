@@ -878,7 +878,7 @@ export class TeamsService {
 
     public async createOrUpdateSemesterVisits(dto: CreateSemesterVisitsDto) {
 
-        const existingTSV = await this.findTSV(dto)
+        const existingTSV = await this.findMaxVisits(dto)
         let msg = ""
 
         if (existingTSV) {
@@ -901,7 +901,7 @@ export class TeamsService {
         return {message: msg}
     }
 
-    public async findTSV(dto: CreateSemesterVisitsDto) {
+    public async findMaxVisits(dto: CreateSemesterVisitsDto) {
         const query = this.requisitionsTeamSemesterVisits.createQueryBuilder("team_semester_visits")
             .leftJoin("team_semester_visits.team", "team")
             .leftJoin("team_semester_visits.semester", "semester")

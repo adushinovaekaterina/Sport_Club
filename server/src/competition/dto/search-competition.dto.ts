@@ -9,5 +9,5 @@ export class SearchCompetitionDto {
   date_start: string;
 
   @IsOptional()
-  date_end: string;
+  date_end?: string;
 }

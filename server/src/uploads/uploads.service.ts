@@ -2,24 +2,43 @@ import {forwardRef, HttpException, HttpStatus, Inject, Injectable} from '@nestjs
 import * as fs from 'fs';
 import {createWriteStream} from 'fs';
 import {Event} from 'src/events/entities/event.entity';
-import {Workbook} from 'exceljs';
+import {Workbook, Worksheet} from 'exceljs';
 import {Response} from 'express';
 import * as sharp from 'sharp';
-import {InjectEntityManager, InjectRepository} from "@nestjs/typeorm";
-import {EntityManager, Repository} from "typeorm";
+import {InjectEntityManager} from "@nestjs/typeorm";
+import {EntityManager} from "typeorm";
 import {ScheduleService} from "../schedule/schedule.service";
 import {TeamsService} from "../teams/teams.service";
 import {SearchVisitsDto} from "../schedule/dto/search-visits.dto";
-import {UsersService} from "../users/users.service";
 import {UserFunction} from "../users/entities/user_function.entity";
 import {TeamRoles} from "../shared/teamRoles";
-import {Worksheet} from "exceljs";
+import {CompetitionService} from "../competition/competition.service";
+import {User} from "../users/entities/user.entity";
+import {TeamVisits} from "../schedule/entities/team_visits.entity";
+import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity";
+
+export interface Participant {
+    [idUser: number]: {
+        user: User,
+        days: { [day: string]: string | boolean },
+        counter: number
+    }
+}
+
+export interface IUserVisits {
+    [userId: number]: {
+        percents: number,
+        visits: number,
+    }
+}
+
 
 @Injectable()
 export class UploadsService {
 
     constructor(
         private readonly scheduleService: ScheduleService,
+        private readonly competitionService: CompetitionService,
         @Inject(forwardRef(() => TeamsService))
         private readonly teamService: TeamsService,
         @InjectEntityManager()
@@ -223,12 +242,15 @@ export class UploadsService {
         res.end();
     }
 
+
     async getReportTeamVisits(res: Response, dto: SearchVisitsDto) {
 
-        const teamVisits = await this.scheduleService.findVisits(dto);
+        const teamVisits = await this.scheduleService.findTeamVisits(dto);
         const teamUsers = await this.teamService.teamWithUsers(dto.team_id, {});
         const semester = await this.scheduleService.findSemester(dto.semester_id)
         const schedule = await this.scheduleService.findSchedule(dto)
+
+        const maxVisits = await this.teamService.findMaxVisits(dto)
 
         // get all dates of classes
         const dates: Date[] = []
@@ -302,12 +324,13 @@ export class UploadsService {
                     months.add(month)
                     workbook.addWorksheet(monthNamesInRussian[month]);
                     sheet = workbook.getWorksheet(monthNamesInRussian[month - 1]);
-                //  get existing sheet
+                    //  get existing sheet
                 } else {
                     sheet = workbook.getWorksheet(monthNamesInRussian[month]);
                 }
                 // add headers if there is months added
                 if (months.size > 0) {
+                    headers.push({header: "посещения", key: 'visits' , width: 10})
                     sheet.columns = headers
                 }
                 headers = [{header: 'участник', key: 'name', width: 25}]
@@ -319,21 +342,13 @@ export class UploadsService {
         console.log("formattedDates", uniqueFormattedDates)
 
 
-        interface Participant {
-            [idUser: number]: {
-                user: UserFunction,
-                days: { [day: string]: string | boolean },
-                counter: number
-            }
-        }
-
         const userVisits: Participant = {};
         // users of team
         teamUsers[0].forEach((userFunction) => {
             const tUser = userFunction.user
 
             if (tUser?.id && userFunction.function?.title != TeamRoles.Leader && userFunction?.user)
-                userVisits[tUser.id] = {user: userFunction, days: {}, counter: 0}
+                userVisits[tUser.id] = {user: userFunction.user, days: {}, counter: 0}
 
             teamVisits[0].forEach((visit) => {
                 const usrVisit = visit.user
@@ -351,12 +366,13 @@ export class UploadsService {
             })
         })
 
+        const compVisits = await this.getVisitsWithCompetitions(semester.date_start, userVisits, dto, maxVisits)
         let indexRow = 0
         for (const userId in userVisits) {
             if (userVisits.hasOwnProperty(userId)) {
                 const participant = userVisits[userId];
                 let data: any[] = [
-                    participant.user.user.fullname ?? '-',
+                    participant.user.fullname ?? '-',
                 ]
 
                 const months = new Set<number>()
@@ -369,22 +385,20 @@ export class UploadsService {
                     if (!months.has(month) || index == uniqueFormattedDates.length - 1) {
                         let m = month
                         if (index != uniqueFormattedDates.length - 1) {
-                          m -= 1
-                        }
+                            m -= 1
+                         }
 
                         if (months.size > 0) {
                             const sheet = workbook.getWorksheet(monthNamesInRussian[m]);
                             sheet.getRow(indexRow).getCell(1).alignment = {wrapText: true};
+                            const compV = compVisits[userId]
+                            data.push((`${compV?.percents}%, ${compV?.visits} (${participant.counter}) из ${maxVisits.max_visits}`))
                             sheet.addRow(data);
-                            data = [participant.user.user.fullname ?? '-',]
+                             data = [participant.user.fullname ?? '-',]
                         }
-
                         months.add(month)
                     }
-
-
                 })
-
             }
             indexRow++
         }
@@ -399,5 +413,81 @@ export class UploadsService {
         const year = date.getFullYear();
         return `${day}.${month}.${year}`;
     }
+
+
+    async getVisitsWithCompetitions(dateStart: Date, userVisits: Participant, dto: SearchVisitsDto, maxVisits: TeamSemesterVisits) {
+
+        const userCompetitions: User[] = await this.getUserCompetitions(dateStart, userVisits)
+        let usrVisitsTemp: IUserVisits = {}
+        // console.log(userCompetitions[0].user_competition)
+        // сколько 1 визит в процентах
+        let onePerVisit = 100 / maxVisits.max_visits
+        // gp through visits
+        for (let key in userVisits) {
+
+            let uV = userVisits[key]
+            if (uV.user.id) {
+
+                usrVisitsTemp[uV.user.id] = {percents: Math.round(onePerVisit * uV.counter), visits: uV.counter}
+                // competitions users
+                userCompetitions.forEach((userComp) => {
+                        const usrId = userComp.id
+                        if (usrId && uV.user.id == usrId) {
+                            // visited only train days
+                            let visits = userVisits[usrId].counter
+                            let sumCompVisitsPercents = 0
+
+                            // competition
+                            userComp.user_competition?.forEach((competition) => {
+                                const dS = new Date(competition.competition?.date_start ?? 0)
+                                const dE = new Date(competition.competition?.date_end ?? 0)
+                                const percentsVisits = this.datesCompetInPercents(dS, dE)
+                                sumCompVisitsPercents += percentsVisits
+                            })
+
+                            // получить соревнования проценты с ограничением 20%
+                            let competitionPercents = Math.min(sumCompVisitsPercents, 20)
+                            // перевести соревнования из процентов в посещения
+                            let competitionInVisits = Math.round(competitionPercents / onePerVisit)
+                            // console.log("competitionInVisits", props.maxVisits, onePerVisit, competitionInVisits,
+                            //     competitionPercents, sumCompVisitsPercents)
+
+                            // сложить посещения и участия в соревнованиях
+                            let visitedWithCompetition = Math.round(visits + competitionInVisits)
+                            usrVisitsTemp[usrId] = {
+                                percents: Math.round(onePerVisit * visitedWithCompetition),
+                                visits: visitedWithCompetition
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
+        // console.log("usrVisitsTemp", usrVisitsTemp)
+
+        return usrVisitsTemp
+    }
+
+    async getUserCompetitions(dateStart: Date, userVisits: Participant) {
+        const currentYear = dateStart.getFullYear()
+        const startOfYear = new Date(currentYear, new Date(dateStart ?? 0).getMonth(),
+            new Date(dateStart ?? 1).getDate())
+
+        let usrIds = Object.keys(userVisits).map(Number);
+        return await this.competitionService.findAllCompetitions({
+            user_ids: usrIds,
+            date_start: startOfYear.toDateString()
+        })
+    }
+
+
+    datesCompetInPercents(dateStart: Date, dateEnd: Date) {
+        let t = dateEnd.getTime() - dateStart.getTime()
+        let days = t / (1000 * 60 * 60 * 24)
+        // in percents +1 (include start date)
+        return (days + 1) * 3
+    }
+
 
 }

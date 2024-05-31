@@ -553,7 +553,7 @@ export class TeamsController {
     })
     @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
     async findMaxVisits(@Query() params:CreateSemesterVisitsDto) {
-        return await this.teamsService.findTSV(params);
+        return await this.teamsService.findMaxVisits(params);
     }
 
     @Get(':id')

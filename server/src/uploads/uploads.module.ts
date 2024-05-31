@@ -26,6 +26,9 @@ import {CabinetsTime} from "../schedule/entities/cabinets-time.entity";
 import {Cabinets} from "../schedule/entities/cabinets.entity";
 import {UsersService} from "../users/users.service";
 import {FormsService} from "../forms/forms.service";
+import {CompetitionService} from "../competition/competition.service";
+import {UserCompetition} from "../competition/entities/user-competition.entity";
+import {StandardUser} from "../competition/entities/standard-user.entity";
 
 @Module({
     imports: [TypeOrmModule.forFeature([
@@ -46,6 +49,9 @@ import {FormsService} from "../forms/forms.service";
         Semester,
         TeamSemesterVisits,
 
+        StandardUser,
+        UserCompetition,
+
         TeamSchedule,
         TeamVisits,
         CabinetsTime,
@@ -53,6 +59,7 @@ import {FormsService} from "../forms/forms.service";
     controllers: [UploadsController],
     providers: [
         UploadsService,
+        CompetitionService,
         EventsService,
         GeneralService,
         UsersService,
