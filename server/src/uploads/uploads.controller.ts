@@ -126,7 +126,6 @@ export class UploadsController {
         @Res() res: Response,
         @Query() dto: SearchVisitsDto,
     ) {
-
         await this.uploadsService.getReportTeamVisits(res, dto);
     }
 }

@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import {use} from "echarts/core";
 import {CanvasRenderer} from "echarts/renderers";
-import {LineChart} from "echarts/charts";
+import {BarChart, LineChart} from "echarts/charts";
 import {
     GridComponent,
     ToolboxComponent,
@@ -16,7 +16,7 @@ import {
     TitleComponent,
 } from "echarts/components";
 import VChart from "vue-echarts";
-import  {computed} from "vue";
+import {computed, ref} from "vue";
 import type {ComputedRef} from "vue";
 import type {EChartsOption} from "echarts";
 import type {ISeriesLine} from "@/store/models/other";
@@ -26,6 +26,7 @@ use([
     LineChart,
     ToolboxComponent,
     GridComponent,
+    BarChart,
     TitleComponent,
     TooltipComponent,
     LegendComponent,
@@ -38,7 +39,8 @@ const props = defineProps<{
     series: ISeriesLine[]
 }>();
 
-// computed
+const tableContainer = ref<HTMLElement | null>(null);// computed
+
 const options: ComputedRef<EChartsOption>  = computed(() => {
     return {
         title: {
@@ -49,9 +51,8 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
         },
         legend: {
             data: props.legend,
-            top: 'top',
-            right: 'right', // Position the legend to the right
-            orient: 'vertical' // Display the legend vertically
+            bottom: 'bottom', // Position the legend at the bottom
+            orient: 'horizontal' // Display the legend horizontally
         },
         grid: {
             left: '3%',
@@ -60,9 +61,14 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
             containLabel: true
         },
         toolbox: {
+            show: true,
             feature: {
-                saveAsImage: {}
-            }
+                dataView: { readOnly: false },
+                magicType: { type: ['line', 'bar'] },
+                restore: {},
+                saveAsImage: {},
+            },
+
         },
         xAxis: {
             type: 'category',
@@ -72,7 +78,7 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
                 rotate: 90, // Rotate the labels by -45 degrees
                 formatter: function (value) {
                     // Set the maximum length of the label
-                    const maxLength = 10;
+                    const maxLength = 20;
                     // Check if the label length exceeds the maximum length
                     if (value.length > maxLength) {
                         // Shorten the label and add ellipsis
@@ -86,9 +92,40 @@ const options: ComputedRef<EChartsOption>  = computed(() => {
         yAxis: {
             type: 'value'
         },
-        series:props.series
+        series: props.series.map((seriesItem, index) => ({
+            ...seriesItem,
+            label: {
+                show: true,
+                position: 'top' // You can adjust the position as needed
+            },
+            symbolSize: (dataValue, data) => {
+
+                if (data.dataIndex === seriesItem.data.length - 1) {
+                    // Return a bigger symbol size
+                    return 15;
+                } else {
+                    // Return default symbol size
+                    return 5;
+                }
+            },
+            itemStyle: {
+                color: (params:any) => {
+                    console.log(params)
+                    // Check if it's the last data point
+                    if (params.dataIndex === seriesItem.data.length - 1) {
+                        // Return a custom color for the last point
+                        return 'red'; // Change to the desired color
+                    } else {
+                        // Return default color for other points
+                        return params.color; // or whatever default color you have
+                    }
+                }
+            }
+        }))
     };
 });
+
+
 </script>
 
 <style scoped>

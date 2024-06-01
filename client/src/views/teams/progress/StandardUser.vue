@@ -114,8 +114,6 @@
     </div>
     <div class="row">
         <!--        {{graphics.standard}}-->
-
-        <!--        semester  {{semester}}-->
         <ELine title="Динамика физической подготовленности студента" :legend="['начало семестра', 'конец семестра']"
                :series="graphics.standard.series"
                :x-axis="graphics.standard.xAxis"/>

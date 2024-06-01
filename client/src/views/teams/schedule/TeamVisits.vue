@@ -187,8 +187,6 @@ async function getUserCompetitions() {
 
 
 async function getVisitsWithCompetitions() {
-
-
     const userCompetitions: IUser[] = await getUserCompetitions()
     const usrVisitsTemp: IUserVisits = {}
     console.log(userCompetitions)
@@ -382,6 +380,7 @@ async function fetchUserStandards() {
         semestersRange: [props.semester.value - 1, props.semester.value],
         team_id: props.teamId,
     }
+
 
     const usersStandards: IUser[] = await competitionsStore.getUserStandards(uS)
 

@@ -1,5 +1,22 @@
 import {standards} from "@/store/constants/other";
 
+export interface ISemesterHalfed {
+    id: number
+    name: string
+    isStart: boolean
+    semester: number
+}
+export const semestersHalfed:ISemesterHalfed[] = [
+    {id: 0, name: "1 семестр (начало)", isStart: true, semester: 0.5},
+    {id: 1, name: "1 семестр (конец) ", isStart: false, semester: 1},
+    {id: 2, name: "2 семестр (начало)", isStart: true, semester: 1.5},
+    {id: 3, name: "2 семестр (конец)", isStart: false, semester: 2},
+    {id: 4, name: "3 семестр (начало)", isStart: true, semester: 2.5},
+    {id: 5, name: "3 семестр (конец)", isStart: false, semester: 3},
+    {id: 6, name: "4 семестр (начало)", isStart: true, semester: 3.5},
+    {id: 7, name: "4 семестр (конец)", isStart: false, semester: 4},
+   ];
+
 export function convertValueToPoint(name: string, value: number) {
     const standard = standards.find(standard => standard.name === name);
     // {id: 0, name: "Сгибание и разгибание рук в упоре лежа на коленях (раз)"},

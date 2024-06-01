@@ -17,7 +17,7 @@ import {SearchStandardDto} from "../competition/dto/search-standard.dto";
 import {Semester} from "../schedule/entities/semester.entity";
 import {GeneralService} from "../general/general.service";
 import {convertValueToPoint} from "./functions/functions";
-import {Dictionary} from "../general/entities/dictionary.entity";
+import {Dictionary} from "../general/entities/dictionary.entity";import {StandardUser} from "../competition/entities/standard-user.entity";
 
 export interface Participant {
     [idUser: number]: {
@@ -236,14 +236,11 @@ export class UploadsService {
         // get dates of classes
         schedule.cabinets_time.forEach((cab) => {
             if (cab.repeat) {
+
                 // Define the start date and the maximum date
-
-                const currentYear = new Date().getFullYear()
-                const year = (schedule.team?.creation_date?.getFullYear() + semester.value/2)
-
+                const year = (schedule.team?.creation_date?.getFullYear() + semester.value / 2)
                 // console.log( currentYear, year, schedule.team?.creation_date.toLocaleDateString(), schedule.team?.creation_date?.getFullYear() )
                 let startDate = new Date(year, semester.date_start.getMonth(), cab.date.getDay());
-
                 let maxDate = new Date(year, semester.date_end.getMonth(), semester.date_end.getDay());
                 // console.log("startDate", startDate.toLocaleDateString(),maxDate.toLocaleDateString(), cab.date.toLocaleDateString())
 
@@ -282,6 +279,7 @@ export class UploadsService {
                 let sheet: Worksheet
                 // add new sheet
                 // console.log("m", month, " ru ", monthNamesInRussian[month], monthNamesInRussian[month - 1])
+
                 if (index != uniqueFormattedDates.length - 1) {
 
                     months.add(month)
@@ -292,13 +290,15 @@ export class UploadsService {
                 } else {
                     sheet = workbook.getWorksheet(monthNamesInRussian[month]);
                 }
+
                 // add headers if there is months added
                 if (months.size > 0) {
                     headers.push({header: "нормативы(начало/конец семестра)", key: 'standards', width: 10})
                     headers.push({header: "посещения", key: 'visits', width: 10})
 
-                   if(sheet) sheet.columns = headers
+                    if (sheet) sheet.columns = headers
                 }
+
                 headers = [{header: 'участник', key: 'name', width: 25}]
             }
             headers.push({header: date.formattedDate, key: 'date' + index, width: 10})
@@ -513,7 +513,6 @@ export class UploadsService {
                 dataStandard[userId].avgEnd = sumPointsEnd / standardsNames.length
             }
         })
-
         return dataStandard
     }
 
