@@ -3,15 +3,15 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 export class DictionaryDto {
   @IsOptional()
-  name: string;
+  name?: string;
 
   @IsOptional()
-  class_name: string;
+  class_name?: string;
 
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
-  class_id: number;
+  class_id?: number;
 
   constructor(name: string, class_is: number) {
     this.name = name;

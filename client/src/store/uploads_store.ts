@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import type {ISearchVisitsDto} from "@/store/models/schedule/visits.model";
 
 export const useUploadsStore = defineStore("uploads", () => {
   // uploadFile in server
@@ -36,15 +37,6 @@ export const useUploadsStore = defineStore("uploads", () => {
   async function uploadImage(file: File){
     let responseMsg = "сохранено";
 
-    // Read the image file as a buffer
-    // const compressedImageData = await compressImage(file, 700, 300);
-
-    // const formData = new FormData();
-    // formData.append(
-    //   "file",
-    //   new Blob([compressedImageData], { type: "image/webp" }),
-    //   "image.webp",
-    // );
 
     const formData = new FormData();
     formData.append(
@@ -65,17 +57,19 @@ export const useUploadsStore = defineStore("uploads", () => {
     return responseMsg;
   }
 
-  // TODO: maybe img compression is needed only on backend?
-  // async function compressImage(file: File, width: number, height: number) {
-  //   const buff = await file.arrayBuffer();
-  //   return await sharp(buff)
-  //     .resize({ width: width, height: height }) // Set the maximum width of the compressed image
-  //     .webp({ quality: 80 }) // Set the webp quality to 80%
-  //     .toBuffer();
-  // }
+  async function getReportTeamVisits(dto:ISearchVisitsDto) {
+
+    const res = await axios.get("/api/uploads/excel/team-visits", {
+      params: {...dto},
+      responseType: 'arraybuffer', // Important for binary data
+    });
+    return res.data;
+  }
+
 
   return {
     uploadFile,
     uploadImage,
+    getReportTeamVisits
   };
 });

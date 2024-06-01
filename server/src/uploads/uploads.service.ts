@@ -1,7 +1,6 @@
 import {forwardRef, HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import * as fs from 'fs';
 import {createWriteStream} from 'fs';
-import {Event} from 'src/events/entities/event.entity';
 import {Workbook, Worksheet} from 'exceljs';
 import {Response} from 'express';
 import * as sharp from 'sharp';
@@ -10,12 +9,15 @@ import {EntityManager} from "typeorm";
 import {ScheduleService} from "../schedule/schedule.service";
 import {TeamsService} from "../teams/teams.service";
 import {SearchVisitsDto} from "../schedule/dto/search-visits.dto";
-import {UserFunction} from "../users/entities/user_function.entity";
 import {TeamRoles} from "../shared/teamRoles";
 import {CompetitionService} from "../competition/competition.service";
 import {User} from "../users/entities/user.entity";
-import {TeamVisits} from "../schedule/entities/team_visits.entity";
 import {TeamSemesterVisits} from "../teams/entities/team-semester-visits.entity";
+import {SearchStandardDto} from "../competition/dto/search-standard.dto";
+import {Semester} from "../schedule/entities/semester.entity";
+import {GeneralService} from "../general/general.service";
+import {convertValueToPoint} from "./functions/functions";
+import {Dictionary} from "../general/entities/dictionary.entity";
 
 export interface Participant {
     [idUser: number]: {
@@ -32,6 +34,13 @@ export interface IUserVisits {
     }
 }
 
+export interface IUserAvgPoints {
+    [userId: number]: {
+        avgStart: number,
+        avgEnd: number
+    }
+}
+
 
 @Injectable()
 export class UploadsService {
@@ -43,6 +52,7 @@ export class UploadsService {
         private readonly teamService: TeamsService,
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
+        private readonly dictionaryService: GeneralService,
     ) {
     }
 
@@ -192,56 +202,6 @@ export class UploadsService {
         return buffer;
     }
 
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    async getReportEvents(res: Response, events: Event[], countEvents: number) {
-        res.setHeader(
-            'Content-Type',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        );
-        res.setHeader(
-            'Content-Disposition',
-            'attachment; filename=' + 'report_file.xlsx',
-        );
-
-        const workbook = new Workbook();
-        const worksheet = workbook.addWorksheet('мероприятия');
-        worksheet.columns = [
-            {header: 'название', key: 'name', width: 25},
-            {header: 'уровень', key: 'level', width: 15},
-            {header: 'тип', key: 'type', width: 15},
-            {header: 'формат', key: 'format', width: 15},
-            {header: 'дата начала', key: 'startDate', width: 15},
-            {header: 'дата конца', key: 'endDate', width: 15},
-        ];
-
-        worksheet.getRow(1).font = {bold: true};
-
-        // Add some data to the worksheet
-
-        let indexRow = 1;
-        for (const i in events) {
-            const e = events[i];
-            const arrData = [];
-
-            arrData.push(
-                e.title ?? '-',
-                e.level ? e.level.name : '-',
-                e.type ? e.type.name : '-',
-                e.format ? e.format.name : '-',
-                e.dateStart,
-                e.dateEnd,
-            );
-
-            worksheet.getRow(indexRow).getCell(1).alignment = {wrapText: true};
-            worksheet.addRow(arrData);
-
-            indexRow++;
-        }
-
-        await workbook.xlsx.write(res);
-        res.end();
-    }
-
 
     async getReportTeamVisits(res: Response, dto: SearchVisitsDto) {
 
@@ -277,18 +237,19 @@ export class UploadsService {
         schedule.cabinets_time.forEach((cab) => {
             if (cab.repeat) {
                 // Define the start date and the maximum date
-                const currentYear = new Date().getFullYear();
 
-                let startDate = new Date(currentYear, 0, cab.date.getDay());
-                console.log("startDate", startDate.toLocaleDateString(), cab.date.toLocaleDateString())
+                const currentYear = new Date().getFullYear()
+                const year = (schedule.team?.creation_date?.getFullYear() + semester.value/2)
 
-                let maxDate = new Date(currentYear, semester.date_end.getMonth(), semester.date_end.getDay());
+                // console.log( currentYear, year, schedule.team?.creation_date.toLocaleDateString(), schedule.team?.creation_date?.getFullYear() )
+                let startDate = new Date(year, semester.date_start.getMonth(), cab.date.getDay());
+
+                let maxDate = new Date(year, semester.date_end.getMonth(), semester.date_end.getDay());
+                // console.log("startDate", startDate.toLocaleDateString(),maxDate.toLocaleDateString(), cab.date.toLocaleDateString())
+
                 // Loop until reaching the maximum date
                 while (startDate < maxDate) {
-                    console.log("inner ", startDate.toLocaleDateString())
-
                     // Do something with the current date
-                    // const formattedDate = formatDate(startDate)
                     startDate.setHours(0, 0, 0, 0)
                     dates.push(new Date(startDate))
                     // Move to the next week
@@ -320,18 +281,23 @@ export class UploadsService {
             if (!months.has(month) || index == uniqueFormattedDates.length - 1) {
                 let sheet: Worksheet
                 // add new sheet
+                // console.log("m", month, " ru ", monthNamesInRussian[month], monthNamesInRussian[month - 1])
                 if (index != uniqueFormattedDates.length - 1) {
+
                     months.add(month)
                     workbook.addWorksheet(monthNamesInRussian[month]);
                     sheet = workbook.getWorksheet(monthNamesInRussian[month - 1]);
+                    // console.log("here", sheet, workbook)
                     //  get existing sheet
                 } else {
                     sheet = workbook.getWorksheet(monthNamesInRussian[month]);
                 }
                 // add headers if there is months added
                 if (months.size > 0) {
-                    headers.push({header: "посещения", key: 'visits' , width: 10})
-                    sheet.columns = headers
+                    headers.push({header: "нормативы(начало/конец семестра)", key: 'standards', width: 10})
+                    headers.push({header: "посещения", key: 'visits', width: 10})
+
+                   if(sheet) sheet.columns = headers
                 }
                 headers = [{header: 'участник', key: 'name', width: 25}]
             }
@@ -367,6 +333,8 @@ export class UploadsService {
         })
 
         const compVisits = await this.getVisitsWithCompetitions(semester.date_start, userVisits, dto, maxVisits)
+        const standards = await this.getUsersStandards(semester, userVisits, dto)
+
         let indexRow = 0
         for (const userId in userVisits) {
             if (userVisits.hasOwnProperty(userId)) {
@@ -379,24 +347,30 @@ export class UploadsService {
 
                 uniqueFormattedDates.forEach((date, index) => {
                     const visitedDay = participant.days[date.formattedDate]
-                    data.push(visitedDay ? "+" : "")
                     const month = date.realDate.getMonth()
+                    // console.log("month", month, " date ", date.formattedDate, date.realDate.toLocaleDateString(), " fffff ", data)
 
                     if (!months.has(month) || index == uniqueFormattedDates.length - 1) {
                         let m = month
                         if (index != uniqueFormattedDates.length - 1) {
                             m -= 1
-                         }
+                        }
 
                         if (months.size > 0) {
+                            const compV = compVisits[userId]
+                            data.push((`${standards[userId]?.avgStart}/${standards[userId]?.avgEnd}`))
+                            data.push((`${compV?.percents}%, ${compV?.visits} (${participant.counter}) из ${maxVisits.max_visits}`))
+
                             const sheet = workbook.getWorksheet(monthNamesInRussian[m]);
                             sheet.getRow(indexRow).getCell(1).alignment = {wrapText: true};
-                            const compV = compVisits[userId]
-                            data.push((`${compV?.percents}%, ${compV?.visits} (${participant.counter}) из ${maxVisits.max_visits}`))
+                            // addition data
                             sheet.addRow(data);
-                             data = [participant.user.fullname ?? '-',]
+                            data = [participant.user.fullname ?? '-',]
                         }
+                        data.push(visitedDay ? "+" : "")
                         months.add(month)
+                    } else {
+                        data.push(visitedDay ? "+" : "")
                     }
                 })
             }
@@ -459,6 +433,7 @@ export class UploadsService {
                                 visits: visitedWithCompetition
                             }
                         }
+
                     }
                 )
             }
@@ -489,5 +464,57 @@ export class UploadsService {
         return (days + 1) * 3
     }
 
+
+    // TODO: this is from client side
+    private async getUsersStandards(semester: Semester, userVisits: Participant, dto: SearchVisitsDto,) {
+        let usrIds = Object.keys(userVisits).map(Number);
+
+        const uS: SearchStandardDto = {
+            user_ids: usrIds,
+            semestersRange: [semester.value - 1, semester.value],
+            team_id: dto.team_id,
+        }
+
+        const usersStandards: User[] = await this.competitionService.findAllStandards(uS)
+
+        const standardsNames: Dictionary[] = await this.dictionaryService.findAll({class_id: 8})
+
+        const dataStandard: IUserAvgPoints = {}
+
+        // go throught each user
+        usersStandards.forEach((user) => {
+            let sumPointsStart = 0
+            let sumPointsEnd = 0
+            const userId = user?.id
+
+            if (userId) {
+                dataStandard[userId] = {avgStart: 0, avgEnd: 0}
+
+                // in each standard
+                standardsNames.forEach((standard) => {
+
+                    // go throught each user value standard
+                    user?.standard_user?.forEach((userStandard) => {
+
+                        if (standard.id == userStandard.standard?.id && userStandard?.semester && userStandard.value) {
+                            // console.log(user.fullname, "userStandard val ", userStandard.value, "sem ", userStandard?.semester, "semester.value", semester.value?.semester )
+                            // start
+                            if (semester?.value && userStandard?.semester < semester?.value) {
+                                sumPointsStart += convertValueToPoint(standard.name, userStandard.value)
+                                // end
+                            } else {
+                                sumPointsEnd += convertValueToPoint(standard.name, userStandard.value)
+                            }
+                        }
+                    })
+                })
+                // console.log("end", sumPointsStart, sumPointsEnd)
+                dataStandard[userId].avgStart = sumPointsStart / standardsNames.length
+                dataStandard[userId].avgEnd = sumPointsEnd / standardsNames.length
+            }
+        })
+
+        return dataStandard
+    }
 
 }

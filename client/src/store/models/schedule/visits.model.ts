@@ -15,3 +15,10 @@ export class IUpdateVisit {
     comment?: string;
     status_visit?: boolean;
 }
+
+export class ISearchVisitsDto {
+    team_id?: number;
+    semester_id?: number;
+    date_visit_start?: string;
+    date_visit_end?: string;
+}

@@ -10,7 +10,7 @@ import {
     Res,
     Req,
     Delete,
-    Body, Param,
+    Body,
 } from '@nestjs/common';
 import {UploadsService} from './uploads.service';
 import {FileInterceptor} from '@nestjs/platform-express';
@@ -107,53 +107,6 @@ export class UploadsController {
 
         return file;
     }
-
-    // reports--------------------------------------------------------------------------
-    //get excel file about events
-    @Get('excel/events_direction')
-    @Header(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    )
-    @Header('Content-Disposition', 'attachment; filename=data.xlsx')
-    @ApiOperation({
-        summary: 'Получение файла excel по мероприятиям направления ',
-    })
-    @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
-    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
-    async getReportEventsOfDirection(
-        @Res() res: Response,
-        @Query() searchEventDto: SearchEventDto,
-    ) {
-        // получить все мероприятия по заданным параметрам
-        const events = await this.eventsService.findAllEvents(searchEventDto);
-        await this.uploadsService.getReportEvents(res, events[0], events[1]);
-    }
-
-    //get excel file about events
-
-    @Get('excel/events_of_team')
-    @Header(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    )
-    @Header('Content-Disposition', 'attachment; filename=data1.xlsx')
-    @ApiOperation({
-        summary: 'Получение файла excel по мероприятиям коллектива ',
-    })
-    @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
-    @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
-    async getReportEventsOfTeam(
-        @Res() res: Response,
-        @Query() searchEventDto: SearchEventDto,
-    ) {
-        const events = await this.eventsService.getEventsViaJournalsByTeam(
-            searchEventDto,
-        );
-
-        await this.uploadsService.getReportEvents(res, events[0], events[1]);
-    }
-
     // --------------------------------------------------------------------------------------------------------------
     // teams
     // --------------------------------------------------------------------------------------------------------------

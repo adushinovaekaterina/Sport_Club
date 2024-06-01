@@ -2,8 +2,12 @@
     <!--    schedule-->
     <!--  time {{ time }} -->
     <!--  timeDayWeek {{ timeDayWeek }}-->
-    <div class="row">
-        <div class="col-12 justify-content-end d-flex my-3" v-if="can('can create teams')">
+
+    <div class="row my-3">
+        <div class="col-6">
+            <button class="btn-primary" @click="downloadReportVisits">Выгрузить отчетность всей команды</button>
+        </div>
+        <div class="col-6 justify-content-end d-flex " v-if="can('can create teams')">
             <button class="btn-custom-primary" type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#editScheduleModal">Добавить занятие
@@ -11,6 +15,9 @@
                 />
             </button>
         </div>
+    </div>
+    <div class="row">
+
         <div class="col-12 overflow-scroll" style="max-height: 500px">
             <table class="table">
                 <thead>
@@ -107,12 +114,15 @@ import {ISemester} from "@/store/models/schedule/semester.model";
 import {TeamRoles} from "@/store/enums/team_roles";
 import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import type {DayWeek} from "@/views/teams/schedule/day.model";
+import {useUploadsStore} from "@/store/uploads_store";
 
 const cabinetsStore = useCabinetsTimeStore();
 const permissions_store = usePermissionsStore();
+const uploadsStore = useUploadsStore();
+
 const can = permissions_store.can;
 
-
+const fileURL = ref(); //путь к файлу для загрузки
 const cabinetsTimeStore = useCabinetsTimeStore();
 
 const props = defineProps<{
@@ -144,6 +154,23 @@ watch(() => props.semester, async (value) => {
     cabinetsTimeSearch.value.semester_id = value.id
     await getCabinetsTime()
 })
+const resFile = ref(); // файл
+
+// скачать файл
+async function downloadReportVisits() {
+    const response = await uploadsStore
+        .getReportTeamVisits({
+            semester_id: props.semester.id,
+            team_id: props.teamId,
+        })
+    const url = window.URL.createObjectURL(new Blob([response]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'report-visits.xlsx'); // or any other extension
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+}
 
 async function onSaveChangesModal() {
     await getCabinetsTime()

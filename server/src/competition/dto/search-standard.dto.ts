@@ -5,7 +5,7 @@ export class SearchStandardDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  user_id: number;
+  user_id?: number;
 
   @IsOptional()
   @IsArray()
@@ -14,11 +14,11 @@ export class SearchStandardDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  standard_id:number
+  standard_id?:number
 
   @IsOptional()
   @IsArray()
-  semesters: number[];
+  semesters?: number[];
 
   // 2 values
   @IsOptional()
@@ -28,5 +28,5 @@ export class SearchStandardDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  team_id: number;
+  team_id?: number;
 }

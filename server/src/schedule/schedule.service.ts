@@ -67,7 +67,7 @@ export class ScheduleService {
         const query = this.teamSchedRepository
             .createQueryBuilder('team_schedule')
             .select(['team_schedule.id', 'user.id', 'user.fullname'])
-            .leftJoin('team_schedule.team', 'team')
+            .leftJoinAndSelect('team_schedule.team', 'team')
             // cabinets_time
             .leftJoinAndSelect('team_schedule.cabinets_time', 'cabinets_time')
             .leftJoinAndSelect('cabinets_time.day_week', 'day_week')
