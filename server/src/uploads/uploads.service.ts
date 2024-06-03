@@ -235,14 +235,17 @@ export class UploadsService {
 
         // get dates of classes
         schedule.cabinets_time.forEach((cab) => {
+            // console.log(cab.date.toLocaleDateString(), cab)
+
             if (cab.repeat) {
 
                 // Define the start date and the maximum date
                 const year = (schedule.team?.creation_date?.getFullYear() + semester.value / 2)
+                console.log("semester.value / 2",semester.value / 2)
                 // console.log( currentYear, year, schedule.team?.creation_date.toLocaleDateString(), schedule.team?.creation_date?.getFullYear() )
-                let startDate = new Date(year, semester.date_start.getMonth(), cab.date.getDay());
-                let maxDate = new Date(year, semester.date_end.getMonth(), semester.date_end.getDay());
-                // console.log("startDate", startDate.toLocaleDateString(),maxDate.toLocaleDateString(), cab.date.toLocaleDateString())
+                let startDate = new Date(year, cab.date.getMonth(), cab.date.getDate());
+                let maxDate = new Date(year, semester.date_end.getMonth(), semester.date_end.getDate());
+                console.log("startDate", startDate.toLocaleDateString(),maxDate.toLocaleDateString(), cab.date.toLocaleDateString())
 
                 // Loop until reaching the maximum date
                 while (startDate < maxDate) {
@@ -252,6 +255,8 @@ export class UploadsService {
                     // Move to the next week
                     startDate.setDate(startDate.getDate() + 7);
                 }
+                console.log("dates", dates)
+
             } else {
                 cab.date.setHours(0, 0, 0, 0)
                 dates.push(new Date(cab.date))
@@ -305,7 +310,7 @@ export class UploadsService {
         })
 
         // Format the dates and print them
-        console.log("formattedDates", uniqueFormattedDates)
+        // console.log("formattedDates", uniqueFormattedDates)
 
 
         const userVisits: Participant = {};
