@@ -135,6 +135,7 @@ export class TeamsService {
             ...updateTeamDto,
             cabinets: updateTeamDto.cabinetsAsNumbers,
             charter_team: updateTeamDto.charterTeam,
+            id_parent:updateTeamDto.id_parent
         });
 
         await this.findOne(id);
@@ -152,10 +153,11 @@ export class TeamsService {
     }
 
     //создать коллектив, с учетом, что есь минимум 1 лидер
-    async createTeam(user: User, createTeamDto: CreateTeamDto) {
+    async createTeam(user: User, dto: CreateTeamDto) {
         const team = await this.teamsRepository.save({
-            ...createTeamDto,
-            cabinets: createTeamDto.cabinetsAsNumbers,
+            ...dto,
+            id_parent:dto.id_parent,
+            cabinets: dto.cabinetsAsNumbers,
             image: [],
             tags: [],
             shortname: '',
@@ -165,7 +167,7 @@ export class TeamsService {
 
         const directionTeamLeaderDto = new AssignDirectionTeamLeaderDto();
         directionTeamLeaderDto.teamId = team.id;
-        directionTeamLeaderDto.userIds = createTeamDto.leaders ?? [];
+        directionTeamLeaderDto.userIds = dto.leaders ?? [];
         directionTeamLeaderDto.roleName = TeamRoles.Leader;
 
         // назначить нового пользвоателя
@@ -653,7 +655,6 @@ export class TeamsService {
         dto: CreateRequisitionDto,
         user: User,
     ): Promise<Requisitions> {
-        // console.log(dto);
         const {team_id, fields} = dto;
         const team = await this.findOne(team_id);
         if (!team) throw new HttpException('Коллектив не найден', 401);

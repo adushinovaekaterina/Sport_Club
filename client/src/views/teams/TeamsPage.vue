@@ -37,8 +37,7 @@
             </div>
 
 
-
-    </div>
+        </div>
         <!-- Обертка карточек коллективов -->
         <div v-if="show" class="wrapper-team__content">
             <!-- Фильтр вдимый-->
@@ -169,24 +168,24 @@
                                 </div>
                             </div>
 
+                        </div>
+
+                        <div
+                                v-if="loading"
+                                class="d-flex align-items-center justify-content-center mt-4"
+                        >
+                            <LoadingElem size-fa-icon="fa-3x"/>
+                        </div>
                     </div>
 
-                    <div
-                            v-if="loading"
-                            class="d-flex align-items-center justify-content-center mt-4"
-                    >
-                        <LoadingElem size-fa-icon="fa-3x"/>
-                    </div>
+                    <Pagination
+                            :max-page="maxPages"
+                            :visible-pages="visiblePages"
+                            :handleEventChangePage="handleEventChangePage"
+                    />
                 </div>
-
-                <Pagination
-                        :max-page="maxPages"
-                        :visible-pages="visiblePages"
-                        :handleEventChangePage="handleEventChangePage"
-                />
             </div>
         </div>
-    </div>
     </div>
 </template>
 
@@ -302,6 +301,12 @@ async function handleEventSetFilters() {
                 break;
             // directions
             case 2:
+                filterTeam.value.directions = []
+                el.menu_types.forEach((direction) => {
+                    if(direction.checked){
+                        filterTeam.value?.directions?.push(direction.id)
+                    }
+                })
 
                 break;
             // archive
@@ -336,9 +341,12 @@ async function getDirections() {
             shortname: direction.shortname,
             idDB: direction.id,
         };
+
+        menu_items.value[1].menu_types.push({id: direction.id, title: direction.shortname, checked: true})
     }
 
     foundDirections.value = arrayData;
+
 }
 
 async function handleEventChangePage(currentPage: number) {

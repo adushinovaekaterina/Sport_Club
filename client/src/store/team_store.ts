@@ -88,6 +88,7 @@ export const useTeamStore = defineStore("teams", () => {
 
     //create team
     async function createTeam(
+        id_parent:number,
         title: string,
         description: string,
         shortname: string,
@@ -97,6 +98,9 @@ export const useTeamStore = defineStore("teams", () => {
     ) {
         const formData = new FormData();
 
+        if (id_parent > 0) {
+            formData.append("id_parent", id_parent.toString());
+        }
         formData.append("title", title);
         formData.append("description", description);
         formData.append("shortname", shortname);
@@ -321,8 +325,8 @@ export const useTeamStore = defineStore("teams", () => {
             title: "Вид спорта",
             hidden: true,
             menu_types: [
-                {id: 1, title: "Командный", checked: true},
-                {id: 2, title: "Индивидуальный", checked: true},
+                // {id: 1, title: "Командный", checked: true},
+                // {id: 2, title: "Индивидуальный", checked: true},
 
                 // { id: 1, title: "Научная деятельность", checked: true },
                 // { id: 2, title: "Учебная деятельность", checked: true },

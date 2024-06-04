@@ -480,7 +480,7 @@ async function fillForm() {
     if (teamObj.value) {
         let t = teamObj.value;
 
-        selectedDirection.value = t.id_parent ? t.id_parent.id ?? 0 : 0;
+        selectedDirection.value = t.id_parent ? (t.id_parent.id ?? 0 ): 0;
         title.value = t.title ?? "";
         shortname.value = t.shortname ?? "";
         description.value = t.description ?? "";
@@ -544,6 +544,7 @@ async function createTeam() {
     //create team
     await teamStore
         .createTeam(
+            selectedDirection.value,
             title.value,
             description.value,
             shortname.value,
