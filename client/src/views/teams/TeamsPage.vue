@@ -307,7 +307,6 @@ async function handleEventSetFilters() {
                         filterTeam.value?.directions?.push(direction.id)
                     }
                 })
-
                 break;
             // archive
             case 3:

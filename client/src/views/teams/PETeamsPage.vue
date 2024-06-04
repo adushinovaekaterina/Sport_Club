@@ -277,6 +277,12 @@ async function handleEventSetFilters() {
                 break;
             // directions
             case 2:
+                filterTeam.value.directions = []
+                el.menu_types.forEach((direction) => {
+                    if(direction.checked){
+                        filterTeam.value?.directions?.push(direction.id)
+                    }
+                })
                 break;
             // archive
             case 3:
@@ -310,6 +316,7 @@ async function getDirections() {
             shortname: direction.shortname,
             idDB: direction.id,
         };
+        menu_items.value[1].menu_types.push({id: direction.id, title: direction.shortname, checked: true})
     }
 
     foundDirections.value = arrayData;
