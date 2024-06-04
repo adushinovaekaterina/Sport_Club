@@ -33,6 +33,12 @@ export class SearchTeamDto {
   @Transform(({ value }) => value === 'true')
   is_archive: boolean;
 
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
+  is_active: boolean;
+
   @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true')

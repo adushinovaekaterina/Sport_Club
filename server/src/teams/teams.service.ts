@@ -287,11 +287,19 @@ export class TeamsService {
             })
             : query;
 
-        // is_archive
-        if (params.is_archive != null) {
-            //отфильтровать по типу коллектива
-            query.andWhere('teams.is_archive = :is_archive', {
-                is_archive: params.is_archive,
+        let archive = null
+        // is_archive and is_active
+        if (params.is_archive && !params.is_active) {
+           archive = true
+        }else if(params.is_archive && params.is_active){
+            archive = null
+        }else if(params.is_archive) archive = params.is_archive
+        else if(params.is_active) archive = !params.is_active
+
+        // archive
+        if (archive != null) {
+            query.andWhere('teams.is_archive = :archive', {
+                archive: archive,
             });
         }
 

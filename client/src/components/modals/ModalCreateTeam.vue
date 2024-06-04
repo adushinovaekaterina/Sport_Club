@@ -357,7 +357,7 @@ const foundUsers = ref();
 const foundAuditories = ref();
 
 // найденные направления из системы
-const directions = ref([{id: 0, shortname: "Все"}]); //дата
+const directions = ref([{id: 0, shortname: "Все"}]);
 const selectedDirection = ref(0);
 
 //получить юзеров
