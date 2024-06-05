@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {ref} from "vue";
-import type UpdateTeamModel from "@/store/models/teams/update-team.model";
+import type UCTeamModel from "@/store/models/teams/u-c-team.model";
 import type {FilterTeam} from "./models/teams/filter-teams.model";
 import type {RURequisition} from "@/store/models/teams/update-requisition.model";
 import axios from "axios";
@@ -88,30 +88,25 @@ export const useTeamStore = defineStore("teams", () => {
 
     //create team
     async function createTeam(
-        id_parent:number,
-        title: string,
-        description: string,
-        shortname: string,
-        leaders: number[],
-        cabinets: number[],
-        is_national: boolean
+        dto:UCTeamModel
     ) {
         const formData = new FormData();
 
-        if (id_parent > 0) {
-            formData.append("id_parent", id_parent.toString());
+        if (dto.id_parent > 0) {
+            formData.append("id_parent", dto.id_parent.toString());
         }
-        formData.append("title", title);
-        formData.append("description", description);
-        formData.append("shortname", shortname);
-        formData.append("is_national", is_national ? "true" : "false");
+        formData.append("capacity", dto.capacity.toString());
+        formData.append("title", dto.title);
+        formData.append("description", dto.description);
+        formData.append("shortname", dto.shortname);
+        formData.append("is_national", dto.is_national ? "true" : "false");
         //add leaders
-        leaders.forEach((el) => {
+        dto.leaders.forEach((el) => {
             formData.append("leaders[]", el.toString());
         });
         // cabinets
-        for (let i = 0; i < cabinets.length; i++) {
-            formData.append("cabinets[]", cabinets[i].toString());
+        for (let i = 0; i < dto.cabinets.length; i++) {
+            formData.append("cabinets[]", dto.cabinets[i].toString());
         }
 
         const config = {
@@ -134,12 +129,13 @@ export const useTeamStore = defineStore("teams", () => {
     }
 
     // обновить коллектив
-    async function updateTeam(uT: UpdateTeamModel) {
+    async function updateTeam(uT: UCTeamModel) {
 
         const formData = new FormData();
         if (uT.id_parent > 0) {
             formData.append("id_parent", uT.id_parent.toString());
         }
+        formData.append("capacity", uT.capacity.toString());
         formData.append("title", uT.title);
         formData.append("description", uT.description);
         formData.append("shortname", uT.shortname);

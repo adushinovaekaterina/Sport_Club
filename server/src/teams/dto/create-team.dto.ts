@@ -35,6 +35,11 @@ export class CreateTeamDto {
   leaders: number[];
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  capacity: number;
+
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
   cabinets: string[];

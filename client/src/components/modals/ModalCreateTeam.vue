@@ -114,6 +114,16 @@
                                         </div>
                                     </div>
 
+                                    <div class="">
+                                        <div class="fw-bold">Число участников:</div>
+                                        <input
+                                                type="number"
+                                                placeholder="Число участников"
+                                                v-model="capacity"
+                                                required
+                                        />
+                                    </div>
+
                                     <div class="fw-bold">Руководители:</div>
                                     <v-select
                                             v-if="can('can create teams')"
@@ -301,7 +311,7 @@ import {onBeforeMount, ref, watch} from "vue";
 import _ from "lodash";
 import {useTeamStore} from "@/store/team_store";
 import {useUserStore} from "@/store/user_store";
-import UpdateTeamModel from "../../store/models/teams/update-team.model";
+import UCTeamModel from "../../store/models/teams/u-c-team.model";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {TeamRoles} from "@/store/enums/team_roles";
 import {FilterUser} from "@/store/models/user.model";
@@ -345,12 +355,11 @@ const searchTxtUser = ref();
 const auditories = ref<{ id: number; name: string }[]>([]);
 
 const description = ref("");
+const capacity = ref(1);
 
 // files
 const charterTeamFile = ref();
 const documentFile = ref();
-
-const charterTeamBase64 = ref();
 
 // найденные юзеры
 const foundUsers = ref();
@@ -436,6 +445,7 @@ async function fetchTeam(id: number) {
     tags.value = teamObj.value.tags ?? [];
     is_national.value = teamObj.value.is_national ?? false
     links.value = teamObj.value.links ?? [];
+    capacity.value = teamObj.value?.capacity ?? 0
 
     let ldrs = getLeaders(teamObj.value);
     leaders.value = ldrs?.map((el) => {
@@ -480,7 +490,7 @@ async function fillForm() {
     if (teamObj.value) {
         let t = teamObj.value;
 
-        selectedDirection.value = t.id_parent ? (t.id_parent.id ?? 0 ): 0;
+        selectedDirection.value = t.id_parent ? (t.id_parent.id ?? 0) : 0;
         title.value = t.title ?? "";
         shortname.value = t.shortname ?? "";
         description.value = t.description ?? "";
@@ -541,16 +551,19 @@ async function getAuditories() {
 
 //создать коллектив
 async function createTeam() {
+    const model = new UCTeamModel();
+    model.title = title.value;
+    model.description = description.value;
+    model.shortname = shortname.value;
+    model.leaders = leaders.value.map((el) => el.id);
+    model.cabinets = auditories.value.map((item) => item.id);
+    model.is_national = is_national.value
+    model.id_parent = selectedDirection.value
+    model.capacity = capacity.value
     //create team
     await teamStore
         .createTeam(
-            selectedDirection.value,
-            title.value,
-            description.value,
-            shortname.value,
-            leaders.value.map((el) => el.id),
-            auditories.value.map((item) => item.id),
-            is_national.value
+            model
         )
         .then(() => {
             props.onSaveChanges();
@@ -560,7 +573,7 @@ async function createTeam() {
 // update коллектив
 async function updateTeam() {
     //update team
-    const uT = new UpdateTeamModel();
+    const uT = new UCTeamModel();
     uT.id_parent = selectedDirection.value;
     uT.cabinets = auditories.value.map((el) => el.id);
     uT.description = description.value;
@@ -571,6 +584,7 @@ async function updateTeam() {
     uT.tags = tags.value;
     uT.links = links.value;
     uT.is_national = is_national.value
+    uT.capacity = capacity.value
 
     await teamStore.updateTeam(uT);
     await fetchTeam(props.teamId);

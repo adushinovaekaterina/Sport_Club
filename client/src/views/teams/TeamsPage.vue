@@ -159,7 +159,7 @@
                                         </div>
 
                                         <div class="col-auto">
-                      <span v-if="team.set_open" class="set set__open">
+                      <span v-if="team.capacity > team.count_members" class="set set__open">
                         Набор открыт
                       </span>
                                             <span class="set set__closed" v-else> Набор закрыт</span>

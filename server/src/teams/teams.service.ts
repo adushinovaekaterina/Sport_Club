@@ -83,7 +83,7 @@ export class TeamsService {
     async findOne(id: number) {
         const head = TeamRoles.Leader;
 
-        const res = await this.teamsRepository
+        const team = await this.teamsRepository
             .createQueryBuilder('teams')
 
             .select([
@@ -103,6 +103,7 @@ export class TeamsService {
                 'teams.charter_team',
                 'teams.id_parent',
                 'teams.is_national',
+                'teams.capacity',
                 //     team photos
                 'team_photos.image',
                 'team_photos.id',
@@ -124,7 +125,10 @@ export class TeamsService {
             .leftJoinAndSelect('user_functions.user', 'user')
             .getOne();
 
-        return res;
+        // console.log(team?.id, team)
+        if(team) await this.countMembers([team])
+
+        return team;
     }
 
     // Обновить коллектив
@@ -135,7 +139,7 @@ export class TeamsService {
             ...updateTeamDto,
             cabinets: updateTeamDto.cabinetsAsNumbers,
             charter_team: updateTeamDto.charterTeam,
-            id_parent:updateTeamDto.id_parent
+            id_parent: updateTeamDto.id_parent
         });
 
         await this.findOne(id);
@@ -156,7 +160,7 @@ export class TeamsService {
     async createTeam(user: User, dto: CreateTeamDto) {
         const team = await this.teamsRepository.save({
             ...dto,
-            id_parent:dto.id_parent,
+            id_parent: dto.id_parent,
             cabinets: dto.cabinetsAsNumbers,
             image: [],
             tags: [],
@@ -189,7 +193,6 @@ export class TeamsService {
     async findAll(params: SearchTeamDto): Promise<[Team[], number]> {
         let query = this.teamsRepository
             .createQueryBuilder('teams')
-
             .select([
                 'teams.id',
                 'teams.title',
@@ -200,6 +203,7 @@ export class TeamsService {
                 'teams.type_team',
                 'teams.cabinets',
                 'teams.is_archive',
+                'teams.capacity',
                 'teams.document',
                 'teams.shortname',
                 'teams.charter_team',
@@ -210,9 +214,8 @@ export class TeamsService {
             .where('teams.type_team = :type', {type: params.type})
             // select direction
             .leftJoin('teams.id_parent', 'direction')
-            // .andWhere("functions.title = :head", { head: head })
-
-            .orderBy('teams.id', 'DESC');
+            .groupBy("teams.id")
+        // .addGroupBy("member_functions.id")
 
         if (params.fields.includes('leaders')) {
             query
@@ -237,7 +240,30 @@ export class TeamsService {
             .take(params.limit) // Set the limit
             .skip(params.offset); // Set the offset
 
-        return await query.getManyAndCount();
+        const teams = await query.getManyAndCount();
+        // if (params.fields.includes('count_members')) {
+        await this.countMembers(teams[0])
+        // }
+        return teams
+    }
+
+    async countMembers(teams: Team[]) {
+        for (const team of teams) {
+            const func = await this.functionsRepository
+                .createQueryBuilder("functions")
+                .where('functions.title = :member and functions.team_id = :team_id',
+                    {member: TeamRoles.Member, team_id: team?.id},
+                )
+                .leftJoin('functions.userFunctions', 'userFunctions')
+                .select(["COUNT(userFunctions.id) as count_member", "functions.team_id"])
+                .groupBy("functions.id")
+                .getRawOne()
+            if (func) {
+                team.count_members = Number(func?.count_member)
+            } else {
+                team.count_members = 0
+            }
+        }
     }
 
     // отфильтровать колелктивы
@@ -292,11 +318,11 @@ export class TeamsService {
         let archive = null
         // is_archive and is_active
         if (params.is_archive && !params.is_active) {
-           archive = true
-        }else if(params.is_archive && params.is_active){
+            archive = true
+        } else if (params.is_archive && params.is_active) {
             archive = null
-        }else if(params.is_archive) archive = params.is_archive
-        else if(params.is_active) archive = !params.is_active
+        } else if (params.is_archive) archive = params.is_archive
+        else if (params.is_active) archive = !params.is_active
 
         // archive
         if (archive != null) {

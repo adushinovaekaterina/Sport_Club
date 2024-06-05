@@ -27,6 +27,10 @@ export class Team {
   title: string;
 
   @ApiProperty()
+  @Column({default:1})
+  capacity: number;
+
+  @ApiProperty()
   @CreateDateColumn({ default: () => 'now()' })
   creation_date: Date;
 
@@ -119,4 +123,6 @@ export class Team {
 
   @OneToMany(() => Requisitions, (requisition) => requisition.team)
   requisitions: Requisitions[];
+
+  count_members:number
 }

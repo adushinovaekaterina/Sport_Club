@@ -16,6 +16,11 @@ export class UpdateTeamDto {
   id_parent: Team;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  capacity: number;
+
+  @IsOptional()
   @Length(1, 100, {
     message: 'Название коллектива, максимальная длина текста 100',
   })

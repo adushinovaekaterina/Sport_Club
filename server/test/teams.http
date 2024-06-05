@@ -5,10 +5,10 @@ GET http://localhost:3000/api/teams/6/requisition?statuses[]=Принята&stat
 GET http://localhost:3000/api/forms/requisition/6
 
 ### get team by id
-GET http://localhost:3000/api/teams/60
+GET http://localhost:3000/api/teams/16
 
 ### get teams
-GET http://localhost:3000/api/teams?limit=4&offset=0
+GET http://localhost:3000/api/teams?limit=40&offset=0
 
 ### directions
 GET http://localhost:3000/api/teams/directions
