@@ -20,6 +20,9 @@ export class CreateTeamDto {
   })
   title: string;
 
+  @IsOptional()
+  phone: string;
+
   @Length(1, 3000, {
     message: 'Описание, максимальная длина текста 1-3000',
   })

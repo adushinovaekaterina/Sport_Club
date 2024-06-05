@@ -21,6 +21,9 @@ export class UpdateTeamDto {
   capacity: number;
 
   @IsOptional()
+  phone: string;
+
+  @IsOptional()
   @Length(1, 100, {
     message: 'Название коллектива, максимальная длина текста 100',
   })

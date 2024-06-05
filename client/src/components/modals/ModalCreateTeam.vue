@@ -123,6 +123,15 @@
                                                 required
                                         />
                                     </div>
+                                    <div class="">
+                                        <div class="fw-bold">Телефон:</div>
+                                        <input
+                                                type="tel"
+                                                placeholder="Телефон"
+                                                v-model="phone"
+                                                required
+                                        />
+                                    </div>
 
                                     <div class="fw-bold">Руководители:</div>
                                     <v-select
@@ -356,6 +365,7 @@ const auditories = ref<{ id: number; name: string }[]>([]);
 
 const description = ref("");
 const capacity = ref(1);
+const phone = ref("");
 
 // files
 const charterTeamFile = ref();
@@ -446,6 +456,7 @@ async function fetchTeam(id: number) {
     is_national.value = teamObj.value.is_national ?? false
     links.value = teamObj.value.links ?? [];
     capacity.value = teamObj.value?.capacity ?? 0
+    phone.value = teamObj.value?.phone ?? ""
 
     let ldrs = getLeaders(teamObj.value);
     leaders.value = ldrs?.map((el) => {
@@ -560,6 +571,8 @@ async function createTeam() {
     model.is_national = is_national.value
     model.id_parent = selectedDirection.value
     model.capacity = capacity.value
+    model.phone = phone.value
+
     //create team
     await teamStore
         .createTeam(
@@ -585,6 +598,7 @@ async function updateTeam() {
     uT.links = links.value;
     uT.is_national = is_national.value
     uT.capacity = capacity.value
+    uT.phone = phone.value
 
     await teamStore.updateTeam(uT);
     await fetchTeam(props.teamId);
