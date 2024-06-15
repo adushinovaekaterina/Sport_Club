@@ -126,7 +126,7 @@ export class TeamsService {
             .getOne();
 
         // console.log(team?.id, team)
-        if(team) await this.countMembers([team])
+        if (team) await this.countMembers([team])
 
         return team;
     }
@@ -585,8 +585,8 @@ export class TeamsService {
         });
     }
 
-    async findAllRequisitionsByUserId(userId: number): Promise<Requisitions[]> {
-        return await this.requisitionsRepository
+    async findAllRequisitionsByUserId(userId: number, dto: RequisitionDto): Promise<Requisitions[]> {
+        const query = this.requisitionsRepository
             .createQueryBuilder('requisition')
             .select([
                 'requisition.date_create',
@@ -602,7 +602,10 @@ export class TeamsService {
             .leftJoinAndSelect('requisition.team', 'team')
             .where('requisition.user.id = :userId', {userId})
             .orderBy('status.name', 'DESC')
-            .getMany();
+
+        dto.status_id && query.andWhere("status.id = :status_id", {status_id: dto.status_id})
+
+        return await query.getMany();
     }
 
     async findRequisitionField(dto: CreateRequisitionFieldDto) {

@@ -47,7 +47,12 @@ h4 {
 
 .link {
   text-decoration: none;
-  color: black;
+  color: var(--second-color);
+
+  &:hover{
+    transition: 0.3s;
+    color:var(--main-color)
+  }
 }
 
 label {

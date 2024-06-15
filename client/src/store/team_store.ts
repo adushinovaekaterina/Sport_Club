@@ -22,8 +22,10 @@ export const useTeamStore = defineStore("teams", () => {
         return (await axios.post(`/api/teams/${teamId}/max-visits/`, {max_visits: maxVisits})).data;
     }
 
-    async function getUserRequisitions(id: number) {
-        return (await axios.get("/api/teams/requisitions/user/" + id)).data;
+    async function getUserRequisitions(id: number, status_id:number|null=null) {
+        return (await axios.get("/api/teams/requisitions/user/" + id, { params: {
+                status_id,
+            },})).data;
     }
 
     async function deleteRequisition(id: number) {

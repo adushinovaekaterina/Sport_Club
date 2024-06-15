@@ -460,8 +460,9 @@ export class TeamsController {
     @ApiResponse({status: HttpStatus.BAD_REQUEST, description: 'Bad Request'})
     async getRequisitionsByUserId(
         @Param('userId') userId: number,
+        @Query() params:RequisitionDto
     ): Promise<Requisitions[]> {
-        return await this.teamsService.findAllRequisitionsByUserId(userId);
+        return await this.teamsService.findAllRequisitionsByUserId(userId, params);
     }
 
     @Post('requisitions')

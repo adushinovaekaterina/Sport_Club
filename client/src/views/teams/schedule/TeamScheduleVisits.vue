@@ -24,15 +24,15 @@
                 <tr class="header">
                     <th class="p-2 bg-transparent"></th>
                     <th
-                            v-for="(week, index) in dates.weeks"
+                            v-for="(date, index) in dates.dateRange"
                             v-bind:key="index"
                             class="p-2 bg-transparent"
                     >
-                        <div class="text-center">{{ week }}</div>
+                        <div class="text-center">{{ date.toLocaleDateString() }}</div>
 
-                        <div class="text-center">
-                            {{ dates.dateRange[index].getDate() }}
-                        </div>
+<!--                        <div class="text-center">-->
+<!--                            {{ dates.dateRange[index].getDate() }}-->
+<!--                        </div>-->
                     </th>
                 </tr>
                 </thead>
