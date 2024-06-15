@@ -16,6 +16,11 @@ export class UpdateTeamDto {
   id_parent: Team;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  health_group_id:number
+
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   capacity: number;

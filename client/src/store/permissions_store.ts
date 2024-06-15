@@ -3,6 +3,7 @@ import { ref } from "vue";
 import type { Permission } from "@/types";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
+import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 
 export const usePermissionsStore = defineStore("permissionsStore", () => {
   const router = useRouter();
@@ -11,6 +12,7 @@ export const usePermissionsStore = defineStore("permissionsStore", () => {
   const username = ref("");
   const fullname = ref("");
   const permissions = ref<Array<Permission>>([]);
+  const healthGroup = ref<IDictionary>({});
   const isLogged = ref(false);
 
   function can(permission: Permission) {
@@ -51,6 +53,7 @@ export const usePermissionsStore = defineStore("permissionsStore", () => {
       username.value = response.data.username;
       fullname.value = response.data.fullname;
       user_id.value = response.data.id;
+      healthGroup.value = response.data.health_group
 
       let nextUrl = "/teams";
       // let nextUrl = "/news";
@@ -140,6 +143,7 @@ export const usePermissionsStore = defineStore("permissionsStore", () => {
     fullname,
     isLogged,
     user_id,
+    healthGroup,
 
     fetchUser,
     checkLogin,

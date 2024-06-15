@@ -195,6 +195,7 @@
                                     </div>
 
                                     <div class="row g-2 mb-4" v-if="can('can create teams')">
+
                                         <!-- selected cabinets-->
                                         <div
                                                 class="col-auto position-relative align-items-center d-flex"
@@ -217,6 +218,23 @@
                                             v-model="description"
                                             required
                                     ></textarea>
+                                </div>
+
+                                <!--    selectedHealthGroup -->
+
+                                <div class="row mb-3">
+                                    <div class="col-auto">
+                                        <label class="form-label fw-bold">Группа здоровья </label>
+                                        <select
+                                                class="form-select"
+                                                aria-label="Status"
+                                                v-model="selectedHealthGroup"
+                                        >
+                                            <option v-for="st in healthGroups" :value="st" v-bind:key="st.id">
+                                                {{ st.name }}
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <!--  Сборная  -->
@@ -330,11 +348,13 @@ import type {IScheduleSearch} from "@/store/models/schedule/schedule.model";
 import {usePermissionsStore} from "@/store/permissions_store";
 import AddedImage from "@/components/AddImage.vue";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {ApiRequest} from "@/store/handleApiRequest";
 import CheckboxBtn from "@/components/Buttons/CheckboxBtn.vue";
+import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
+import {useDictionaryStore} from "@/store/dictionary_store";
 
 const teamStore = useTeamStore();
 const auditoryStore = useAuditoriesStore();
+const dictStore = useDictionaryStore();
 
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
@@ -347,6 +367,8 @@ const props = defineProps<{
 }>();
 
 const teamObj: Ref<ITeam> = ref({});
+
+const healthGroups = ref<IDictionary[]>([]);
 
 // values from form
 const title = ref("");
@@ -378,6 +400,7 @@ const foundAuditories = ref();
 // найденные направления из системы
 const directions = ref([{id: 0, shortname: "Все"}]);
 const selectedDirection = ref(0);
+const selectedHealthGroup = ref<IDictionary>();
 
 //получить юзеров
 const timerFetchUsers = _.debounce(() => {
@@ -388,8 +411,13 @@ const leaderSelect = ref();
 const auditorySelect = ref();
 
 onBeforeMount(() => {
-    // teamStore.refresh()
+    fetchHealthGroups()
 })
+
+const fetchHealthGroups = async () => {
+    healthGroups.value = await dictStore.getFromDictionaryByClassID(9)
+}
+
 
 //отслеживать изменение текста для v-select
 async function onTextChange(e: InputEvent) {
@@ -457,6 +485,7 @@ async function fetchTeam(id: number) {
     links.value = teamObj.value.links ?? [];
     capacity.value = teamObj.value?.capacity ?? 0
     phone.value = teamObj.value?.phone ?? ""
+    selectedHealthGroup.value = teamObj.value.health_group
 
     let ldrs = getLeaders(teamObj.value);
     leaders.value = ldrs?.map((el) => {
@@ -572,6 +601,7 @@ async function createTeam() {
     model.id_parent = selectedDirection.value
     model.capacity = capacity.value
     model.phone = phone.value
+    model.health_group_id = selectedHealthGroup.value?.id
 
     //create team
     await teamStore
@@ -586,21 +616,23 @@ async function createTeam() {
 // update коллектив
 async function updateTeam() {
     //update team
-    const uT = new UCTeamModel();
-    uT.id_parent = selectedDirection.value;
-    uT.cabinets = auditories.value.map((el) => el.id);
-    uT.description = description.value;
-    uT.id = teamObj.value.id ?? -1;
-    uT.leaders = leaders.value.map((el) => el.id);
-    uT.shortname = shortname.value;
-    uT.title = title.value;
-    uT.tags = tags.value;
-    uT.links = links.value;
-    uT.is_national = is_national.value
-    uT.capacity = capacity.value
-    uT.phone = phone.value
+    const model = new UCTeamModel();
+    model.id_parent = selectedDirection.value;
+    model.cabinets = auditories.value.map((el) => el.id);
+    model.description = description.value;
+    model.id = teamObj.value.id ?? -1;
+    model.leaders = leaders.value.map((el) => el.id);
+    model.shortname = shortname.value;
+    model.title = title.value;
+    model.tags = tags.value;
+    model.links = links.value;
+    model.is_national = is_national.value
+    model.capacity = capacity.value
+    model.phone = phone.value
+    model.health_group_id = selectedHealthGroup.value?.id
 
-    await teamStore.updateTeam(uT);
+
+    await teamStore.updateTeam(model);
     await fetchTeam(props.teamId);
 }
 

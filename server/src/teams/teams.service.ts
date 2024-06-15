@@ -45,6 +45,7 @@ import {CreatSemesterDto} from "../schedule/dto/create-semester.dto";
 import {CreateSemesterVisitsDto} from "./dto/create-semester-visits.dto";
 import {TeamSemesterVisits} from "./entities/team-semester-visits.entity";
 import {Semester} from "../schedule/entities/semester.entity";
+import { Dictionary } from 'src/general/entities/dictionary.entity';
 
 @Injectable()
 export class TeamsService {
@@ -114,6 +115,7 @@ export class TeamsService {
             .leftJoin('teams.id_parent', 'direction')
             .addSelect('direction.id')
             .leftJoin('teams.team_photos', 'team_photos')
+            .leftJoinAndSelect('teams.health_group', 'health_group')
             .leftJoinAndSelect(
                 'teams.functions',
                 'functions',
@@ -125,7 +127,7 @@ export class TeamsService {
             .leftJoinAndSelect('user_functions.user', 'user')
             .getOne();
 
-        // console.log(team?.id, team)
+
         if (team) await this.countMembers([team])
 
         return team;
@@ -134,12 +136,17 @@ export class TeamsService {
     // Обновить коллектив
     async update(user: User, id: number, updateTeamDto: UpdateTeamDto) {
         updateTeamDto.id_parent = updateTeamDto.id_parent ?? null;
+
+        let healthGroup: Dictionary
+        if (updateTeamDto.health_group_id)
+            healthGroup = await this.dictionaryService.findOne(updateTeamDto.health_group_id)
         const updatedTeam = await this.teamsRepository.save({
             id,
             ...updateTeamDto,
             cabinets: updateTeamDto.cabinetsAsNumbers,
             charter_team: updateTeamDto.charterTeam,
-            id_parent: updateTeamDto.id_parent
+            id_parent: updateTeamDto.id_parent,
+            health_group: healthGroup,
         });
 
         await this.findOne(id);
@@ -158,9 +165,13 @@ export class TeamsService {
 
     //создать коллектив, с учетом, что есь минимум 1 лидер
     async createTeam(user: User, dto: CreateTeamDto) {
+        let healthGroup: Dictionary
+        if (dto.health_group_id)
+            healthGroup = await this.dictionaryService.findOne(dto.health_group_id)
         const team = await this.teamsRepository.save({
             ...dto,
             id_parent: dto.id_parent,
+            health_group: healthGroup,
             cabinets: dto.cabinetsAsNumbers,
             image: [],
             tags: [],

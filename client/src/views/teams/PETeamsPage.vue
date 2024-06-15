@@ -186,7 +186,6 @@ import Search from "@/components/SearchField.vue";
 import type {ITeam} from "@/store/models/teams/team.model";
 import type {Ref} from "vue";
 import LoadingElem from "@/components/LoadingElem.vue";
-import {useRoute} from "vue-router";
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();

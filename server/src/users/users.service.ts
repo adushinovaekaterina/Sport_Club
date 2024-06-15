@@ -176,6 +176,7 @@ export class UsersService {
     async login(username: string, pass: string): Promise<any> {
         const user = await this.usersRepository
             .createQueryBuilder('users')
+            .leftJoinAndSelect("users.health_group", "health_group")
             .where('users.username = :username', {username})
             .getOne();
 
@@ -235,6 +236,7 @@ export class UsersService {
     async findById(id: number): Promise<User> {
         const user = await this.usersRepository
             .createQueryBuilder('users')
+            .leftJoinAndSelect("users.health_group", "health_group")
             .where('users.id = :id', {id})
             .getOne();
 

@@ -97,6 +97,8 @@ export const useTeamStore = defineStore("teams", () => {
         if (dto.id_parent > 0) {
             formData.append("id_parent", dto.id_parent.toString());
         }
+        if(dto.health_group_id)
+            formData.append("health_group_id", dto.health_group_id.toString());
         formData.append("phone", dto.phone.toString());
         formData.append("capacity", dto.capacity.toString());
         formData.append("title", dto.title);
@@ -138,6 +140,8 @@ export const useTeamStore = defineStore("teams", () => {
         if (uT.id_parent > 0) {
             formData.append("id_parent", uT.id_parent.toString());
         }
+        if(uT.health_group_id)
+            formData.append("health_group_id", uT.health_group_id.toString());
         formData.append("capacity", uT.capacity.toString());
         formData.append("phone", uT.phone.toString());
         formData.append("title", uT.title);

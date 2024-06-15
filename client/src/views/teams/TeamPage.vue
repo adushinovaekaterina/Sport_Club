@@ -8,7 +8,12 @@
                 <div class="text-area">
                     <div class="container" v-if="team && team.title">
                         <p>{{ team.title }}</p>
-                        <div v-if="team?.capacity > team?.count_members && !can('can create teams') && !can('can create team roles')">
+
+                        <div v-if="
+                        permissions_store.healthGroup?.id == team.health_group?.id
+                        && team?.capacity > team?.count_members
+                        && !can('can create teams')
+                        && !can('can create team roles')">
                             <ModalQuestionnaire v-model="team.title"/>
                         </div>
                     </div>

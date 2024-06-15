@@ -15,6 +15,12 @@ export class CreateTeamDto {
   @IsNumber()
   id_parent: Team;
 
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  health_group_id: number;
+
   @Length(1, 100, {
     message: 'Название коллектива, максимальная длина текста 1-100',
   })
