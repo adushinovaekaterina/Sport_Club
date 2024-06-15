@@ -1,6 +1,7 @@
 import type { IFunction } from "@/store/models/user/functions.model";
 import type {ITeamPhotos} from "@/store/models/teams/team-photos.model";
 import type {ITeamSemesterVisits} from "@/store/models/teams/team-semester-visits.model";
+import type {IDictionary} from "@/store/models/dictionary/dictionary.model";
 
 export interface ITeam {
   id?: number;
@@ -20,6 +21,8 @@ export interface ITeam {
   set_open?: boolean;
   capacity?:number;
   is_national?: boolean;
+
+  health_group?: IDictionary;
   team_semester_visits?:ITeamSemesterVisits[]
 
   team_photos?: ITeamPhotos[];

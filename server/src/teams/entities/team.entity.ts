@@ -15,6 +15,7 @@ import { Requisitions } from './requisition.entity';
 import { TeamPhoto } from './team-photo.entity';
 import {Semester} from "../../schedule/entities/semester.entity";
 import {TeamSemesterVisits} from "./team-semester-visits.entity";
+import {Dictionary} from "../../general/entities/dictionary.entity";
 
 @Entity('teams')
 export class Team {
@@ -95,6 +96,11 @@ export class Team {
   @ApiProperty()
   @Column({ default: true })
   set_open: boolean;
+
+  @ApiProperty()
+  @ManyToOne(() => Dictionary, (d) => d.id)
+  @JoinColumn([{ name: 'health_group_id' }])
+  health_group: Dictionary;
 
   @ManyToOne(() => Team, (team) => team.id)
   @JoinColumn([{ name: 'id_parent' }])
