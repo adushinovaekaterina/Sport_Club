@@ -61,11 +61,14 @@
                     </div>
                 </router-link>
 
-                <div class="row">
+                <div class="row ">
                     <span>Дата последнего рассмотрения: {{ item.date_update }}</span>
                 </div>
                 <div class="row">
-                    <span>Статус вашей заявки: {{ item.status.name }}</span>
+                    <span>Статус вашей заявки: <span :class="[item.status?.name == 'Принята' ? 'text-success' : 'text-danger', 'fw-bold']">
+                         {{ item.status.name }}
+                    </span>
+                    </span>
                 </div>
                 <div class="row">
                     <span>Комментарий: {{ item.comment_leader ?? "-" }}</span>
