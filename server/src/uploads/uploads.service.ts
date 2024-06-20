@@ -364,7 +364,7 @@ export class UploadsService {
                         if (months.size > 0) {
                             const compV = compVisits[userId]
                             data.push((`${standards[userId]?.avgStart}/${standards[userId]?.avgEnd}`))
-                            data.push((`${compV?.percents}%, ${compV?.visits} (${participant.counter}) из ${maxVisits.max_visits}`))
+                            data.push((`${compV?.percents}%, ${participant.counter} из ${maxVisits.max_visits}`))
 
                             const sheet = workbook.getWorksheet(monthNamesInRussian[m]);
                             sheet.getRow(indexRow).getCell(1).alignment = {wrapText: true};

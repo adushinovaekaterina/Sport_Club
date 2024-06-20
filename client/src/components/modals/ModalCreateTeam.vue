@@ -278,34 +278,34 @@
                                         class="row g-2 mb-4"
                                         v-if="can('can edit own teams') && isEditTeam"
                                 >
-                                    <b>Фотографии из галереи: </b>
-                                    <div
-                                            class="col-md-6 col-lg-4 col-12 position-relative align-items-center"
-                                            v-for="(teamPhoto, index) in teamObj?.team_photos"
-                                            v-bind:key="index"
-                                    >
-                                        <AddedImage
-                                                :handle-on-delete="handleOnDeletePhoto"
-                                                :index="index"
-                                                :src="teamPhoto.image"
-                                        />
-                                    </div>
-                                    <div class="col-12 d-flex align-items-center">
-                                        <div>
-                                            <input
-                                                    class="form-control"
-                                                    type="file"
-                                                    id="formFile"
-                                                    @change="(e) => handlePhotoUpload(e)"
-                                            />
-                                        </div>
-                                    </div>
+<!--                                    <b>Фотографии из галереи: </b>-->
+<!--                                    <div-->
+<!--                                            class="col-md-6 col-lg-4 col-12 position-relative align-items-center"-->
+<!--                                            v-for="(teamPhoto, index) in teamObj?.team_photos"-->
+<!--                                            v-bind:key="index"-->
+<!--                                    >-->
+<!--                                        <AddedImage-->
+<!--                                                :handle-on-delete="handleOnDeletePhoto"-->
+<!--                                                :index="index"-->
+<!--                                                :src="teamPhoto.image"-->
+<!--                                        />-->
+<!--                                    </div>-->
+<!--                                    <div class="col-12 d-flex align-items-center">-->
+<!--                                        <div>-->
+<!--                                            <input-->
+<!--                                                    class="form-control"-->
+<!--                                                    type="file"-->
+<!--                                                    id="formFile"-->
+<!--                                                    @change="(e) => handlePhotoUpload(e)"-->
+<!--                                            />-->
+<!--                                        </div>-->
+<!--                                    </div>-->
                                 </div>
 
                                 <div class="fuck-off-btn">
                                     <div class="row">
                                         <div class="col">
-                                            <button type="submit">Сохранить коллектив</button>
+                                            <button type="submit">Сохранить команду</button>
                                         </div>
                                         <div class="col-auto" v-if="isEditTeam">
                                             <button

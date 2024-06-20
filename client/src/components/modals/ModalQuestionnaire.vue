@@ -1,52 +1,80 @@
 <template>
-  <button
-      v-if="userReq == null || userReq.length <= 0"
-          type="button"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-  >
-    Подать заявку
-  </button>
-  <div v-else class="">
-    Заявка "{{ userReq[0].status ? userReq[0].status.name : 'Подана' }}"
-    <FontAwesomeIcon icon="feather" />
+  <div>
+    <!-- Проверка: Студент не подавал заявку -->
+    <button
+        v-if="userReq == null || userReq.length <= 0"
+        type="button"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+    >
+      Подать заявку
+    </button>
+
+    <!-- Заявка уже подана -->
+    <div v-else>
+      Заявка "{{ userReq[0].status ? userReq[0].status.name : 'Подана' }}"
+      <FontAwesomeIcon icon="feather" />
+    </div>
   </div>
+<!--  <div>-->
+<!--    <div v-if="team?.capacity <= team?.count_members" class="">-->
+<!--      там-->
+<!--    </div>-->
+<!--    <div v-else-if="(permissions_store.healthGroup?.id !== team.health_group?.id)" class="">-->
+<!--      Ваша группа здоровья не соответствует-->
+<!--    </div>-->
+<!--    <button-->
+<!--        v-else-if="(userReq == null || userReq.length <= 0)"-->
+<!--        type="button"-->
+<!--        data-bs-toggle="modal"-->
+<!--        data-bs-target="#exampleModal"-->
+<!--    >-->
+<!--      Подать заявку-->
+<!--    </button>-->
+<!--    <div v-else class="">-->
+<!--      Заявка "{{ userReq[0].status ? userReq[0].status.name : 'Подана' }}"-->
+<!--      <FontAwesomeIcon icon="feather"/>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <!-- Modal -->
   <div
-    class="modal fade"
-    id="exampleModal"
-    ref="exampleModal"
-    tabindex="-1"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
+      class="modal fade"
+      id="exampleModal"
+      ref="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
   >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-title" id="exampleModalLabel">Подтверждение отправки заявки</div>
-        <div class="modal-subtitle" :value="modelValue">Вы собираетесь отправить заявку в сборную команду "{{ modelValue }}"</div>
+        <div class="modal-subtitle" :value="modelValue">Вы собираетесь отправить заявку в сборную команду "{{
+            modelValue
+          }}"
+        </div>
 
         <div class="alert alert-warning" v-if="msg">
           {{ msg }}
-<!--          Вы не авторизованы-->
+          <!--          Вы не авторизованы-->
         </div>
-        <LoadingElem v-if="teamStore.apiRequest.loading" size-fa-icon="" />
+        <LoadingElem v-if="teamStore.apiRequest.loading" size-fa-icon=""/>
 
-<!--        <div-->
-<!--          v-for="(form, i) in data"-->
-<!--          class="wrapper-questions"-->
-<!--          v-bind:key="form.id"-->
-<!--        >-->
-<!--          <div class="wrapper-one-question">-->
-<!--            <div class="question-label">-->
-<!--              {{ form.title }}{{ form.required ? "*" : "" }}-->
-<!--            </div>-->
-<!--            <textarea-->
-<!--              class="input-answer"-->
-<!--              v-model="createRequisitionData.fields[i]"-->
-<!--            />-->
-<!--          </div>-->
-<!--        </div>-->
+        <!--        <div-->
+        <!--          v-for="(form, i) in data"-->
+        <!--          class="wrapper-questions"-->
+        <!--          v-bind:key="form.id"-->
+        <!--        >-->
+        <!--          <div class="wrapper-one-question">-->
+        <!--            <div class="question-label">-->
+        <!--              {{ form.title }}{{ form.required ? "*" : "" }}-->
+        <!--            </div>-->
+        <!--            <textarea-->
+        <!--              class="input-answer"-->
+        <!--              v-model="createRequisitionData.fields[i]"-->
+        <!--            />-->
+        <!--          </div>-->
+        <!--        </div>-->
         <div class="wrap-button">
           <button type="button" class="close-btn" data-bs-dismiss="modal">
             Отмена
@@ -61,17 +89,18 @@
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount, ref } from "vue";
-import { useFormStore } from "@/store/form_store";
-import { useRoute } from "vue-router";
-import { useTeamStore } from "@/store/team_store";
-import { usePermissionsStore } from "@/store/permissions_store";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import type { IFormField } from "@/store/models/forms/form-field.model";
-import type { Ref } from "vue";
-import type { RURequisition } from "@/store/models/teams/update-requisition.model";
-import type { ICreateRequisition } from "@/store/models/forms/requisition-fields.model";
+import {onBeforeMount, ref} from "vue";
+import {useFormStore} from "@/store/form_store";
+import {useRoute} from "vue-router";
+import {useTeamStore} from "@/store/team_store";
+import {usePermissionsStore} from "@/store/permissions_store";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import type {IFormField} from "@/store/models/forms/form-field.model";
+import type {Ref} from "vue";
+import type {RURequisition} from "@/store/models/teams/update-requisition.model";
+import type {ICreateRequisition} from "@/store/models/forms/requisition-fields.model";
 import LoadingElem from "@/components/LoadingElem.vue";
+import type {ITeam} from "@/store/models/teams/team.model";
 
 const permissions_store = usePermissionsStore();
 const can = permissions_store.can;
@@ -87,6 +116,7 @@ const idTeam = Number(route.params.id);
 const formStore = useFormStore();
 const userReq = ref(); //проверить не подавал ли уже юзер заявку в этот колелктив
 const data: Ref<IFormField[]> = ref([]);
+const team: Ref<ITeam> = ref({});
 
 const createRequisitionData: Ref<ICreateRequisition> = ref({
   team_id: idTeam,
@@ -113,7 +143,7 @@ async function fetchFormFields() {
 
 async function createRequisition() {
   await teamStore.createRequisition(createRequisitionData.value).then(() => {
-    msg.value = teamStore.apiRequest.error.length>0 ? teamStore.apiRequest.error :"Отправлено";
+    msg.value = teamStore.apiRequest.error.length > 0 ? teamStore.apiRequest.error : "Отправлено";
   });
 }
 

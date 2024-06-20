@@ -145,7 +145,7 @@
             </div>
         </div>
 
-        <div class="my-3">
+        <div class="my-3" v-if="can('can edit own teams')">
             <router-link :to="{name:'AddParticipants', params:{id:idTeam}, query:{team_title: teamTitle}}">
                 <button class="btn-primary"> Добавить участника</button>
             </router-link>

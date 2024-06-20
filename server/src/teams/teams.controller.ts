@@ -133,7 +133,7 @@ export class TeamsController {
     @ApiResponse({status: HttpStatus.OK, description: 'Успешно'})
     @ApiResponse({
         status: HttpStatus.BAD_REQUEST,
-        description: 'Bad Request, какие то данные неверно введены',
+        description: 'Bad Request, какие-то данные неверно введены',
     })
     @UseInterceptors(FilesInterceptor('files'))
     async update(
@@ -169,7 +169,7 @@ export class TeamsController {
         return this.teamsService.teamWithUsers(id, uFDto);
     }
 
-    //по ид команды и id юзера найти есть ли юзер в вкомманде
+    //по ид команды и id юзера найти есть ли юзер в в команде
     @Get(':id/users/:id_user')
     @ApiOperation({summary: 'Получение участника коллектива по id коллектива и id участника'})
     @ApiResponse({

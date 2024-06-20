@@ -62,12 +62,12 @@
             </div>
 
             <div class="col-lg-8">
-                <div class="row">
-                    <div class="block-content border-block pb-2 p-3">
-                        <h2 class="ps-3">Расписание</h2>
-                        <VCalendar :attributes="attrs" expanded/>
-                    </div>
-                </div>
+<!--                <div class="row">-->
+<!--                    <div class="block-content border-block pb-2 p-3">-->
+<!--                        <h2 class="ps-3">Расписание</h2>-->
+<!--                        <VCalendar :attributes="attrs" expanded/>-->
+<!--                    </div>-->
+<!--                </div>-->
                 <!--        <div class="row mb-3">-->
                 <!--          <div class="block-content border-block">-->
                 <!--            <h2 class="p-3">Достижения</h2>-->

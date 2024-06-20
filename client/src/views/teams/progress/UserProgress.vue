@@ -1,9 +1,9 @@
 <template>
-    <!--    go back -->
-    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">
-        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>
-        Назад
-    </button>
+<!--    &lt;!&ndash;    go back &ndash;&gt;-->
+<!--    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">-->
+<!--        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>-->
+<!--        Назад-->
+<!--    </button>-->
     <div class="border-block bg-white p-4">
         <h2>ПРОГРЕСС</h2>
         <div class="row my-3">
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
-import {onBeforeMount, ref, onMounted, watch} from "vue"; // Добавлен импорт onMounted
+import {onBeforeMount, ref, onMounted, watch, computed} from "vue"; // Добавлен импорт onMounted
 // import {onBeforeMount, ref} from "vue";
 import {usePermissionsStore} from "@/store/permissions_store";
 import {useRoute, useRouter} from "vue-router";
@@ -41,7 +41,37 @@ import {useUserStore} from "@/store/user_store";
 import type {IUser} from "@/store/models/user/user.model";
 import {FilterUser} from "@/store/models/user.model";
 import _ from "lodash";
+import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
+import {getFormattedWeek, getMonday} from "@/views/teams/schedule/format-date";
+import {semesters} from "@/store/constants/other";
+import {TeamRoles} from "@/store/enums/team_roles";
 
+const props = defineProps<{
+  teamId: number;
+  isNational: boolean;
+  currUserFunctions: TeamRoles | undefined;
+}>();
+
+const selectedWeekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника
+const semester = ref(semesters[0]);
+
+const weekDays = computed(() => {
+  const days: Date[] = [];
+  const startDate = new Date(selectedWeekStart.value);
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(startDate);
+    day.setDate(startDate.getDate() + i);
+    days.push(day);
+  }
+  return days;
+});
+
+const dates = computed(() => {
+  return getFormattedWeek(
+      weekDays.value[0],
+      weekDays.value[weekDays.value.length - 1],
+  );
+});
 
 const router = useRouter();
 const route = useRoute();

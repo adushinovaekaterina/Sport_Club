@@ -1,192 +1,191 @@
 <template>
-    <!-- Это вся обертка -->
-    <div class="wrapper-team">
-        <!-- Навигация -->
-        <div class="wrapper-team__navigation">
-            <div class="row g-2">
-                <!-- создание коллектива -->
-                <div v-if="can('can create teams')" class="col-auto">
-                    <!-- Button trigger modal -->
-                    <button
-                            @click="editTeam(false, null)"
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editTeamModal"
-                    >
-                        Создать команду
-                    </button>
-                    <ModalCreateTeam
-                            :is-edit-team="isEditTeam"
-                            :team-id="teamId"
-                            :on-save-changes="handleModalSaveChanges"
-                            id="editTeamModal"/>
-                </div>
-
-                <div class="col-auto">
-                    <!--   Редактировать семестры -->
-                    <button
-                            @click="editSemester(false)"
-                            type="button"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editSemester"
-                    >
-                        Редактировать семестры
-                    </button>
-                    <ModalEditSemester modal-id="editSemester"/>
-                </div>
-            </div>
-
-
+  <!-- Это вся обертка -->
+  <div class="wrapper-team">
+    <!-- Навигация -->
+    <div class="wrapper-team__navigation">
+      <div class="row g-2">
+        <!-- создание коллектива -->
+        <div v-if="can('can create teams')" class="col-auto">
+          <!-- Button trigger modal -->
+          <button
+              @click="editTeam(false, null)"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#editTeamModal"
+          >
+            Создать команду
+          </button>
+          <ModalCreateTeam
+              :is-edit-team="isEditTeam"
+              :team-id="teamId"
+              :on-save-changes="handleModalSaveChanges"
+              id="editTeamModal"/>
         </div>
-        <!-- Обертка карточек коллективов -->
-        <div v-if="show" class="wrapper-team__content">
-            <!-- Фильтр вдимый-->
-            <div class="nav-collapse collapse" id="collapseCkecker">
-                <div class="filters-block border-block">
-                    <CheckBox_Menu
-                            :menu_items="menu_items"
-                            :handleEventSetFilters="handleEventSetFilters"
-                            :handleEventResetFilters="handleEventResetFilters"
-                    />
-                </div>
+
+        <div v-if="can('can create teams')" class="col-auto">
+          <!--   Редактировать семестры -->
+          <button
+              @click="editSemester(false)"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#editSemester"
+          >
+            Редактировать семестры
+          </button>
+          <ModalEditSemester modal-id="editSemester"/>
+        </div>
+      </div>
+
+
+    </div>
+    <!-- Обертка карточек коллективов -->
+    <div v-if="show" class="wrapper-team__content">
+      <!-- Фильтр видимый -->
+      <div class="nav-collapse collapse" id="collapseCkecker">
+        <div class="filters-block border-block">
+          <CheckBox_Menu
+              :menu_items="menu_items"
+              :handleEventSetFilters="handleEventSetFilters"
+              :handleEventResetFilters="handleEventResetFilters"
+          />
+        </div>
+      </div>
+
+      <!-- Обертка контента с карточками -->
+      <div class="content-cards ms-md-4">
+        <!-- Инпут с поиском -->
+        <div class="cards__search">
+          <div class="row g-0">
+            <div class="col">
+              <Search :handleTimerSearch="handleTimerSearch"/>
             </div>
 
-            <!-- Обертка контента с карточками -->
-            <div class="content-cards ms-md-4">
-                <!-- Инпут с поиском -->
-                <div class="cards__search">
-                    <div class="row g-0">
-                        <div class="col">
-                            <Search :handleTimerSearch="handleTimerSearch"/>
-                        </div>
+            <div class="col-auto">
+              <Switch_toggle
+                  :on-event-change-state="handleEventChangeStateLayout"
+              />
+            </div>
 
-                        <div class="col-auto">
-                            <Switch_toggle
-                                    :on-event-change-state="handleEventChangeStateLayout"
-                            />
-                        </div>
+            <!-- фильтры в модальнос окне -->
+            <div class="col-auto">
+              <div class="d-md-none">
+                <button
+                    type="button"
+                    class="btn-icon-rounded"
+                    data-bs-toggle="modal"
+                    data-bs-target="#filtersModal"
+                >
+                  <font-awesome-icon class="ic fa-lg" icon="filter"/>
+                </button>
+              </div>
 
-                        <!-- фильтры в модальнос окне -->
-                        <div class="col-auto">
-                            <div class="d-md-none">
-                                <button
-                                        type="button"
-                                        class="btn-icon-rounded"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#filtersModal"
-                                >
-                                    <font-awesome-icon class="ic fa-lg" icon="filter"/>
-                                </button>
-                            </div>
+              <ModalFull modal-id="filtersModal">
+                <template #header> Фильтры</template>
+                <template #body>
+                  <CheckBox_Menu
+                      :menu_items="menu_items"
+                      :handleEventSetFilters="handleEventSetFilters"
+                      :handleEventResetFilters="handleEventResetFilters"
+                  />
+                </template>
+              </ModalFull>
+            </div>
+          </div>
+        </div>
 
-                            <ModalFull modal-id="filtersModal">
-                                <template #header> Фильтры</template>
-                                <template #body>
-                                    <CheckBox_Menu
-                                            :menu_items="menu_items"
-                                            :handleEventSetFilters="handleEventSetFilters"
-                                            :handleEventResetFilters="handleEventResetFilters"
-                                    />
-                                </template>
-                            </ModalFull>
-                        </div>
-                    </div>
+        <!-- Сами карточки -->
+        <div :class="[stateLayout ? 'wrapper-list' : 'wrapper-grid']">
+          <div
+              v-for="team in data"
+              :class="[{ archive: team.is_archive }]"
+              class="cardEvent border-block row justify-content-center position-relative"
+              v-bind:key="team.id"
+          >
+            <!-- edit -->
+            <div v-if="can('can create teams')"
+                 class="opacity-75 position-absolute w-auto top-0 end-0 p-2">
+              <div
+                  @click="editTeam(true, team)"
+                  type="button"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editTeamModal"
+              >
+                <font-awesome-icon
+                    class="ic fa-1x btn-icon btn-icon-rounded"
+                    icon="pen-to-square"
+                />
+              </div>
+            </div>
+            <div class="p-0 col-md-auto d-flex justify-content-center">
+              <router-link
+                  :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
+                <div class="card__banner">
+                  <img
+                      v-if="team?.image && team.image?.length > 0"
+                      :src="team?.image[0]"
+                      class="d-block"
+                      style="width: 100%; object-fit: cover"
+                      alt=""
+                  />
+                  <img
+                      v-else
+                      src="@/assets/icon/empty_photo.jpg"
+                      class="d-block"
+                      style="width: 100%; object-fit: cover"
+                      alt=""
+                  />
                 </div>
+              </router-link>
+            </div>
 
-                <!-- Сами карточки -->
-                <div :class="[stateLayout ? 'wrapper-list' : 'wrapper-grid']">
-                    <div
-                            v-for="team in data"
-                            :class="[{ archive: team.is_archive }]"
-                            class="cardEvent border-block row justify-content-center position-relative"
-                            v-bind:key="team.id"
-                    >
-                        <!-- edit -->
-                        <div v-if="can('can create teams')"
-                             class="opacity-75 position-absolute w-auto top-0 end-0 p-2">
-                            <div
-                                    @click="editTeam(true, team)"
-                                    type="button"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#editTeamModal"
-                            >
-                                <font-awesome-icon
-                                        class="ic fa-1x btn-icon btn-icon-rounded"
-                                        icon="pen-to-square"
-                                />
-                            </div>
-                        </div>
-                        <div class="p-0 col-md-auto d-flex justify-content-center">
-                            <router-link
-                                    :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
-                                <div class="card__banner">
-                                    <img
-                                            v-if="team?.image && team.image?.length > 0"
-                                            :src="team?.image[0]"
-                                            class="d-block"
-                                            style="width: 100%; object-fit: cover"
-                                            alt=""
-                                    />
-                                    <img
-                                            v-else
-                                            src="@/assets/icon/empty_photo.jpg"
-                                            class="d-block"
-                                            style="width: 100%; object-fit: cover"
-                                            alt=""
-                                    />
-                                </div>
-                            </router-link>
-                        </div>
+            <div class="wrapperContent col-lg col-md-auto px-4 py-4">
 
-                        <div class="wrapperContent col-lg col-md-auto px-4 py-4">
-
-                            <div class="row mb-2 g-2">
-                                <!-- team title -->
-                                <div class="col p-0">
-                                    <div class="row g-2">
-                                        <!-- набор -->
-                                        <div class="col-12">
-                                            <router-link
-                                                    :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
+              <div class="row mb-2 g-2">
+                <!-- team title -->
+                <div class="col p-0">
+                  <div class="row g-2">
+                    <!-- набор -->
+                    <div class="col-12">
+                      <router-link
+                          :to="{name:'Team', params:{id:team.id} , query:{is_national:filterTeam.is_national}}">
                         <span
-                                v-if="team.title && team.title.length > 50"
-                                class="cardTitle"
+                            v-if="team.title && team.title.length > 50"
+                            class="cardTitle"
                         >
                           {{ team.title.slice(0, 50) }} ...
                         </span>
-                                                <span v-else class="cardTitle">{{ team.title }}</span>
-                                            </router-link>
-                                        </div>
+                        <span v-else class="cardTitle">{{ team.title }}</span>
+                      </router-link>
+                    </div>
 
-                                        <div class="col-auto">
+                    <div class="col-auto">
                       <span v-if="team.capacity > team.count_members" class="set set__open">
                         Набор открыт
                       </span>
-                                            <span class="set set__closed" v-else> Набор закрыт</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div
-                                v-if="loading"
-                                class="d-flex align-items-center justify-content-center mt-4"
-                        >
-                            <LoadingElem size-fa-icon="fa-3x"/>
-                        </div>
+                      <span class="set set__closed" v-else> Набор закрыт</span>
                     </div>
-
-                    <Pagination
-                            :max-page="maxPages"
-                            :visible-pages="visiblePages"
-                            :handleEventChangePage="handleEventChangePage"
-                    />
+                  </div>
                 </div>
+              </div>
+
             </div>
+
+            <div
+                v-if="loading"
+                class="d-flex align-items-center justify-content-center mt-4"
+            >
+              <LoadingElem size-fa-icon="fa-3x"/>
+            </div>
+          </div>
         </div>
+        <Pagination
+            :max-page="maxPages"
+            :visible-pages="visiblePages"
+            :handleEventChangePage="handleEventChangePage"
+        />
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">

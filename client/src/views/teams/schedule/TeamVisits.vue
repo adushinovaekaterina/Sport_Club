@@ -19,8 +19,8 @@
                     <th>Нормативы (3 балла для зачета) начало/конец семестра</th>
                     <th> Посещаемость (94% для зачета)</th>
                 </tr>
-
                 </thead>
+
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
                     <td v-if="!isNational">
@@ -50,9 +50,12 @@
                     <!--   visits-->
                     <td>
                         <!--     percents          -->
-                        <div class="text-center">{{ visits[participant.user.id]?.percents }} %</div>
-                        <div class="text-center"> {{ visits[participant.user.id]?.visits }}
-                            ({{ userVisits[participant.user.id].counter }}) из {{ props.maxVisits }}
+                        <div class="text-center">{{ visits[participant.user.id]?.percents - 20 }} %</div>
+                        <div class="text-center">
+<!--                          {{ visits[participant.user.id]?.visits }}-->
+<!--                            ({{ userVisits[participant.user.id].counter }}) из {{ props.maxVisits }}-->
+                          {{ userVisits[participant.user.id].counter }} из {{ props.maxVisits }}
+<!--                          из {{ props.maxVisits }}-->
                         </div>
                     </td>
                 </tr>
@@ -291,7 +294,7 @@ async function setDataPie() {
     let competitionPercents = Math.min(sumCompVisitsPercents.value, 20)
     // перевести соревнования из процентов в посещения
     let competitionInVisits = Math.round(competitionPercents / onePerVisit)
-    // console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
+    //console.log("competitionInVisits", maxVisits, props.maxVisits, onePerVisit, competitionInVisits, competitionPercents, sumCompVisitsPercents.value)
     if (usrV && usrV.counter) {
         // сложить посещения и участия в соревнованиях
         let visitedWithCompetition = Math.round(usrV.counter + competitionInVisits)

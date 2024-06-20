@@ -1,9 +1,9 @@
 <template>
-    <!--    go back -->
-    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">
-        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>
-        Назад
-    </button>
+<!--    &lt;!&ndash;    go back &ndash;&gt;-->
+<!--    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">-->
+<!--        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>-->
+<!--        Назад-->
+<!--    </button>-->
     <div class="border-block bg-white p-4">
 
 
@@ -23,7 +23,7 @@
 
             <!--   users-->
             <div class="col-md-9 col-12">
-                <h4 class="fw-bold">Добавление студентов в сборную комманду "{{ team.title }}" </h4>
+                <h4 class="fw-bold">Добавление студентов в команду "{{ team.title }}" </h4>
                 <div class="row">
                     <div class="col my-3">
                         <SearchField :handle-timer-search="handleTimerSearch"/>
@@ -59,7 +59,7 @@
                         <thead>
                         <tr>
                             <th class="header">Студент</th>
-                            <th class="header">День рождения</th>
+<!--                            <th class="header">День рождения</th>-->
                             <th class="header">Группа</th>
                             <th class="header">Номер телефона</th>
                             <td></td>
@@ -69,7 +69,7 @@
 
                         <tr v-for="el in foundUsers.users" :key="el.id">
                             <td class="header">{{ el.fullname }}</td>
-                            <td>{{ el.birthdate }}</td>
+<!--                            <td>{{ el.birthdate }}</td>-->
                             <td>{{ el.education_group }}</td>
                             <td>{{ el.phone }}</td>
                             <td>
@@ -84,6 +84,18 @@
                                     <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>
                                 </div>
                             </td>
+                          <td>
+                            <!-- add new-->
+                            <div v-if="userInTeam(el.id ?? -1)">
+                              <button class="btn-primary-bordered"
+                                      @click="deleteUserFromTeam(el.id ?? -1, Status.CANCELLED)">Удалить
+                              </button>
+                            </div>
+                            <!-- already added-->
+                            <div v-else class="justify-content-center align-items-center d-flex">
+<!--                              <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>-->
+                            </div>
+                          </td>
                         </tr>
                         </tbody>
                     </table>
@@ -95,6 +107,7 @@
 </template>
 
 <script setup lang="ts">
+import type {IRUFunction} from "@/store/models/user/search-user-functions.model";
 import {useTeamStore} from "@/store/team_store";
 import type {ITeam} from "@/store/models/teams/team.model";
 import {onBeforeMount, ref} from "vue";
@@ -111,6 +124,9 @@ import {useDictionaryStore} from "@/store/dictionary_store";
 import CheckBox_Menu from "@/components/CheckBoxMenu.vue";
 import type {IMENU,} from "@/store/models/other";
 import ModalFull from "@/components/modals/ModalFull.vue";
+import {Status} from "@/store/enums/enum_event";
+import type {RURequisition} from "@/store/models/teams/update-requisition.model";
+import {useUserFunctionsStore} from "@/store/user_functions.store";
 
 const router = useRouter();
 const route = useRoute();
@@ -258,7 +274,6 @@ const fetchUsersOfTeam = async () => {
     teamUsers.value.count = data[1];
 }
 
-
 const goBack = () => {
     router.go(-1); // Navigate back to the previous page
 };
@@ -284,6 +299,41 @@ const fetchUsers = async () => {
 
     foundUsers.value.users = r.data[0];
     foundUsers.value.count = r.data[1];
+}
+
+const uFStore = useUserFunctionsStore();
+
+const props = defineProps<{
+  idTeam: number
+  isNational: boolean
+}>();
+
+async function deleteUserFromTeam(userId: number, status_name: string) {
+  let requis: RURequisition = {};
+  requis.team_id = props.idTeam;
+  requis.user_id = userId;
+
+  // заявка меняет статус
+  let requisitions = await teamStore.fetchRequisitions(requis);
+
+  if (requisitions && requisitions[0]?.id) {
+    let requis: RURequisition = {};
+    requis.id = requisitions[0].id;
+    requis.status_name = status_name;
+
+    await teamStore.updateRequisition(requis);
+  }
+
+  // remove user functions
+  let uFs = await uFStore.findUserFunctions(props.idTeam, userId);
+
+  for (const uF of uFs) {
+    // удалить роль в коллективе
+    await uFStore.removeUserFunction(uF.id);
+  }
+
+  await fetchUsersOfTeam(); // благодаря этому обновляется в реальном времени
+  await fetchUsers();  // Обновление списка всех найденных пользователей (Добавлено)
 }
 
 </script>

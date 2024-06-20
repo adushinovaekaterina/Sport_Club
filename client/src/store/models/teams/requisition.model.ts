@@ -9,4 +9,5 @@ export interface IRequisition {
   team?: ITeam;
   comment_leader?: string;
   date_update?: string;
+  date_create?: string;
 }

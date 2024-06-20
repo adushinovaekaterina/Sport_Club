@@ -37,66 +37,74 @@
                         {{ el.userStandard.value }}
                     </td>
                     <td>
-                        <!— Используем индекс строки для определения критериев —>
+                        <!-- Используем индекс строки для определения критериев -->
                         <template v-if="index === 0">
-                            <!— Критерии для первой строки (сгибание и разгибание рук) —>
-                            <span v-if="el.userStandard.value < 21">{{score1 = 1}}</span>
+                            <!-- Критерии для первой строки (сгибание и разгибание рук) -->
+                            <span v-if="el.userStandard.value == null">{{score1 = 0}}</span>
+                            <span v-else-if="el.userStandard.value < 21">{{score1 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 21 && el.userStandard.value <= 25">{{score1 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 26 && el.userStandard.value <= 38">{{score1 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 39 && el.userStandard.value <= 43">{{score1 = 4}}</span>
                             <span v-else-if="el.userStandard.value > 43">{{score1 = 5}}</span>
                         </template>
                         <template v-else-if="index === 1">
-                            <!— Критерии для второй строки (поднимание туловища из положения лежа) —>
-                            <span v-if="el.userStandard.value < 25">{{score2 = 1}}</span>
+                            <!-- Критерии для второй строки (поднимание туловища из положения лежа) -->
+                            <span v-if="el.userStandard.value == null">{{score2 = 0}}</span>
+                            <span v-else-if="el.userStandard.value < 25">{{score2 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 25 && el.userStandard.value <= 33">{{score2 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 34 && el.userStandard.value <= 46">{{score2 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 46 && el.userStandard.value <= 47">{{score2 = 4}}</span>
                             <span v-else-if="el.userStandard.value > 47">{{score2 = 5}}</span>
                         </template>
                         <template v-else-if="index === 2">
-                            <!— Критерии для третьей строки (наклон вперед) —>
-                            <span v-if="el.userStandard.value < 5">{{score3 = 1}}</span>
+                            <!-- Критерии для третьей строки (наклон вперед) -->
+                            <span v-if="el.userStandard.value == null">{{score3 = 0}}</span>
+                            <span v-else-if="el.userStandard.value < 5">{{score3 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 5 && el.userStandard.value <= 7">{{score3 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 8 && el.userStandard.value <= 10">{{score3 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 11 && el.userStandard.value <= 15">{{score3 = 4}}</span>
                             <span v-else-if="el.userStandard.value > 16">{{score3 = 5}}</span>
                         </template>
                         <template v-else-if="index === 3">
-                            <!— Критерии для четвертой строки (прыжок в длину с места) —>
-                            <span v-if="el.userStandard.value < 133">{{score4 = 1}}</span>
+                            <!-- Критерии для четвертой строки (прыжок в длину с места) -->
+                            <span v-if="el.userStandard.value == null">{{score4 = 0}}</span>
+                            <span v-else-if="el.userStandard.value < 133">{{score4 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 133 && el.userStandard.value <= 143">{{score4 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 144 && el.userStandard.value <= 170">{{score4 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 171 && el.userStandard.value <= 182">{{score4 = 4}}</span>
                             <span v-else-if="el.userStandard.value > 182">{{score4 = 5}}</span>
                         </template>
                         <template v-else-if="index === 4">
-                            <!— Критерии для пятой строки (челночный бег) —>
-                            <span v-if="el.userStandard.value > 23.2">{{score5 = 1}}</span>
+                            <!-- Критерии для пятой строки (челночный бег) -->
+                            <span v-if="el.userStandard.value == null">{{score5 = 0}}</span>
+                            <span v-else-if="el.userStandard.value > 23.2">{{score5 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 22.3 && el.userStandard.value <= 23.2">{{score5 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 20.1 && el.userStandard.value <= 22.2">{{score5 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 19.0 && el.userStandard.value <= 20.0">{{score5 = 4}}</span>
                             <span v-else-if="el.userStandard.value < 19.0">{{score5 = 5}}</span>
                         </template>
                         <template v-else-if="index === 5">
-                            <!— Критерии для шестой строки (бег 100 м) —>
-                            <span v-if="el.userStandard.value > 18.0">{{score6 = 1}}</span>
+                            <!-- Критерии для шестой строки (бег 100 м) -->
+                            <span v-if="el.userStandard.value == null">{{score6 = 0}}</span>
+                            <span v-else-if="el.userStandard.value > 18.0">{{score6 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 17.6 && el.userStandard.value <= 18.0">{{score6 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 17.1 && el.userStandard.value <= 17.5">{{score6 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 16.6 && el.userStandard.value <= 17.0">{{score6 = 4}}</span>
                             <span v-else-if="el.userStandard.value <= 16.5">{{score6 = 5}}</span>
                         </template>
                         <template v-else-if="index === 6">
-                            <!— Критерии для седьмой строки (бег 1000 м) —>
-                            <span v-if="el.userStandard.value > 8.21">{{score7 = 1}}</span>
+                            <!-- Критерии для седьмой строки (бег 1000 м) -->
+                            <span v-if="el.userStandard.value == null">{{score7 = 0}}</span>
+                            <span v-else-if="el.userStandard.value > 8.21">{{score7 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 7.29 && el.userStandard.value <= 8.23">{{score7 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 5.37 && el.userStandard.value <= 7.28">{{score7 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 4.01 && el.userStandard.value <= 5.36">{{score7 = 4}}</span>
                             <span v-else-if="el.userStandard.value < 4.01">{{score7 = 5}}</span>
                         </template>
                         <template v-else-if="index === 7">
-                            <!— Критерии для восьмой строки (бег 2000 м) —>
-                            <span v-if="el.userStandard.value > 14.00">{{score8 = 1}}</span>
+                            <!-- Критерии для восьмой строки (бег 2000 м) -->
+                            <span v-if="el.userStandard.value == null">{{score8 = 0}}</span>
+                            <span v-else-if="el.userStandard.value > 14.00">{{score8 = 1}}</span>
                             <span v-else-if="el.userStandard.value >= 13.11 && el.userStandard.value <= 14.00">{{score8 = 2}}</span>
                             <span v-else-if="el.userStandard.value >= 12.31 && el.userStandard.value <= 13.10">{{score8 = 3}}</span>
                             <span v-else-if="el.userStandard.value >= 10.50 && el.userStandard.value <= 12.30">{{score8 = 4}}</span>

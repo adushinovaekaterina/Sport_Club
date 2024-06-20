@@ -5,7 +5,7 @@
 
     <div class="row my-3">
         <div class="col-6">
-            <button class="btn-primary" @click="downloadReportVisits">Выгрузить отчетность всей команды</button>
+            <button class="btn-primary" @click="downloadReportVisits">Выгрузить отчетность команды</button>
         </div>
         <div class="col-6 justify-content-end d-flex " v-if="can('can create teams')">
             <button class="btn-custom-primary" type="button"
@@ -85,7 +85,8 @@
 
     <!-- visits-->
     <div class="row"
-         v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader">
+         v-if="can('can edit own teams') || currUserFunctions == TeamRoles.Member || currUserFunctions == TeamRoles.Leader"
+    >
         <TeamVisits :dates="dates" :team-id="teamId" :maxVisits="maxVisits" :is-national="isNational"
                     :semester="semester" :schedule="schedule" :timeDayWeek="timeDayWeek"/>
     </div>

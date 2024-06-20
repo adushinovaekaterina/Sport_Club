@@ -118,9 +118,12 @@
         </div>
         <div class="col-lg col-md col-sm p-3">
           <div class="card-body d-flex flex-column">
-            <div class="member-title mb-2">{{ item.user?.fullname }}</div>
+            <div class="member-title mb-3">{{ item.user?.fullname }}</div>
+            <div class="member-desc mb-2">
+              Дата отправки заявки студентом: {{ item.date_create }}
+            </div>
             <div class="member-desc mb-5">
-              Дата отправки заявки: {{ item.date_update }}
+              Дата изменения статуса заявки тренером: {{ item.date_update }}
             </div>
             <div class="mt-auto row align-content-center g-2">
               <div class="member-status col">

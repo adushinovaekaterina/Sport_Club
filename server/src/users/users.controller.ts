@@ -139,7 +139,7 @@ export class UsersController {
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
-    description: 'You are not admin',
+    description: 'Вы не админ',
   })
   async changePermissions(
     @Body() params: { userId: number; permissions: Permissions[] },

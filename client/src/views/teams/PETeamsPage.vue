@@ -2,25 +2,40 @@
     <!-- Это вся обертка -->
     <div class="wrapper-team">
         <!-- Навигация -->
-        <div class="wrapper-team__navigation">
-            <!-- создание коллектива -->
-            <div v-if="can('can create teams')">
-                <!-- Button trigger modal -->
-                <button
-                        @click="editTeam(false, null)"
-                        type="button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editTeamModal"
-                >
-                    Создать команду
-                </button>
-                <ModalCreateTeam
-                        :is-edit-team="isEditTeam"
-                        :team-id="teamId"
-                        :on-save-changes="handleModalSaveChanges"
-                        id="editTeamModal"/>
-            </div>
+      <div class="wrapper-team__navigation">
+        <div class="row g-2">
+          <!-- создание коллектива -->
+          <div v-if="can('can create teams')" class="col-auto">
+            <!-- Button trigger modal -->
+            <button
+                @click="editTeam(false, null)"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#editTeamModal"
+            >
+              Создать команду
+            </button>
+            <ModalCreateTeam
+                :is-edit-team="isEditTeam"
+                :team-id="teamId"
+                :on-save-changes="handleModalSaveChanges"
+                id="editTeamModal"/>
+          </div>
+
+          <div class="col-auto">
+            <!--   Редактировать семестры -->
+            <button
+                @click="editSemester(false)"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#editSemester"
+            >
+              Редактировать семестры
+            </button>
+            <ModalEditSemester modal-id="editSemester"/>
+          </div>
         </div>
+      </div>
 
         <!-- Обертка карточек коллективов -->
         <div v-if="show" class="wrapper-team__content">
@@ -186,6 +201,7 @@ import Search from "@/components/SearchField.vue";
 import type {ITeam} from "@/store/models/teams/team.model";
 import type {Ref} from "vue";
 import LoadingElem from "@/components/LoadingElem.vue";
+import ModalEditSemester from "@/components/modals/ModalEditSemester.vue";
 
 const permissions_store = usePermissionsStore();
 const teamStore = useTeamStore();
@@ -198,6 +214,7 @@ const data: Ref<ITeam[]> = ref([]);
 
 // переключить на редактирвоание коллектива или на создание новаого
 const isEditTeam = ref(false);
+const isEditSemester = ref(false);
 const teamId = ref(-1);
 
 const findTeamTxt = ref();
@@ -234,6 +251,11 @@ function editTeam(editT: boolean, team: ITeam | null) {
     // редактируем колектив или создаем новый
     isEditTeam.value = editT;
     teamId.value = team?.id ? team.id : -1;
+}
+
+function editSemester(editT: boolean) {
+  // редактируем колектив или создаем новый
+  isEditSemester.value = editT;
 }
 
 function handleEventChangeStateLayout(stateL: boolean) {

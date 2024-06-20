@@ -1,6 +1,6 @@
 <template>
   <div class="form-login">
-    <a>Система поддержки физкультурно-спортивной деятельности ИРНИТУ</a>
+    <a>Система "Физкультурно-спортивная деятельность ИРНИТУ"</a>
     <div class="form-login__choice">
       <a @click="show = true" :class="{ active: show }">Авторизация</a>
       <a @click="show = false" :class="{ active: !show }">Регистрация</a>
