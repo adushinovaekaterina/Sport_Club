@@ -8,20 +8,24 @@
         <div class="text-area">
           <div class="container" v-if="team && team.title">
             <p>{{ team.title }}</p>
-
-            <div v-if="
+            <div v-if="user?.id == null && team?.capacity > team?.count_members" class="">
+              <ModalQuestionnaire v-model="team.title"/>
+            </div>
+            <div v-else>
+              <div v-if="
                         // permissions_store.healthGroup?.id == team.health_group?.id
                         team?.capacity > team?.count_members
                         && permissions_store.healthGroup?.id == team.health_group?.id
                         && !can('can create teams')
                         && !can('can create team roles')">
-              <ModalQuestionnaire v-model="team.title"/>
-            </div>
-            <div v-else-if="team?.capacity <= team?.count_members" class="">
-              Нужное количество участников набралось
-            </div>
-            <div v-else-if="permissions_store.healthGroup?.id !== team.health_group?.id" class="">
-              Ваша группа здоровья не соответствует группе здоровья команды
+                <ModalQuestionnaire v-model="team.title"/>
+              </div>
+              <div v-else-if="team?.capacity <= team?.count_members" class="">
+                Нужное количество участников набралось
+              </div>
+              <div v-else-if="permissions_store.healthGroup?.id !== team.health_group?.id" class="">
+                Ваша группа здоровья не соответствует группе здоровья команды
+              </div>
             </div>
           </div>
         </div>
@@ -85,6 +89,8 @@ import ParticipationsPage from "@/views/teams/ParticipationsPage.vue";
 import {useTeamStore} from "@/store/team_store";
 import type {IUserFunction} from "@/store/models/user/user-functions.model";
 import type {TeamRoles} from "@/store/enums/team_roles";
+import type {IUser} from "@/store/models/user/user.model";
+import {useUserStore} from "@/store/user_store";
 
 const route = useRoute();
 // это сборная?
@@ -103,6 +109,8 @@ const teamId = Number(route.params.id);
 const show = ref(true);
 
 const team: Ref<ITeam> = ref({});
+const user: Ref<IUser> = ref({});
+const functions = ref();
 
 // const currentPage = ref(0);
 
@@ -110,6 +118,18 @@ onBeforeMount(() => {
   fetchCurrentUserOfTeam();
   fetchCurrentTeam();
 })
+
+onBeforeMount(async () => {
+  user.value = await usePermissionsStore().fetchUser();
+  if (user.value.id) {
+    functions.value = await useUserStore().getUsersFunction(user.value.id);
+    // dateEvent.value = await useJournalStore().fetchJournalsByUserId(3);
+    // attrs.value[0].dates = dateEvent.value[0].map(
+    //     (x: { dateParticipation: string }) => x.dateParticipation,
+    // );
+  }
+
+});
 
 async function fetchCurrentTeam() {
   await axios.get("/api/teams/" + route.params.id).then((respose) => {
