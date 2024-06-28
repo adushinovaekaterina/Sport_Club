@@ -28,6 +28,7 @@
         </div>
 
         <div class="row py-4">
+            <div>{{ team?.capacity - countParticipants }} свободных мест</div>
             <div>{{ countParticipants }} участник</div>
             <div>{{ countLeaders }} руководитель</div>
         </div>
@@ -62,7 +63,7 @@
                                 <div class="col-auto">
                                     <div
                                             class="dropdown"
-                                            v-if="item.function?.title != TeamRoles.Leader"
+                                            v-if="can('can edit own teams')"
                                     >
                                         <button
                                                 class="btn-icon"
@@ -235,6 +236,7 @@ import type {RURequisition} from "@/store/models/teams/update-requisition.model"
 import {useUserFunctionsStore} from "@/store/user_functions.store";
 import {Status} from "@/store/enums/enum_event";
 import {usePermissionsStore} from "@/store/permissions_store";
+import type {ITeam} from "@/store/models/teams/team.model";
 
 const teamStore = useTeamStore();
 const uFStore = useUserFunctionsStore();
@@ -258,6 +260,7 @@ const isEditMode = ref(false);
 const teamUsers: Ref<IUserFunction[]> = ref([]);
 const countParticipants = ref(0);
 const countLeaders = ref(0);
+const team: Ref<ITeam> = ref({});
 
 const searchTxt = ref("");
 
@@ -283,7 +286,12 @@ onBeforeMount(async () => {
     filter.value.offset = offset.value;
     filter.value.limit = limit;
     await fetchUsers();
+    await fetchTeam();
 });
+
+async function fetchTeam() {
+  team.value = await teamStore.fetchTeam(props.idTeam);
+}
 
 function handleEventChangeStateLayout(stateL: boolean) {
     isTable.value = !stateL;
@@ -317,6 +325,8 @@ async function fetchUsers() {
 async function countPeople(teamUsers: IUserFunction[]) {
     let cParticipants = 0;
     let cLeaders = 0;
+    let cFreeSeats = 0;
+
     teamUsers.forEach((uF) => {
         if (uF.function?.title == TeamRoles.Member) cParticipants++;
         else if (uF.function?.title == TeamRoles.Leader) cLeaders++;

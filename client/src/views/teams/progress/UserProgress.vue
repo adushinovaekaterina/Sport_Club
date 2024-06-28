@@ -23,6 +23,7 @@
         </div>
 
         <UserCompetitions :team-id="teamId" :user-id="userId"/>
+        <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         <StandardUser :team-id="teamId" :user-id="userId"/>
 
     </div>
@@ -45,6 +46,7 @@ import TeamVisits from "@/views/teams/schedule/TeamVisits.vue";
 import {getFormattedWeek, getMonday} from "@/views/teams/schedule/format-date";
 import {semesters} from "@/store/constants/other";
 import {TeamRoles} from "@/store/enums/team_roles";
+import EHalfPie from "@/components/charts/EHalfPie.vue";
 
 const props = defineProps<{
   teamId: number;
@@ -72,6 +74,11 @@ const dates = computed(() => {
       weekDays.value[weekDays.value.length - 1],
   );
 });
+
+const dataPie = ref<{
+  value: number,
+  name: string
+} []>([])
 
 const router = useRouter();
 const route = useRoute();

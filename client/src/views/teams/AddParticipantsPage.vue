@@ -1,110 +1,207 @@
 <template>
-<!--    &lt;!&ndash;    go back &ndash;&gt;-->
-<!--    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">-->
-<!--        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>-->
-<!--        Назад-->
-<!--    </button>-->
-    <div class="border-block bg-white p-4">
-
-
-        <div class="row">
-            <!--    filters    -->
-            <div class="col-md-3 col-12">
-                <div class="nav-collapse collapse" id="collapseCkecker">
-                    <div class="filters-block  border-1 border-end p-3">
-                        <CheckBox_Menu
-                                :menu_items="filters"
-                                :handleEventSetFilters="handleEventSetFilters"
-                                :handleEventResetFilters="handleEventResetFilters"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            <!--   users-->
-            <div class="col-md-9 col-12">
-                <h4 class="fw-bold">Добавление студентов в команду "{{ team.title }}" </h4>
-                <div class="row">
-                    <div class="col my-3">
-                        <SearchField :handle-timer-search="handleTimerSearch"/>
-                    </div>
-
-                    <!-- фильтры в модальнос окне -->
-                    <div class="col-auto align-items-center d-flex">
-                        <div class="d-md-none">
-                            <button
-                                    type="button"
-                                    class="btn-icon-rounded"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#filtersModal"
-                            >
-                                <font-awesome-icon class="ic fa-lg" icon="filter"/>
-                            </button>
-                        </div>
-
-                        <ModalFull modal-id="filtersModal">
-                            <template #header> Фильтры</template>
-                            <template #body>
-                                <CheckBox_Menu
-                                        :menu_items="filters"
-                                        :handleEventSetFilters="handleEventSetFilters"
-                                        :handleEventResetFilters="handleEventResetFilters"
-                                />
-                            </template>
-                        </ModalFull>
-                    </div>
-                </div>
-                <div class="overflow-x-scroll">
-                    <table class="table table-bordered fw-bold">
-                        <thead>
-                        <tr>
-                            <th class="header">Студент</th>
-<!--                            <th class="header">День рождения</th>-->
-                            <th class="header">Группа</th>
-                            <th class="header">Номер телефона</th>
-                            <td></td>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr v-for="el in foundUsers.users" :key="el.id">
-                            <td class="header">{{ el.fullname }}</td>
-<!--                            <td>{{ el.birthdate }}</td>-->
-                            <td>{{ el.education_group }}</td>
-                            <td>{{ el.phone }}</td>
-                            <td>
-                                <!-- add new-->
-                                <div v-if="!userInTeam(el.id ?? -1)">
-                                    <button class="btn-primary-bordered"
-                                            @click="addNewParticipant(el.id ?? -1)">Добавить
-                                    </button>
-                                </div>
-                                <!-- already added-->
-                                <div v-else class="justify-content-center align-items-center d-flex">
-                                    <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>
-                                </div>
-                            </td>
-                          <td>
-                            <!-- add new-->
-                            <div v-if="userInTeam(el.id ?? -1)">
-                              <button class="btn-primary-bordered"
-                                      @click="deleteUserFromTeam(el.id ?? -1, Status.CANCELLED)">Удалить
-                              </button>
-                            </div>
-                            <!-- already added-->
-                            <div v-else class="justify-content-center align-items-center d-flex">
-<!--                              <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>-->
-                            </div>
-                          </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+  <div class="border-block bg-white p-4">
+    <div class="row">
+      <!--    filters    -->
+      <div class="col-md-3 col-12">
+        <div class="nav-collapse collapse" id="collapseCkecker">
+          <div class="filters-block  border-1 border-end p-3">
+            <CheckBox_Menu
+                :menu_items="filters"
+                :handleEventSetFilters="handleEventSetFilters"
+                :handleEventResetFilters="handleEventResetFilters"
+            />
+          </div>
         </div>
+      </div>
 
+      <!--   users-->
+      <div class="col-md-9 col-12">
+        <h4 class="fw-bold">Добавление студентов в команду "{{ team.title }}" </h4>
+        <div class="row">
+          <div class="col my-3">
+            <SearchField :handle-timer-search="handleTimerSearch"/>
+          </div>
+
+          <!-- фильтры в модальнос окне -->
+          <div class="col-auto align-items-center d-flex">
+            <div class="d-md-none">
+              <button
+                  type="button"
+                  class="btn-icon-rounded"
+                  data-bs-toggle="modal"
+                  data-bs-target="#filtersModal"
+              >
+                <font-awesome-icon class="ic fa-lg" icon="filter"/>
+              </button>
+            </div>
+
+            <ModalFull modal-id="filtersModal">
+              <template #header> Фильтры</template>
+              <template #body>
+                <CheckBox_Menu
+                    :menu_items="filters"
+                    :handleEventSetFilters="handleEventSetFilters"
+                    :handleEventResetFilters="handleEventResetFilters"
+                />
+              </template>
+            </ModalFull>
+          </div>
+        </div>
+        <div class="overflow-x-scroll">
+          <table class="table table-bordered fw-bold">
+            <thead>
+            <tr>
+              <th class="header">Студент</th>
+              <th class="header">Группа</th>
+<!--              <th class="header">Номер телефона</th>-->
+              <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Фильтрация пользователей по education_group -->
+            <tr v-for="el in foundUsers.users.filter(user => user.education_group !== null)" :key="el.id">
+              <td class="header">{{ el.fullname }}</td>
+              <td>{{ el.education_group }}</td>
+<!--              <td>{{ el.phone }}</td>-->
+              <td>
+                <!-- add new-->
+                <div v-if="!userInTeam(el.id ?? -1)">
+                  <button class="btn-primary-bordered"
+                          @click="addNewParticipant(el.id ?? -1)">Добавить
+                  </button>
+                </div>
+                <!-- already added-->
+                <div v-else class="justify-content-center align-items-center d-flex">
+                  <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>
+                </div>
+              </td>
+              <td>
+                <!-- add new-->
+                <div v-if="userInTeam(el.id ?? -1)">
+                  <button class="btn-primary-bordered"
+                          @click="deleteUserFromTeam(el.id ?? -1, Status.CANCELLED)">Удалить
+                  </button>
+                </div>
+                <!-- already added-->
+                <div v-else class="justify-content-center align-items-center d-flex">
+                </div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
+
+<!--<template>-->
+<!--&lt;!&ndash;    &lt;!&ndash;    go back &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;    <button class="btn-icon-rounded position-fixed start-0 btn-float mx-4" @click="goBack">&ndash;&gt;-->
+<!--&lt;!&ndash;        <font-awesome-icon :icon="['fas', 'arrow-left']" size="xl"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        Назад&ndash;&gt;-->
+<!--&lt;!&ndash;    </button>&ndash;&gt;-->
+<!--    <div class="border-block bg-white p-4">-->
+
+
+<!--        <div class="row">-->
+<!--            &lt;!&ndash;    filters    &ndash;&gt;-->
+<!--            <div class="col-md-3 col-12">-->
+<!--                <div class="nav-collapse collapse" id="collapseCkecker">-->
+<!--                    <div class="filters-block  border-1 border-end p-3">-->
+<!--                        <CheckBox_Menu-->
+<!--                                :menu_items="filters"-->
+<!--                                :handleEventSetFilters="handleEventSetFilters"-->
+<!--                                :handleEventResetFilters="handleEventResetFilters"-->
+<!--                        />-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash;   users&ndash;&gt;-->
+<!--            <div class="col-md-9 col-12">-->
+<!--                <h4 class="fw-bold">Добавление студентов в команду "{{ team.title }}" </h4>-->
+<!--                <div class="row">-->
+<!--                    <div class="col my-3">-->
+<!--                        <SearchField :handle-timer-search="handleTimerSearch"/>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; фильтры в модальнос окне &ndash;&gt;-->
+<!--                    <div class="col-auto align-items-center d-flex">-->
+<!--                        <div class="d-md-none">-->
+<!--                            <button-->
+<!--                                    type="button"-->
+<!--                                    class="btn-icon-rounded"-->
+<!--                                    data-bs-toggle="modal"-->
+<!--                                    data-bs-target="#filtersModal"-->
+<!--                            >-->
+<!--                                <font-awesome-icon class="ic fa-lg" icon="filter"/>-->
+<!--                            </button>-->
+<!--                        </div>-->
+
+<!--                        <ModalFull modal-id="filtersModal">-->
+<!--                            <template #header> Фильтры</template>-->
+<!--                            <template #body>-->
+<!--                                <CheckBox_Menu-->
+<!--                                        :menu_items="filters"-->
+<!--                                        :handleEventSetFilters="handleEventSetFilters"-->
+<!--                                        :handleEventResetFilters="handleEventResetFilters"-->
+<!--                                />-->
+<!--                            </template>-->
+<!--                        </ModalFull>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="overflow-x-scroll">-->
+<!--                    <table class="table table-bordered fw-bold">-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th class="header">Студент</th>-->
+<!--&lt;!&ndash;                            <th class="header">День рождения</th>&ndash;&gt;-->
+<!--                            <th class="header">Группа</th>-->
+<!--                            <th class="header">Номер телефона</th>-->
+<!--                            <td></td>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody>-->
+
+<!--                        <tr v-for="el in foundUsers.users" :key="el.id">-->
+<!--                            <td class="header">{{ el.fullname }}</td>-->
+<!--&lt;!&ndash;                            <td>{{ el.birthdate }}</td>&ndash;&gt;-->
+<!--                            <td>{{ el.education_group }}</td>-->
+<!--                            <td>{{ el.phone }}</td>-->
+<!--                            <td>-->
+<!--                                &lt;!&ndash; add new&ndash;&gt;-->
+<!--                                <div v-if="!userInTeam(el.id ?? -1)">-->
+<!--                                    <button class="btn-primary-bordered"-->
+<!--                                            @click="addNewParticipant(el.id ?? -1)">Добавить-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                                &lt;!&ndash; already added&ndash;&gt;-->
+<!--                                <div v-else class="justify-content-center align-items-center d-flex">-->
+<!--                                    <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>-->
+<!--                                </div>-->
+<!--                            </td>-->
+<!--                          <td>-->
+<!--                            &lt;!&ndash; add new&ndash;&gt;-->
+<!--                            <div v-if="userInTeam(el.id ?? -1)">-->
+<!--                              <button class="btn-primary-bordered"-->
+<!--                                      @click="deleteUserFromTeam(el.id ?? -1, Status.CANCELLED)">Удалить-->
+<!--                              </button>-->
+<!--                            </div>-->
+<!--                            &lt;!&ndash; already added&ndash;&gt;-->
+<!--                            <div v-else class="justify-content-center align-items-center d-flex">-->
+<!--&lt;!&ndash;                              <font-awesome-icon :icon="['fas', 'circle-check']" size="xl" class="text-success"/>&ndash;&gt;-->
+<!--                            </div>-->
+<!--                          </td>-->
+<!--                        </tr>-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+<!--</template>-->
 
 <script setup lang="ts">
 import type {IRUFunction} from "@/store/models/user/search-user-functions.model";
@@ -280,7 +377,7 @@ const goBack = () => {
 
 const fetchUsers = async () => {
     let filterUser = new FilterUser();
-    filterUser.limit = 10;
+    filterUser.limit = 30;
     filterUser.searchTxt = searchTxt.value;
     let fls = filters.value
     let healthGroups = fls[0].menu_types.filter(el => el.checked).map(el => el.id);

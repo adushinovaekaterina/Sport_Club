@@ -8,16 +8,15 @@
         <div class="text-area">
           <div class="container" v-if="team && team.title">
             <p>{{ team.title }}</p>
-            <div v-if="user?.id == null && team?.capacity > team?.count_members" class="">
-              <ModalQuestionnaire v-model="team.title"/>
+            <div v-if="can('can edit own teams') || can('can create teams')" class="">
+            </div>
+            <div v-else-if="!user?.id && team?.capacity > team?.count_members" class="">
+              Необходимо зарегистрироваться перед тем как подавать заявку
             </div>
             <div v-else>
-              <div v-if="
-                        // permissions_store.healthGroup?.id == team.health_group?.id
-                        team?.capacity > team?.count_members
-                        && permissions_store.healthGroup?.id == team.health_group?.id
-                        && !can('can create teams')
-                        && !can('can create team roles')">
+              <div v-if="team?.capacity > team?.count_members
+                  && permissions_store.healthGroup?.id == team.health_group?.id
+                  && !can('can create teams')">
                 <ModalQuestionnaire v-model="team.title"/>
               </div>
               <div v-else-if="team?.capacity <= team?.count_members" class="">
@@ -27,6 +26,28 @@
                 Ваша группа здоровья не соответствует группе здоровья команды
               </div>
             </div>
+<!--            <div v-if ="can('can create teams')" class="">-->
+<!--              Вы являетесь тренером данной команды и поэтому не можете подать заявку-->
+<!--            </div>-->
+<!--            <div v-else-if="user?.id == null && team?.capacity > team?.count_members" class="">-->
+<!--              <ModalQuestionnaire v-model="team.title"/>-->
+<!--            </div>-->
+<!--            <div v-else>-->
+<!--              <div v-if="-->
+<!--                        // permissions_store.healthGroup?.id == team.health_group?.id-->
+<!--                        team?.capacity > team?.count_members-->
+<!--                        && permissions_store.healthGroup?.id == team.health_group?.id-->
+<!--                        && !can('can create teams')-->
+<!--                        && !can('can create team roles')">-->
+<!--                <ModalQuestionnaire v-model="team.title"/>-->
+<!--              </div>-->
+<!--              <div v-else-if="team?.capacity <= team?.count_members" class="">-->
+<!--                Нужное количество участников набралось-->
+<!--              </div>-->
+<!--              <div v-else-if="permissions_store.healthGroup?.id !== team.health_group?.id" class="">-->
+<!--                Ваша группа здоровья не соответствует группе здоровья команды-->
+<!--              </div>-->
+<!--            </div>-->
           </div>
         </div>
       </div>
@@ -154,7 +175,7 @@ const itemList = [
   {name: "Занятия", permission: true},
   {name: "Участники", permission: true},
   // { name: "Редактор анкеты", permission: can("can create questionnaires") },
-  {name: "Заявки", permission: can("can edit status requisitions")},
+  {name: "Заявки", permission: can("can edit own teams")},
 ];
 
 const selectItem = (i: number) => {

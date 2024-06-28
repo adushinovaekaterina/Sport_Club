@@ -15,7 +15,7 @@
         <thead>
           <tr>
             <th scope="col">№</th>
-            <th scope="col">ФИО тренера</th>
+            <th scope="col">ФИО пользователя</th>
             <th scope="col">Почта</th>
             <th scope="col">Разрешения</th>
             <th scope="col"></th>

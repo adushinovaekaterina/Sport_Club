@@ -13,7 +13,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">
                         <!-- редактирование или создание нвого колелктива -->
                         <b v-if="isEditTeam">
-                            Редактировать команду {{ teamObj.shortname }}
+                            Редактировать команду {{ teamObj.title }}
                         </b>
                         <b v-else>Создать команду </b>
                         <!-- если коллектив в архиве -->
@@ -65,10 +65,7 @@
                                             required
                                     />
 
-                                    <div
-                                            v-if="can('can edit own teams') && isEditTeam"
-                                            class="row g-2 mb-4"
-                                    >
+                                    <div class="row g-2 mb-4">
                                         <!--  tags-->
                                         <div class="fw-bold">Теги:</div>
                                         <div class="col-auto create-field">
@@ -135,7 +132,6 @@
 
                                     <div class="fw-bold">Руководители:</div>
                                     <v-select
-                                            v-if="can('can create teams')"
                                             placeholder="ФИО Руководителя или email"
                                             class="v-select"
                                             label="data"
@@ -144,7 +140,7 @@
                                             v-model="leaderSelect"
                                     ></v-select>
 
-                                    <div v-if="can('can create teams')" class="row g-2 mb-4">
+                                    <div class="row g-2 mb-4">
                                         <!-- selected leaders-->
                                         <div
                                                 class="col-auto position-relative align-items-center d-flex"
@@ -162,7 +158,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row" v-if="can('can create teams')">
+                                    <div class="row">
                                         <div class="col-auto">
                                             <div class="fw-bold">Вид спорта:</div>
                                             <!-- select direction -->
@@ -182,19 +178,19 @@
                                             </select>
                                         </div>
 
-                                        <div class="col">
-                                            <div class="fw-bold">Аудитория:</div>
-                                            <v-select
-                                                    placeholder="Аудитория"
-                                                    class="v-select"
-                                                    label="name"
-                                                    :options="foundAuditories"
-                                                    v-model="auditorySelect"
-                                            ></v-select>
-                                        </div>
+<!--                                        <div class="col">-->
+<!--                                            <div class="fw-bold">Аудитория:</div>-->
+<!--                                            <v-select-->
+<!--                                                    placeholder="Аудитория"-->
+<!--                                                    class="v-select"-->
+<!--                                                    label="name"-->
+<!--                                                    :options="foundAuditories"-->
+<!--                                                    v-model="auditorySelect"-->
+<!--                                            ></v-select>-->
+<!--                                        </div>-->
                                     </div>
 
-                                    <div class="row g-2 mb-4" v-if="can('can create teams')">
+                                    <div class="row g-2 mb-4">
 
                                         <!-- selected cabinets-->
                                         <div
@@ -242,11 +238,8 @@
                                              :is-checked="is_national"/>
 
                                 <!-- main photos -->
-                                <div
-                                        class="row g-2 mb-4"
-                                        v-if="can('can create teams') && isEditTeam"
-                                >
-                                    <b>Заглавные фотографии: </b>
+                                <div v-if = isEditTeam class="row g-2 mb-4">
+                                    <b>Фотография: </b>
                                     <!--       images      -->
                                     <div
                                             class="col-md-6 col-lg-4 col-12 position-relative align-items-center"
@@ -274,10 +267,10 @@
                                 </div>
 
                                 <!-- photo gallery -->
-                                <div
-                                        class="row g-2 mb-4"
-                                        v-if="can('can edit own teams') && isEditTeam"
-                                >
+<!--                                <div-->
+<!--                                        class="row g-2 mb-4"-->
+<!--                                        v-if="can('can edit own teams') && isEditTeam"-->
+<!--                                >-->
 <!--                                    <b>Фотографии из галереи: </b>-->
 <!--                                    <div-->
 <!--                                            class="col-md-6 col-lg-4 col-12 position-relative align-items-center"-->
@@ -300,7 +293,7 @@
 <!--                                            />-->
 <!--                                        </div>-->
 <!--                                    </div>-->
-                                </div>
+<!--                                </div>-->
 
                                 <div class="fuck-off-btn">
                                     <div class="row">

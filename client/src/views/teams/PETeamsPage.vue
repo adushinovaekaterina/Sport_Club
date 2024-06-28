@@ -22,7 +22,7 @@
                 id="editTeamModal"/>
           </div>
 
-          <div class="col-auto">
+          <div v-if="can('can create teams')" class="col-auto">
             <!--   Редактировать семестры -->
             <button
                 @click="editSemester(false)"

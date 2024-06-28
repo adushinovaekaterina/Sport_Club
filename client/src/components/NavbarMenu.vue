@@ -52,13 +52,13 @@
               </p>
             </RouterLink>
           </div>
-          <div v-else-if="can('can create teams')" class="link-item col-auto">
-            <RouterLink class="link" active-class="active" :to="'/edit-teams'">
-              <p class="align-items-center admin-btn d-flex"><span>Настройки команд</span>
-                <font-awesome-icon :icon="['fas', 'gear']" class="fa-xl mx-2"/>
-              </p>
-            </RouterLink>
-          </div>
+<!--          <div v-else-if="can('can create teams')" class="link-item col-auto">-->
+<!--            <RouterLink class="link" active-class="active" :to="'/edit-teams'">-->
+<!--              <p class="align-items-center admin-btn d-flex"><span>Настройки команд</span>-->
+<!--                <font-awesome-icon :icon="['fas', 'gear']" class="fa-xl mx-2"/>-->
+<!--              </p>-->
+<!--            </RouterLink>-->
+<!--          </div>-->
         </div>
         <!-- Кнопка вход + Личный кабинет-->
         <div class="navbar__item-login justify-content-center d-flex">

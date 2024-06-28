@@ -92,9 +92,9 @@ import {useSemesterStore} from "@/store/schedule/semesters_store";
 import {watch} from "vue";
 
 const props = defineProps<{
-    teamId: number;
-    isNational: boolean;
-    currUserFunctions: TeamRoles | undefined;
+  teamId: number;
+  isNational: boolean;
+  currUserFunctions: TeamRoles | undefined;
 }>();
 
 const permissions_store = usePermissionsStore();
@@ -103,82 +103,191 @@ const semestersStore = useSemesterStore();
 
 const can = permissions_store.can;
 
-const selectedWeekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника
-const maxVisits = ref(0); // Используем функцию для получения понедельника
-const team = ref<ITeam>({}); // Используем функцию для получения понедельника
+const selectedWeekStart = ref(getMonday(new Date()));
+const maxVisits = ref(32); // Устанавливаем количество посещений в 32 при загрузке компонента
+const team = ref<ITeam>({});
 
 const selectedSemester = ref<ISemester>({});
 const foundSemesters = ref<ISemester[]>([]);
 
-onBeforeMount(() => {
-    getTeam()
-    getSemesters()
+onBeforeMount(async () => {
+  await getTeam();
+  await getSemesters();
+  await setMaxVisits(); // Сохраняем значение maxVisits при загрузке компонента
 })
 
 watch(() => selectedSemester.value, async (value) => {
-    console.log(selectedSemester.value)
-    await getTeam()
-    await getMaxVisits()
+  console.log(selectedSemester.value)
+  await getTeam()
+  await getMaxVisits()
 })
 
 async function getSemesters() {
-    foundSemesters.value = await semestersStore.getSemesters({});
-    selectedSemester.value = (foundSemesters.value)[0]
+  foundSemesters.value = await semestersStore.getSemesters({});
+  selectedSemester.value = (foundSemesters.value)[0]
 }
 
 const weekDays = computed(() => {
-    const days: Date[] = [];
-    const startDate = new Date(selectedWeekStart.value);
-    for (let i = 0; i < 7; i++) {
-        const day = new Date(startDate);
-        day.setDate(startDate.getDate() + i);
-        days.push(day);
-    }
-    return days;
+  const days: Date[] = [];
+  const startDate = new Date(selectedWeekStart.value);
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(startDate);
+    day.setDate(startDate.getDate() + i);
+    days.push(day);
+  }
+  return days;
 });
 
 const dates = computed(() => {
-    return getFormattedWeek(
-        weekDays.value[0],
-        weekDays.value[weekDays.value.length - 1],
-    );
+  return getFormattedWeek(
+      weekDays.value[0],
+      weekDays.value[weekDays.value.length - 1],
+  );
 });
 
 async function setMaxVisits() {
-    const res = await teamStore.createOrUpdateSemesterVisits({
-        team_id: props.teamId,
-        max_visits: maxVisits.value, semester_id: selectedSemester.value.id
-    }).then(async () => {
-        await getTeam()
-    })
+  const res = await teamStore.createOrUpdateSemesterVisits({
+    team_id: props.teamId,
+    max_visits: maxVisits.value, semester_id: selectedSemester.value.id
+  }).then(async () => {
+    await getTeam()
+  })
 }
 
 async function getTeam() {
-    team.value = await teamStore.fetchTeam(props.teamId)
+  team.value = await teamStore.fetchTeam(props.teamId)
 }
 
 async function getMaxVisits() {
-    const smv = await teamStore.fetchSemesterMaxVisits({
-        team_id: props.teamId,
-        max_visits: maxVisits.value, semester_id: selectedSemester.value.id
-    })
-    maxVisits.value = smv.max_visits ?? 0
+  const smv = await teamStore.fetchSemesterMaxVisits({
+    team_id: props.teamId,
+    max_visits: maxVisits.value, semester_id: selectedSemester.value.id
+  })
+  maxVisits.value = smv.max_visits ?? 0
 }
 
 
 function prevWeek() {
-    selectedWeekStart.value = new Date(
-        selectedWeekStart.value.getTime() - 7 * 24 * 60 * 60 * 1000,
-    );
+  selectedWeekStart.value = new Date(
+      selectedWeekStart.value.getTime() - 7 * 24 * 60 * 60 * 1000,
+  );
 }
 
 function nextWeek() {
-    selectedWeekStart.value = new Date(
-        selectedWeekStart.value.getTime() + 7 * 24 * 60 * 60 * 1000,
-    );
+  selectedWeekStart.value = new Date(
+      selectedWeekStart.value.getTime() + 7 * 24 * 60 * 60 * 1000,
+  );
 }
 
 </script>
+
+
+<!--<script lang="ts" setup>-->
+<!--import {getFormattedWeek, getMonday,} from "@/views/teams/schedule/format-date";-->
+<!--import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";-->
+<!--import {computed, onBeforeMount, ref} from "vue";-->
+<!--import {DatePicker} from "v-calendar";-->
+<!--import DropdownBtn from "@/components/Buttons/DropdownBtn.vue";-->
+<!--import {useTeamStore} from "@/store/team_store";-->
+<!--import type {ITeam} from "@/store/models/teams/team.model";-->
+<!--import {usePermissionsStore} from "@/store/permissions_store";-->
+<!--import TeamSchedule from "@/views/teams/schedule/TeamScheduleVisits.vue";-->
+<!--import UserCompetitions from "@/views/teams/progress/UserCompetitions.vue";-->
+<!--import StandardUser from "@/views/teams/progress/StandardUser.vue";-->
+<!--import {TeamRoles} from "@/store/enums/team_roles";-->
+<!--import {ISemester} from "@/store/models/schedule/semester.model";-->
+<!--import {useSemesterStore} from "@/store/schedule/semesters_store";-->
+<!--import {watch} from "vue";-->
+
+<!--const props = defineProps<{-->
+<!--    teamId: number;-->
+<!--    isNational: boolean;-->
+<!--    currUserFunctions: TeamRoles | undefined;-->
+<!--}>();-->
+
+<!--const permissions_store = usePermissionsStore();-->
+<!--const teamStore = useTeamStore();-->
+<!--const semestersStore = useSemesterStore();-->
+
+<!--const can = permissions_store.can;-->
+
+<!--const selectedWeekStart = ref(getMonday(new Date())); // Используем функцию для получения понедельника-->
+<!--const maxVisits = ref(32); // Используем функцию для получения понедельника-->
+<!--const team = ref<ITeam>({}); // Используем функцию для получения понедельника-->
+
+<!--const selectedSemester = ref<ISemester>({});-->
+<!--const foundSemesters = ref<ISemester[]>([]);-->
+
+<!--onBeforeMount(() => {-->
+<!--    getTeam()-->
+<!--    getSemesters()-->
+<!--})-->
+
+<!--watch(() => selectedSemester.value, async (value) => {-->
+<!--    console.log(selectedSemester.value)-->
+<!--    await getTeam()-->
+<!--    await getMaxVisits()-->
+<!--    await setMaxVisits(); // Сохраняем значение maxVisits при загрузке компонента-->
+<!--})-->
+
+<!--async function getSemesters() {-->
+<!--    foundSemesters.value = await semestersStore.getSemesters({});-->
+<!--    selectedSemester.value = (foundSemesters.value)[0]-->
+<!--}-->
+
+<!--const weekDays = computed(() => {-->
+<!--    const days: Date[] = [];-->
+<!--    const startDate = new Date(selectedWeekStart.value);-->
+<!--    for (let i = 0; i < 7; i++) {-->
+<!--        const day = new Date(startDate);-->
+<!--        day.setDate(startDate.getDate() + i);-->
+<!--        days.push(day);-->
+<!--    }-->
+<!--    return days;-->
+<!--});-->
+
+<!--const dates = computed(() => {-->
+<!--    return getFormattedWeek(-->
+<!--        weekDays.value[0],-->
+<!--        weekDays.value[weekDays.value.length - 1],-->
+<!--    );-->
+<!--});-->
+
+<!--async function setMaxVisits() {-->
+<!--    const res = await teamStore.createOrUpdateSemesterVisits({-->
+<!--        team_id: props.teamId,-->
+<!--        max_visits: maxVisits.value, semester_id: selectedSemester.value.id-->
+<!--    }).then(async () => {-->
+<!--        await getTeam()-->
+<!--    })-->
+<!--}-->
+
+<!--async function getTeam() {-->
+<!--    team.value = await teamStore.fetchTeam(props.teamId)-->
+<!--}-->
+
+<!--async function getMaxVisits() {-->
+<!--    const smv = await teamStore.fetchSemesterMaxVisits({-->
+<!--        team_id: props.teamId,-->
+<!--        max_visits: maxVisits.value, semester_id: selectedSemester.value.id-->
+<!--    })-->
+<!--    maxVisits.value = smv.max_visits ?? 0-->
+<!--}-->
+
+
+<!--function prevWeek() {-->
+<!--    selectedWeekStart.value = new Date(-->
+<!--        selectedWeekStart.value.getTime() - 7 * 24 * 60 * 60 * 1000,-->
+<!--    );-->
+<!--}-->
+
+<!--function nextWeek() {-->
+<!--    selectedWeekStart.value = new Date(-->
+<!--        selectedWeekStart.value.getTime() + 7 * 24 * 60 * 60 * 1000,-->
+<!--    );-->
+<!--}-->
+
+<!--</script>-->
 
 <style lang="scss" scoped>
 

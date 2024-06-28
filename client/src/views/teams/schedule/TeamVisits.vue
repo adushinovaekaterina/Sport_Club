@@ -3,6 +3,7 @@
     <p> Всего занятий: {{ maxVisits }}</p>
     <div class="row">
         <div class="chart-container">
+<!--            <EHalfPie v-if="currUserF.function ?.title == TeamRoles.Leader || currUserF.function ?.title == TeamRoles.Member" :data="dataPie" :name="'Прогресс'"/>-->
             <EHalfPie :data="dataPie" :name="'Прогресс'"/>
         </div>
     </div>
@@ -23,13 +24,10 @@
 
                 <tbody>
                 <tr v-for="participant in userVisits" :key="participant.name">
-                    <td v-if="!isNational">
+                    <td>
                         <router-link :to="{name:'Progress', params:{id:teamId}, query:{user_id: participant.user.id}}">
                             {{ participant.user.fullname }}
                         </router-link>
-                    </td>
-                    <td v-else>
-                        {{ participant.user.fullname }}
                     </td>
 
                     <td v-for="(date, index) in dates.dateRange" :key="index" class="">
@@ -50,7 +48,7 @@
                     <!--   visits-->
                     <td>
                         <!--     percents          -->
-                        <div class="text-center">{{ visits[participant.user.id]?.percents - 20 }} %</div>
+                        <div class="text-center">{{ visits[participant.user.id]?.percents }} %</div>
                         <div class="text-center">
 <!--                          {{ visits[participant.user.id]?.visits }}-->
 <!--                            ({{ userVisits[participant.user.id].counter }}) из {{ props.maxVisits }}-->
@@ -67,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import type {Ref} from "vue";
+import {computed, type Ref} from "vue";
 import {onBeforeMount, ref, watch} from "vue";
 import {formatDate, formatDayOfWeek} from "@/views/teams/schedule/format-date";
 import type {IUserFunction} from "@/store/models/user/user-functions.model";
@@ -156,7 +154,6 @@ interface IUserVisits {
     }
 }
 
-
 onBeforeMount(async () => {
     await getUserCompetitionsCurrentUser()
     await fetchUsers();
@@ -220,14 +217,14 @@ async function getVisitsWithCompetitions() {
                         })
 
                         // получить соревнования проценты с ограничением 20%
-                        let competitionPercents = Math.min(sumCompVisitsPercents, 20)
+                        let competitionPercents = sumCompVisitsPercents > 20 ? 20 : sumCompVisitsPercents;
                         // перевести соревнования из процентов в посещения
-                        let competitionInVisits = Math.round(competitionPercents / onePerVisit)
+                        let competitionInVisits = Math.floor(competitionPercents / onePerVisit)
                         // console.log("competitionInVisits", props.maxVisits, onePerVisit, competitionInVisits,
                         //     competitionPercents, sumCompVisitsPercents)
 
                         // сложить посещения и участия в соревнованиях
-                        let visitedWithCompetition = Math.round(visits + competitionInVisits)
+                        let visitedWithCompetition = Math.floor(visits + competitionInVisits)
                         usrVisitsTemp[usrId] = {
                             percents: Math.round(onePerVisit * visitedWithCompetition),
                             visits: visitedWithCompetition

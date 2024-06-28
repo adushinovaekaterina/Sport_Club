@@ -1,86 +1,86 @@
 <template>
-    <div class="navigation-tags row g-1">
-        <div class="col">
-            <div class="row g-2">
-                <Tag
-                        v-for="(item, index) in team?.tags"
-                        class="col-auto me-2"
-                        :text="item"
-                        :key="index"
-                />
-            </div>
-        </div>
-
-    </div>
-    <hr/>
-    <div class="block-title">О команде</div>
-    <div class="middle-panel row g-3">
-        <div class="column-left col-md-7 col-sm-12">
-            <div class="description">
-                {{ team?.description }}
-            </div>
-        </div>
-        <div class="column-right col-md-5 col-sm-12">
-            <div class="image-box">
-                <div class="arrow-left" @click="previousPage">
-                    <FontAwesomeIcon icon="angle-left"/>
-                </div>
-                <div class="image-container">
-                    <div v-for="(item, index) in team?.image" :key="index">
-                        <img :src="item" v-if="currentPage === index" alt=""/>
-                    </div>
-                </div>
-                <div class="arrow-right" @click="nextPage">
-                    <FontAwesomeIcon icon="angle-right"/>
-                </div>
-            </div>
-        </div>
+  <div class="navigation-tags row g-1">
+    <div class="col">
+      <div class="row g-2">
+        <Tag
+            v-for="(item, index) in team?.tags"
+            class="col-auto me-2"
+            :text="item"
+            :key="index"
+        />
+      </div>
     </div>
 
-  <div class="block-title">Галерея</div>
-  <div class="middle-panel">
-    <div class="gallery">
-      <div v-for="(item, index) in team?.image" :key="index">
-        <img :src="item" v-if="currentPage === index" />
-        <img :src="item" v-if="currentPage === index" />
-        <img :src="item" v-if="currentPage === index" />
-        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
-        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
-        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
-        <!--      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />-->
+  </div>
+  <hr/>
+  <div class="block-title">О команде</div>
+  <div class="middle-panel row g-12">
+    <div class="column-left col-md-7 col-sm-12">
+      <div class="description">
+        {{ team?.description }}
+      </div>
+    </div>
+    <div class="column-right col-md-5 col-sm-12">
+      <div class="image-box">
+        <!--                <div class="arrow-left" @click="previousPage">-->
+        <!--                    <FontAwesomeIcon icon="angle-left"/>-->
+        <!--                </div>-->
+        <div class="image-container">
+          <div v-for="(item, index) in team?.image" :key="index">
+            <img :src="item" v-if="currentPage === index" alt=""/>
+          </div>
+        </div>
+        <!--                <div class="arrow-right" @click="nextPage">-->
+        <!--                    <FontAwesomeIcon icon="angle-right"/>-->
+        <!--                </div>-->
       </div>
     </div>
   </div>
 
-<!--    <div class="block-title">Галерея</div>-->
-<!--    <div class="middle-panel">-->
-<!--        <div class="gallery">-->
-<!--            <img-->
-<!--                    v-for="(el, index) in team?.team_photos"-->
-<!--                    v-bind:key="index"-->
-<!--                    :src="el.image"-->
-<!--                    alt=""-->
-<!--            />-->
-<!--        </div>-->
-<!--    </div>-->
-    <div class="map">
-        <div class="info">
-            <div class="title">Наши контакты</div>
-            <div class="phone block">{{ team?.phone }}</div>
-            <!--      <div class="adress block">г. Иркутск, ул. Лермонтова, 83,<br>главный корпус ИРНИТУ,<br>каб. А-203</div>-->
-            <div class="links" v-for="(el, index) in team?.links" v-bind:key="index">
-                {{ el }}
-            </div>
-            <!--      <div class="schedule block">пн-пт 9:00 - 18:00,<br>сб 10:00 - 15:00<br>вс - выходной</div>-->
-        </div>
-        <img src="https://i.imgur.com/0e7rWdZ.png" alt="map"/>
+  <!--  <div class="block-title">Галерея</div>-->
+  <!--  <div class="middle-panel">-->
+  <!--    <div class="gallery">-->
+  <!--      <div v-for="(item, index) in team?.image" :key="index">-->
+  <!--        <img :src="item" v-if="currentPage === index" />-->
+  <!--        <img :src="item" v-if="currentPage === index" />-->
+  <!--        <img :src="item" v-if="currentPage === index" />-->
+  <!--        &lt;!&ndash;      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />&ndash;&gt;-->
+  <!--        &lt;!&ndash;      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />&ndash;&gt;-->
+  <!--        &lt;!&ndash;      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />&ndash;&gt;-->
+  <!--        &lt;!&ndash;      <img src="https://sun9-80.userapi.com/impg/v16lLdu-5nAWk8CFWXfgBTKbry5ySAaxpg07pA/_VQyOnsIS2U.jpg?size=1600x1067&quality=95&sign=29b4aa0494f355212449ccb5b2d438d4&type=album" alt="" />&ndash;&gt;-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
-        <ModalCreateTeam
-                :is-edit-team="true"
-                :team-id="teamId"
-                :on-save-changes="handleModalSaveChanges"
-                id="editTeamModal"/>
-    </div>
+  <!--    <div class="block-title">Галерея</div>-->
+  <!--    <div class="middle-panel">-->
+  <!--        <div class="gallery">-->
+  <!--            <img-->
+  <!--                    v-for="(el, index) in team?.team_photos"-->
+  <!--                    v-bind:key="index"-->
+  <!--                    :src="el.image"-->
+  <!--                    alt=""-->
+  <!--            />-->
+  <!--        </div>-->
+  <!--    </div>-->
+  <!--    <div class="map">-->
+  <!--        <div class="info">-->
+  <div class="block-title">Наши контакты</div>
+  <div class="phone block">{{ team?.phone }}</div>
+  <!--      <div class="adress block">г. Иркутск, ул. Лермонтова, 83,<br>главный корпус ИРНИТУ,<br>каб. А-203</div>-->
+  <!--            <div class="links" v-for="(el, index) in team?.links" v-bind:key="index">-->
+  <!--                {{ el }}-->
+  <!--            </div>-->
+  <!--      <div class="schedule block">пн-пт 9:00 - 18:00,<br>сб 10:00 - 15:00<br>вс - выходной</div>-->
+  <!--        </div>-->
+  <!--        <img src="https://i.imgur.com/0e7rWdZ.png" alt="map"/>-->
+
+  <ModalCreateTeam
+      :is-edit-team="true"
+      :team-id="teamId"
+      :on-save-changes="handleModalSaveChanges"
+      id="editTeamModal"/>
+  <!--    </div>-->
 </template>
 
 <script setup lang="ts">
@@ -93,9 +93,9 @@ import ModalCreateTeam from "@/components/modals/ModalCreateTeam.vue";
 import {useTeamStore} from "@/store/team_store";
 
 const props = defineProps<{
-    teamId: number;
-    isNational:boolean
-    onUpdateTeam: () => void;
+  teamId: number;
+  isNational: boolean
+  onUpdateTeam: () => void;
 }>();
 
 const teamStore = useTeamStore();
@@ -107,26 +107,26 @@ const permissions_store = usePermissionsStore();
 
 const currentPage = ref(0);
 
-onBeforeMount(()=>{
-    fetchTeam();
+onBeforeMount(() => {
+  fetchTeam();
 })
 
 // const image = ref<File>();
 
 function nextPage() {
-    if (team.value.image && currentPage.value + 1 < team.value.image.length) {
-        currentPage.value++;
-    } else {
-        currentPage.value = 0;
-    }
+  if (team.value.image && currentPage.value + 1 < team.value.image.length) {
+    currentPage.value++;
+  } else {
+    currentPage.value = 0;
+  }
 }
 
 function previousPage() {
-    if (currentPage.value - 1 >= 0) {
-        currentPage.value--;
-    } else if (team.value.image) {
-        currentPage.value = team.value.image.length - 1;
-    }
+  if (currentPage.value - 1 >= 0) {
+    currentPage.value--;
+  } else if (team.value.image) {
+    currentPage.value = team.value.image.length - 1;
+  }
 }
 
 // TODO: сделать загрузку изображений в коллективе
@@ -147,11 +147,11 @@ function previousPage() {
 // }
 
 async function fetchTeam() {
-    team.value = await teamStore.fetchTeam(props.teamId);
+  team.value = await teamStore.fetchTeam(props.teamId);
 }
 
 async function handleModalSaveChanges() {
-    await fetchTeam();
+  await fetchTeam();
 }
 </script>
 

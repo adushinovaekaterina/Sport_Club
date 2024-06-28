@@ -5,14 +5,14 @@
 
     <div class="row my-3">
         <div class="col-6">
-            <button class="btn-primary" @click="downloadReportVisits">Выгрузить отчетность команды</button>
+            <button v-if="can('can edit own teams')" class="btn-primary" @click="downloadReportVisits">Выгрузить отчетность команды</button>
         </div>
         <div class="col-6 justify-content-end d-flex " v-if="can('can create teams')">
             <button class="btn-custom-primary" type="button"
                     data-bs-toggle="modal"
                     data-bs-target="#editScheduleModal">Добавить занятие
-                <FontAwesomeIcon icon="arrow-right"
-                />
+<!--                <FontAwesomeIcon icon="arrow-right"-->
+<!--                />-->
             </button>
         </div>
     </div>

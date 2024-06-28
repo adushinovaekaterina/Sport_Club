@@ -13,7 +13,7 @@
     <section class="dropdownMenu" v-if="isOpen">
       <RouterLink
         @click="openClose"
-        v-if="permissions_store.isLogged"
+
         :to="'/personal/' + username"
       >
         <p>
@@ -23,7 +23,7 @@
       </RouterLink>
       <RouterLink
         @click="openClose"
-        v-if="permissions_store.isLogged"
+
         :to="{
           name: 'Requests',
           query: { user_id: permissions_store.user_id },
@@ -34,7 +34,7 @@
           Мои заявки
         </p>
       </RouterLink>
-      <p v-if="permissions_store.isLogged" @click.prevent="OnExitSubmit">
+      <p @click.prevent="OnExitSubmit">
         <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
         Выход
       </p>
